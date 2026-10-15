@@ -47,20 +47,30 @@ a{color:inherit;text-decoration:none}
 .top nav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
 .top nav a:hover{opacity:1}
 
-/* hero: the object */
-.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden}
-#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* hero: scroll-driven snap (coin → dock → pull back) */
+.hero{position:relative;height:340vh}
+.hero .pinbox{position:sticky;top:0;height:100vh;height:100svh;min-height:520px;overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
 .hero .poster{position:absolute;inset:0;display:grid;place-items:center}
 .hero .poster svg{width:min(40vw,320px);opacity:.9}
 .hero.gl-on .poster{display:none}
-.hero .under{position:absolute;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
-.hero .under p{max-width:300px}
-.hero .under p b{color:var(--fg);font-weight:500}
-.hero .under .cue{display:flex;align-items:center;gap:10px}
+.hero .ghost{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:clamp(4.5rem,19vw,17rem);color:transparent;-webkit-text-stroke:1px rgba(237,237,237,.1);pointer-events:none;z-index:0;white-space:nowrap;transition:opacity .8s}
+.hero .ghost.off{opacity:0}
+.hero .under{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.hero .lines{position:relative;min-height:3.6em;flex:1;max-width:340px}
+.hero .lines p{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(8px);transition:opacity .6s,transform .6s}
+.hero .lines p.on{opacity:1;transform:none}
+.hero .lines b{color:var(--fg);font-weight:500}
+.hero .under .cue{display:flex;align-items:center;gap:10px;transition:opacity .4s}
+.hero .under .cue.off{opacity:0}
 .hero .under .cue i{width:1px;height:28px;background:linear-gradient(var(--fg),transparent);animation:drop 2s ease-in-out infinite;transform-origin:top}
 @keyframes drop{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
-.hero h1{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:clamp(4.5rem,19vw,17rem);color:transparent;-webkit-text-stroke:1px rgba(237,237,237,.09);pointer-events:none;z-index:0;white-space:nowrap}
-#gl{z-index:1}
+.hero .tick{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:10px;justify-items:end}
+.hero .tick span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#4a4a4a;transition:color .4s}
+.hero .tick span.on{color:var(--fg)}
+.flash{position:absolute;inset:0;z-index:1;background:radial-gradient(40% 40% at 50% 50%,rgba(255,255,255,.18),rgba(255,255,255,0));opacity:0;pointer-events:none}
+@media (max-width:560px){.hero .tick{display:none}}
+.hero.static{height:auto}.hero.static .pinbox{position:relative}
 
 /* film: fiber to knee */
 .film{position:relative;height:300vh}
@@ -163,6 +173,7 @@ footer .small{color:#5a5a5a;font-size:11px}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .hero .under .cue i,.how .wire .dash{animation:none}
+  .hero .lines p{transition:none}
   .rv,.film .words h2,.statement .big .wd,.step{transition:none}
   .js .rv.pending{opacity:1;transform:none}
 }
@@ -175,13 +186,21 @@ footer .small{color:#5a5a5a;font-size:11px}
   <nav aria-label="Main"><a href="#mission">Mission</a><a href="#join" data-join>Join waitlist</a></nav>
 </header>
 
-<section class="hero" id="top" aria-label="Kinn">
-  <h1 class="big" aria-hidden="true">KINN</h1>
-  <div class="poster" aria-hidden="true"><svg viewBox="-70 -140 140 280"><path id="posterPath" fill="none" stroke="#bdbdbd" stroke-width="1"/></svg></div>
-  <canvas id="gl" aria-label="A chrome knee strip turning slowly" role="img"></canvas>
-  <div class="under gut">
-    <p class="small">Knee recovery happens at home, where nobody measures it.<br><b>We're building the instrument that does.</b></p>
-    <span class="small cue"><i></i>Scroll</span>
+<section class="hero" id="top" aria-label="A small chrome coin turns, drops and snaps into a thin knee strip, then the view pulls back to show the whole strip">
+  <div class="pinbox">
+    <span class="big ghost" id="ghost" aria-hidden="true">KINN</span>
+    <div class="poster" aria-hidden="true"><svg viewBox="-70 -140 140 280"><path id="posterPath" fill="none" stroke="#bdbdbd" stroke-width="1"/></svg></div>
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="flash" id="flash" aria-hidden="true"></div>
+    <div class="tick" aria-hidden="true"><span class="on" data-k="0">01 Coin</span><span data-k="1">02 Snap</span><span data-k="2">03 Strip</span></div>
+    <div class="under gut">
+      <div class="lines small">
+        <p class="on" data-in="0" data-out=".3">Knee recovery happens at home, where nobody measures it.<br><b>We're building the instrument that does.</b></p>
+        <p data-in=".3" data-out=".6">A small coin holds the electronics.<br><b>It goes wherever your recovery does.</b></p>
+        <p data-in=".6" data-out="1.1">It snaps into a thin strip that does the sensing.<br><b>The tape changes. The coin stays.</b></p>
+      </div>
+      <span class="small cue" id="heroCue"><i></i>Scroll</span>
+    </div>
   </div>
 </section>
 
@@ -271,53 +290,139 @@ const KNEE = {"ext":[[-38.1,-43.7],[-38.0,-42.9],[-38.0,43.3],[-38.2,44.2],[-63.
 const pathD = pts => 'M' + pts.map(p => p[0] + ' ' + (-p[1])).join('L') + 'Z';
 document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(KNEE.holes[0]));
 
-/* ---------- hero: chrome knee strip ---------- */
+/* ---------- hero: coin → snap → strip (scroll-driven) ---------- */
 (function hero() {
   const sec = document.getElementById('top'), canvas = document.getElementById('gl');
-  if (!window.THREE) return;
-  let r; try { r = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true}); } catch (e) { return; }
-  if (!r.getContext()) return;
+  const lines = [...sec.querySelectorAll('.lines [data-in]')], ticks = [...sec.querySelectorAll('.tick span')], cue = document.getElementById('heroCue'), ghost = document.getElementById('ghost'), flashEl = document.getElementById('flash');
+  if (!window.THREE) { sec.classList.add('static'); lines.forEach((l, i) => l.classList.toggle('on', i === 2)); return; }
+  let r; try { r = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true}); } catch (e) { sec.classList.add('static'); return; }
+  if (!r.getContext()) { sec.classList.add('static'); return; }
   sec.classList.add('gl-on');
-  r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.outputEncoding = THREE.sRGBEncoding; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.35;
+  r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.outputEncoding = THREE.sRGBEncoding; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.3;
+  r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
   const scene = new THREE.Scene();
-  // studio of long light strips → sharp streak reflections
+  // studio of thin light strips → sharp streak reflections on chrome
   const studio = new THREE.Scene(); studio.background = new THREE.Color(0x030303);
-  const strip = (w, h, x, y, z, ry, rz, c, k) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({color: new THREE.Color(c).multiplyScalar(k), side: THREE.DoubleSide})); m.position.set(x, y, z); m.rotation.set(0, ry, rz); studio.add(m); };
-  strip(0.7, 12, -4, 1, 1, Math.PI / 2.4, 0.3, 0xffffff, 12);
-  strip(0.4, 12, 4.5, 0, -1, -Math.PI / 2.2, -0.5, 0xffffff, 10);
-  strip(12, 0.5, 0, 4.5, 0, 0, 0, 0xffffff, 6);
-  strip(0.6, 10, 0, -1, 5, 0, 0.9, 0xcfe0ff, 8);
-  strip(0.3, 10, -2, 2, -5, 0, -0.7, 0xffd9b8, 7);
-  strip(0.4, 9, 3, -3, 4, 0.6, 1.2, 0xa9b8ff, 7);
-  strip(0.25, 9, -3.5, -2, 3.5, -0.4, 0.2, 0xffffff, 9);
-  strip(2.6, 12, 2.2, 0, 7, 0, 0.35, 0xffffff, 1.8);
+  const lamp = (w, h, x, y, z, rx, ry, rz, c, k) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({color: new THREE.Color(c).multiplyScalar(k), side: THREE.DoubleSide})); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); studio.add(m); };
+  lamp(0.7, 14, -5, 2, 1, 0, Math.PI / 2.4, 0.3, 0xffffff, 12);
+  lamp(0.4, 14, 5, 1, -1, 0, -Math.PI / 2.2, -0.5, 0xffffff, 10);
+  lamp(14, 0.6, 0, 6, 0, Math.PI / 2, 0, 0.4, 0xffffff, 7);
+  lamp(0.6, 12, 0, 1, 6, 0, 0, 0.9, 0xdfe8ff, 8);
+  lamp(0.3, 12, -2, 3, -6, 0, 0, -0.7, 0xffe2c8, 7);
+  lamp(3, 14, 2.5, 3, 7, 0, 0, 0.35, 0xffffff, 1.6);
+  lamp(10, 10, 0, 7, 0, Math.PI / 2, 0, 0, 0x2a2a2a, 1);
   const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(studio, 0.02).texture;
+
+  const S = 0.04; // scene units per mm
+  const chrome = new THREE.MeshPhysicalMaterial({color: 0xd8d8d8, metalness: 1, roughness: 0.09, iridescence: 0.7, iridescenceIOR: 1.5, iridescenceThicknessRange: [250, 800], clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.5});
+  const darkChrome = new THREE.MeshPhysicalMaterial({color: 0x8e8e8e, metalness: 1, roughness: 0.2, iridescence: 0.2, iridescenceIOR: 1.4, iridescenceThicknessRange: [300, 700], envMapIntensity: 1.2});
+  const ceramic = new THREE.MeshPhysicalMaterial({color: 0xf1f1f1, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.1});
+  const ringMat = new THREE.MeshBasicMaterial({color: 0xffffff, toneMapped: false});
+
+  // the strip, lying flat
   const V = p => new THREE.Vector2(p[0], p[1]);
   const shape = new THREE.Shape(KNEE.ext.map(V)); KNEE.holes.forEach(h => shape.holes.push(new THREE.Path(h.map(V))));
-  const geo = new THREE.ExtrudeGeometry(shape, {depth: 16, bevelEnabled: true, bevelThickness: 7, bevelSize: 6, bevelSegments: 10, curveSegments: 6});
-  geo.center(); geo.scale(0.0125, 0.0125, 0.0125); geo.computeVertexNormals();
-  const mat = new THREE.MeshPhysicalMaterial({color: 0xffffff, metalness: 1, roughness: 0.05, iridescence: 1, iridescenceIOR: 1.6, iridescenceThicknessRange: [250, 900], clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1.6});
-  const mesh = new THREE.Mesh(geo, mat); const group = new THREE.Group(); group.add(mesh); scene.add(group);
-  const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 100); cam.position.set(0, 0, 9.2);
-  let mx = 0, my = 0, tx = 0, ty = 0, vis = true, scrollK = 0;
+  const stripGeo = new THREE.ExtrudeGeometry(shape, {depth: 1.2, bevelEnabled: true, bevelThickness: 0.8, bevelSize: 1.2, bevelSegments: 4, curveSegments: 6});
+  stripGeo.scale(S, S, S); stripGeo.rotateX(-Math.PI / 2);
+  const strip = new THREE.Mesh(stripGeo, darkChrome); strip.receiveShadow = true; scene.add(strip);
+  const TOP = 2.8 * S; // tape top surface incl. bevel
+  const D = new THREE.Vector3(0, TOP, -42 * S); // dock centre
+  // dock: raised ring + three contacts
+  const dock = new THREE.Mesh(new THREE.TorusGeometry(12.2 * S, 0.7 * S, 16, 96), chrome); dock.rotation.x = Math.PI / 2; dock.position.copy(D).add(new THREE.Vector3(0, 0.25 * S, 0)); scene.add(dock);
+  for (const a of [90, 210, 330]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(1.1 * S, 1.1 * S, 0.3 * S, 24), chrome); c.position.set(D.x + 5.2 * S * Math.cos(a * Math.PI / 180), TOP + 0.15 * S, D.z - 5.2 * S * Math.sin(a * Math.PI / 180)); scene.add(c); }
+  // shockwave ring on the tape
+  const wave = new THREE.Mesh(new THREE.RingGeometry(0.98, 1, 96), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0, toneMapped: false, depthWrite: false}));
+  wave.rotation.x = -Math.PI / 2; wave.position.copy(D).add(new THREE.Vector3(0, 0.01, 0)); scene.add(wave);
+
+  // the coin (axis = local Y)
+  const coin = new THREE.Group(); scene.add(coin);
+  const R = 11 * S, H = 3.2 * S;
+  const baseProf = [[0.001, 0], [R - 0.6 * S, 0], [R, 0.5 * S], [R, 1.0 * S]].map(V);
+  const domeProf = [[R, 1.0 * S]]; for (let i = 1; i <= 24; i++) { const t = i / 24; domeProf.push([R - 3.5 * S * (1 - Math.cos(t * Math.PI / 2)), 1.0 * S + 2.2 * S * Math.sin(t * Math.PI / 2)]); } domeProf.push([0.001, H]);
+  const cb = new THREE.Mesh(new THREE.LatheGeometry(baseProf, 96), chrome); cb.castShadow = true; coin.add(cb);
+  const cd = new THREE.Mesh(new THREE.LatheGeometry(domeProf.map(V), 96), ceramic); cd.castShadow = true; coin.add(cd);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(R - 0.12 * S, 0.24 * S, 12, 120), ringMat); ring.rotation.x = Math.PI / 2; ring.position.y = 1.05 * S; ring.scale.z = 0.6; coin.add(ring);
+  // engraved wordmark on top
+  const tc = document.createElement('canvas'); tc.width = tc.height = 256; const tg = tc.getContext('2d'); tg.fillStyle = 'rgba(120,120,120,.85)'; tg.font = '600 62px Manrope, Helvetica, Arial, sans-serif'; tg.textAlign = 'center'; tg.textBaseline = 'middle'; tg.fillText('kinn', 128, 134);
+  const ttex = new THREE.CanvasTexture(tc); ttex.encoding = THREE.sRGBEncoding;
+  const word = new THREE.Mesh(new THREE.CircleGeometry(7 * S, 48), new THREE.MeshStandardMaterial({map: ttex, transparent: true, roughness: 0.5, depthWrite: false})); word.rotation.x = -Math.PI / 2; word.position.y = H + 0.002; coin.add(word);
+
+  // light for soft contact shadow under the coin
+  const key = new THREE.DirectionalLight(0xffffff, 0.6); key.position.set(-2, 8, 4); key.target.position.copy(D); key.castShadow = true;
+  Object.assign(key.shadow.camera, {left: -1.5, right: 1.5, top: 1.5, bottom: -1.5, near: 1, far: 20}); key.shadow.mapSize.set(1024, 1024); key.shadow.radius = 6; key.shadow.bias = -0.0005;
+  scene.add(key, key.target);
+
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.02, 200);
+  let portrait = false;
+  const size = () => { const w = canvas.clientWidth, h = canvas.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; portrait = cam.aspect < 0.85; cam.updateProjectionMatrix(); dirty = true; };
+
+  // timeline helpers
+  const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const seg = (p, a, b) => cl((p - a) / (b - a));
+  const ss = t => t * t * (3 - 2 * t);
+  const easeIn = t => t * t * t;
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+  const SNAP = 0.56;
+  let target = 0, prog = 0, mx = 0, my = 0, tx = 0, ty = 0, vis = true, dirty = true, snapT = -1, wasSnapped = false;
   addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, {passive: true});
-  const size = () => { const w = canvas.clientWidth, h = canvas.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; cam.position.z = w / h < 0.8 ? 12.5 : 9.2; cam.updateProjectionMatrix(); };
-  addEventListener('resize', size); size();
+  const read = () => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; target = cl(-b.top / Math.max(1, span)); };
+  addEventListener('scroll', read, {passive: true}); addEventListener('resize', size);
   new IntersectionObserver(es => vis = es[0].isIntersecting).observe(sec);
-  addEventListener('scroll', () => { scrollK = Math.min(1, scrollY / innerHeight); }, {passive: true});
+  size(); read(); prog = target;
+
+  const P = new THREE.Vector3(), T = new THREE.Vector3(), tmp = new THREE.Vector3();
   const t0 = performance.now();
   (function loop(now) {
     requestAnimationFrame(loop); if (!vis) return;
     const t = (now - t0) / 1000;
+    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0003) prog = target;
     mx += (tx - mx) * 0.05; my += (ty - my) * 0.05;
-    const idle = reduce ? 0 : Math.sin(t * 0.35) * 0.45;
-    group.rotation.y = idle + mx * 0.9 + scrollK * 1.2;
-    group.rotation.x = -0.12 + my * 0.5 + (reduce ? 0 : Math.sin(t * 0.5) * 0.05);
-    group.rotation.z = -0.08 + (reduce ? 0 : Math.sin(t * 0.27) * 0.04);
-    group.position.y = (reduce ? 0 : Math.sin(t * 0.8) * 0.06) + scrollK * 0.6;
-    const s = 1 - scrollK * 0.18; group.scale.set(s, s, s);
-    canvas.style.opacity = String(1 - scrollK * 0.9);
+    const p = reduce ? Math.max(prog, 1) : prog;
+    const far = portrait ? 1.55 : 1;
+
+    // --- coin pose ---
+    const hover = D.clone().add(v3(0, 2.1, 0));
+    const a1 = ss(seg(p, 0.18, 0.42));            // stand-up → flat
+    const fall = easeIn(seg(p, 0.40, SNAP));       // drop into the dock
+    const settled = p >= SNAP;
+    const bob = settled ? 0 : Math.sin(t * 1.1) * 0.03 * (1 - a1);
+    const yHover = lerp(hover.y, D.y + 0.45, ss(seg(p, 0.18, 0.40)));
+    coin.position.set(D.x, settled ? D.y : lerp(yHover, D.y, fall) + bob, D.z);
+    coin.rotation.x = lerp(Math.PI / 2 - 0.25, 0, a1) + (settled ? 0 : my * 0.35 * (1 - a1));
+    coin.rotation.z = settled ? 0 : (1 - a1) * (Math.sin(t * 0.6) * 0.12 + mx * 0.6);
+    coin.rotation.y = settled ? 0 : (Math.sin(t * 0.45) * 0.35 + mx * 0.5 + a1 * 1.2) * (1 - fall);
+
+    // --- snap moment (time-based burst) ---
+    if (settled && !wasSnapped) { snapT = now; wasSnapped = true; }
+    if (!settled && wasSnapped) { wasSnapped = false; snapT = -1; }
+    const since = snapT < 0 ? 99 : (now - snapT) / 1000;
+    const burst = Math.exp(-since * 4);
+    ringMat.color.setScalar(lerp(1.2, 1.2 + 9 * burst, settled ? 1 : 0));
+    wave.material.opacity = settled ? 0.7 * Math.exp(-since * 3) : 0;
+    const wr = (12.5 + 60 * (1 - Math.exp(-since * 3.2))) * S; wave.scale.set(wr, wr, 1);
+    flashEl.style.opacity = settled ? (0.9 * burst).toFixed(3) : 0;
+    const shake = settled ? 0.012 * Math.exp(-since * 9) * Math.sin(since * 60) : 0;
+
+    // --- camera ---
+    const pull = ss(seg(p, SNAP + 0.04, 1));
+    const camA = hover.clone().add(v3(0, 0.05, 2.9 * far));               // face to face with the coin
+    const camB = D.clone().add(v3(0.9, 1.7 * far, 1.8 * far));            // above, watching it drop
+    const camC = portrait ? v3(0.4, 22, 11) : v3(4.2, 9.5, 9.0);       // whole strip
+    const tgA = hover, tgB = D, tgC = portrait ? v3(0, 0, -0.2) : v3(-1.6, 0, -0.2);
+    const k1 = ss(seg(p, 0.16, 0.5));
+    P.copy(camA).lerp(camB, k1); T.copy(tgA).lerp(tgB, k1);
+    P.lerp(camC, pull); T.lerp(tgC, pull);
+    P.x += mx * 0.25 * (1 - pull) + shake; P.y += -my * 0.18 * (1 - pull) + shake;
+    cam.position.copy(P); cam.lookAt(T);
+    strip.rotation.y = 0; 
     r.render(scene, cam);
+
+    // --- overlay ---
+    lines.forEach(l => l.classList.toggle('on', p >= +l.dataset.in && p < +l.dataset.out));
+    const phase = p < 0.4 ? 0 : p < SNAP + 0.06 ? 1 : 2;
+    ticks.forEach((s, i) => s.classList.toggle('on', i === phase));
+    cue.classList.toggle('off', p > 0.03); ghost.classList.toggle('off', p > 0.2);
   })(t0);
 })();
 
