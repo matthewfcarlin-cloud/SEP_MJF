@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+</head>
+<body>
+<title>Kinn</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kinn is thin kinesiology tape with printed sensors and a snap-in coin that tracks how your joints move during recovery.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: warm paper page, product photography in large rounded frames, full-bleed ink bands for emphasis, floating pill nav + floating reserve bar. Single light look by design. */
+:root{
+  --paper:#f7f4ee;       /* page */
+  --card:#efe9df;        /* tinted panels */
+  --line:#e0d9cd;
+  --ink:#18211f;         /* text, dark bands, primary buttons */
+  --ink-soft:#4c5552;
+  --muted:#77786f;
+  --sand:#dcb38b;        /* tape color, call-to-action */
+  --sand-hover:#e6c29f;
+  --led:#25a885;         /* coin status ring, used sparingly */
+  --on-dark:#f4f1ea;
+  --film:#090a0a;        /* video backdrop */
+  --sans:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --t-hero:clamp(2.75rem,6.2vw,5.5rem);
+  --t-h2:clamp(2rem,4.2vw,3.5rem);
+  --t-lead:clamp(1.5rem,2.9vw,2.6rem);
+  --t-h3:1.5rem;
+  --r-lg:24px; --r-md:16px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+img{height:auto;max-width:100%}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:400;font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3{font-weight:400;letter-spacing:-.022em;line-height:1.04;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.label{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.btn{font:500 1rem/1 var(--sans);letter-spacing:.01em;border:0;border-radius:999px;padding:15px 24px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;transition:background .2s,color .2s,box-shadow .2s,transform .15s}
+.btn:active{transform:scale(.98)}
+.btn-ink{background:var(--ink);color:var(--on-dark)}.btn-ink:hover{background:#2a3633}
+.btn-line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}.btn-line:hover{background:var(--ink);color:var(--on-dark)}
+.btn-sand{background:var(--sand);color:var(--ink)}.btn-sand:hover{background:var(--sand-hover)}
+.btn-ghost-light{background:transparent;color:var(--on-dark);box-shadow:inset 0 0 0 1.5px rgba(244,241,234,.7)}.btn-ghost-light:hover{background:var(--on-dark);color:var(--ink)}
+.icon-btn{width:46px;height:46px;border-radius:50%;border:0;display:inline-grid;place-items:center;cursor:pointer;font:400 1.4rem/1 var(--sans);transition:background .2s,transform .2s}
+
+/* ---------- nav: floating pill ---------- */
+.nav{position:fixed;z-index:30;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 24px));display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 8px 8px 22px;border-radius:999px;background:rgba(18,22,21,.42);color:var(--on-dark);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);transition:background .35s,color .35s,box-shadow .35s}
+.nav.light{background:rgba(247,244,238,.82);color:var(--ink);box-shadow:0 1px 0 var(--line),0 10px 30px rgba(24,33,31,.06)}
+.logo{font:500 1.45rem/1 var(--sans);letter-spacing:-.04em;text-decoration:none;display:inline-flex;align-items:baseline;gap:2px}
+.logo i{width:6px;height:6px;border-radius:50%;background:#3ee8bd;box-shadow:0 0 8px #3ee8bd}
+.nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:.95rem}
+.nav ul a{text-decoration:none;opacity:.85}.nav ul a:hover{opacity:1}
+.nav .btn{padding:11px 18px;font-size:.92rem}
+@media (max-width:760px){.nav ul{display:none}}
+
+/* ---------- intro: scroll-scrubbed film ---------- */
+.intro{position:relative;height:320vh}
+.intro-pin{position:sticky;top:0;height:100vh;height:100svh;padding:10px;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+.film{position:relative;height:100%;border-radius:var(--r-lg);overflow:hidden;background:var(--film);color:var(--on-dark)}
+.film canvas,.film .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:100%}
+.film canvas{opacity:0;transition:opacity .4s}.film.live canvas{opacity:1}
+.film::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(9,10,10,.82),rgba(9,10,10,0) 50%),linear-gradient(to right,rgba(9,10,10,.5),rgba(9,10,10,0) 45%);pointer-events:none}
+.film-ui{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(22px,4vw,56px);pointer-events:none}
+.beats{position:relative;min-height:12rem}
+.beat{position:absolute;left:0;bottom:0;max-width:620px;opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .7s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.beat.on{opacity:1;transform:none;pointer-events:auto}
+.beat .label{color:rgba(244,241,234,.7)}
+.beat p.say{font-size:var(--t-lead);line-height:1.1;letter-spacing:-.02em;margin-top:14px;text-wrap:balance}
+.beat.final{display:grid;gap:22px}
+.beat.final h1{font-size:var(--t-hero)}
+.beat.final .sub{font-size:1.15rem;color:rgba(244,241,234,.82);max-width:30em}
+.film-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:28px}
+.cue{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(244,241,234,.7);transition:opacity .4s}
+.cue.off{opacity:0}
+.bar{flex:1;max-width:220px;height:2px;border-radius:2px;background:rgba(244,241,234,.2);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:var(--on-dark);transform-origin:left;transform:scaleX(0)}
+.signup{display:flex;gap:8px;max-width:480px;padding:6px;border-radius:999px;background:rgba(244,241,234,.12);box-shadow:inset 0 0 0 1px rgba(244,241,234,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.signup input{flex:1;width:0;min-width:0;background:transparent;border:0;color:var(--on-dark);font:inherit;padding:0 16px}
+.signup input::placeholder{color:rgba(244,241,234,.6)}
+.signup input:focus{outline:none}
+.signup:focus-within{box-shadow:inset 0 0 0 1.5px var(--on-dark)}
+.fine{font-size:.85rem;color:var(--muted)}
+.film .fine{color:rgba(244,241,234,.65)}
+.msg{font-size:.95rem;min-height:1.5em}
+.msg.ok{color:#7ff0cf}.msg.warn{color:var(--sand)}
+.light-msg.ok{color:var(--led)}.light-msg.warn{color:#9a6a3f}
+@media (max-width:640px){.beats{min-height:15rem}.beat.final .sub{font-size:1rem}.film::after{background:linear-gradient(to top,rgba(9,10,10,.9),rgba(9,10,10,0) 62%)}}
+.intro.static{height:auto}
+.intro.static .intro-pin{position:relative;height:auto}
+.intro.static .film{height:min(88svh,820px)}
+.intro.static .beat:not(.final),.intro.static .cue,.intro.static .bar{display:none}
+.intro.static .beat.final{position:relative;opacity:1;transform:none;pointer-events:auto}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(72px,10vw,128px)}
+.statement{text-align:center;display:grid;justify-items:center;gap:36px}
+.statement p{font-size:var(--t-lead);line-height:1.18;letter-spacing:-.018em;max-width:23em;text-wrap:balance}
+.statement p span{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px 40px;margin-bottom:40px}
+.head h2{font-size:var(--t-h2);max-width:14em}
+.head p{color:var(--ink-soft);max-width:30em}
+
+/* tracks band: photo + chip marquee */
+.band-photo{position:relative;margin-inline:10px;border-radius:var(--r-lg);overflow:hidden;background:var(--film);color:var(--on-dark);padding-block:clamp(90px,14vw,170px)}
+.band-photo img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;max-width:100%}
+.band-photo h2{position:relative;text-align:center;font-size:var(--t-h2);margin-bottom:44px}
+.marquee{position:relative;overflow:hidden;display:grid;gap:14px;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;gap:14px;width:max-content;animation:slide 48s linear infinite}
+.track.rev{animation-direction:reverse;animation-duration:56s}
+.chip{flex:none;font-size:clamp(1.15rem,2.2vw,1.75rem);letter-spacing:-.01em;padding:16px 30px;border-radius:999px;background:rgba(244,241,234,.1);box-shadow:inset 0 0 0 1px rgba(244,241,234,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+@keyframes slide{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.track{animation:none;flex-wrap:wrap;width:auto;justify-content:center}.track [aria-hidden]{display:none}}
+
+/* how it works: card carousel */
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,460px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;padding-left:max(20px,calc((100vw - 1240px)/2 + 20px));padding-right:20px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.slide{position:relative;scroll-snap-align:start;aspect-ratio:4/5;border-radius:var(--r-lg);overflow:hidden;background:var(--film);color:var(--on-dark);max-width:100%}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:100%}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(9,10,10,.6),rgba(9,10,10,0) 40%);pointer-events:none}
+.slide .word{position:absolute;left:24px;bottom:18px;z-index:2;font-size:clamp(3rem,6vw,4.5rem);letter-spacing:-.035em;line-height:1}
+.slide .n{position:absolute;left:26px;top:22px;z-index:2;font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;color:rgba(244,241,234,.75)}
+.slide .icon-btn{position:absolute;right:16px;top:16px;z-index:3;background:var(--ink);color:var(--on-dark)}
+.slide .more{position:absolute;inset:0;z-index:2;background:rgba(24,33,31,.92);padding:76px 26px 26px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;opacity:0;transition:opacity .3s;pointer-events:none}
+.slide .more p{font-size:1.2rem;line-height:1.45}
+.slide.open .more{opacity:1;pointer-events:auto}
+.slide.open .icon-btn{transform:rotate(45deg);background:var(--on-dark);color:var(--ink)}
+.slide.app{background:var(--card);color:var(--ink)}
+.slide.app::after{display:none}
+.slide.app .word{color:var(--ink)}
+.slide.app .n{color:var(--muted)}
+.slide.app .mini{position:absolute;left:50%;top:9%;transform:translateX(-50%);width:62%}
+.rail-nav{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.rail-nav .icon-btn{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)}
+.rail-nav .icon-btn:hover{background:var(--ink);color:var(--on-dark)}
+
+/* accordion + spin */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(32px,6vw,80px);align-items:center}
+.split h2{font-size:var(--t-h2);margin-bottom:28px}
+.acc details{border-top:1px solid var(--line);padding-block:22px}
+.acc details:last-child{border-bottom:1px solid var(--line)}
+.acc summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:1.45rem;letter-spacing:-.01em}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:"";width:9px;height:9px;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(45deg) translate(-2px,-2px);transition:transform .25s;flex:none}
+.acc details[open] summary::after{transform:rotate(-135deg)}
+.acc details p{color:var(--ink-soft);margin-top:12px;max-width:34em}
+.spin{position:relative;aspect-ratio:1/1;border-radius:var(--r-lg);background:radial-gradient(60% 60% at 50% 45%,#222a28,var(--film));overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;max-width:100%}
+.spin.dragging{cursor:grabbing}
+.spin img,.spin canvas{position:absolute;inset:4%;width:92%;height:92%;max-width:92%}
+.spin canvas{opacity:0;transition:opacity .4s}.spin.live canvas{opacity:1}.spin.live img{opacity:0}
+.spin .hint{position:absolute;top:18px;left:20px;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(244,241,234,.6)}
+.spin .cap{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);max-width:90%;text-align:center;font-size:.9rem;color:var(--on-dark);background:rgba(244,241,234,.1);box-shadow:inset 0 0 0 1px rgba(244,241,234,.22);border-radius:999px;padding:8px 16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);white-space:nowrap}
+@media (max-width:880px){.split{grid-template-columns:minmax(0,1fr)}.spin .cap{white-space:normal}}
+
+/* ink band: the problem */
+.band-ink{background:var(--ink);color:var(--on-dark);margin-inline:10px;border-radius:var(--r-lg)}
+.band-ink .inner{display:grid;justify-items:center;text-align:center;gap:40px}
+.band-ink h2{font-size:var(--t-h2);max-width:16em}
+.week{display:grid;grid-template-columns:repeat(24,1fr);gap:4px;width:min(100%,640px)}
+.week i{aspect-ratio:1;border-radius:3px;background:rgba(244,241,234,.12)}
+.week i.pt{background:var(--sand)}
+.week-key{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 28px;font-size:.9rem;color:rgba(244,241,234,.7)}
+.week-key b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:0}
+.stat{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(244,241,234,.16);padding-top:36px;width:min(100%,720px)}
+.stat strong{font-weight:300;font-size:clamp(4rem,10vw,7rem);letter-spacing:-.05em;line-height:.9}
+.stat span{max-width:22em;text-align:left;color:rgba(244,241,234,.8)}
+
+/* strips */
+.frame{border-radius:var(--r-lg);overflow:hidden;background:var(--card)}
+.frame img{display:block;width:100%}
+.strips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+.strip{background:var(--card);border-radius:var(--r-md);padding:24px;display:grid;gap:8px;align-content:start}
+.strip svg{width:40px;height:58px;margin-bottom:10px}
+.strip h3{font-size:var(--t-h3)}
+.strip p{color:var(--ink-soft);font-size:.98rem}
+.strip .reads{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;color:var(--muted);margin-top:6px}
+@media (max-width:900px){.strips{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.strips{grid-template-columns:minmax(0,1fr)}}
+
+/* app */
+.app-panel{background:var(--card);border-radius:var(--r-lg);padding:clamp(28px,5vw,64px) 16px}
+.phones{display:grid;grid-template-columns:repeat(3,minmax(0,280px));justify-content:center;gap:28px}
+.phone{background:#0b0d0c;border-radius:40px;padding:11px;box-shadow:0 30px 60px rgba(24,33,31,.18)}
+.screen{background:#151a19;color:var(--on-dark);border-radius:30px;padding:22px 18px;min-height:500px;display:flex;flex-direction:column;gap:16px;font-size:.88rem}
+.screen .top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.66rem;color:#8c918e;letter-spacing:.06em;text-transform:uppercase}
+.screen .dot{display:inline-flex;align-items:center;gap:6px}.screen .dot::before{content:"";width:6px;height:6px;border-radius:50%;background:#3ee8bd;box-shadow:0 0 8px #3ee8bd}
+.screen h4{font-weight:400;font-size:1.4rem;letter-spacing:-.02em;margin:0;line-height:1.1}
+.screen .sub{color:#8c918e}
+.screen svg{width:100%;height:auto;display:block}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{background:#0b0d0c;border-radius:14px;padding:12px;display:grid;gap:2px}
+.tile b{font-weight:400;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.tile span{color:#8c918e;font-size:.75rem}
+.rows{display:grid;gap:8px}
+.r{background:#0b0d0c;border-radius:14px;padding:11px 12px;display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center}
+.r b{font-weight:500}
+.r .meta{color:#8c918e;font-size:.75rem}
+.r .val{font-family:var(--mono);font-size:.8rem;font-variant-numeric:tabular-nums;text-align:right}
+.pill{grid-column:1/-1;justify-self:start;font-family:var(--mono);font-size:.66rem;padding:3px 8px;border-radius:999px;margin-top:4px}
+.pill.good{background:rgba(62,232,189,.14);color:#6fe9c6}
+.pill.flag{background:rgba(220,179,139,.18);color:var(--sand)}
+.reps{display:flex;align-items:baseline;gap:6px}.reps b{font-weight:300;font-size:3.2rem;line-height:1;font-variant-numeric:tabular-nums}
+.note{text-align:center;margin-top:28px}
+@media (max-width:940px){.phones{grid-template-columns:minmax(0,300px)}.phone:not(:first-child){display:none}.phones.all .phone{display:block}}
+.show-all{display:none;margin:22px auto 0}
+@media (max-width:940px){.show-all{display:flex}}
+
+/* clinics */
+.list{list-style:none;margin:0;padding:0}
+.list li{display:grid;grid-template-columns:150px minmax(0,1fr);gap:24px;padding-block:22px;border-top:1px solid var(--line)}
+.list li:last-child{border-bottom:1px solid var(--line)}
+.list li span{font-size:1.2rem}
+.list li p{color:var(--ink-soft)}
+@media (max-width:640px){.list li{grid-template-columns:minmax(0,1fr);gap:6px}}
+
+/* reserve */
+.reserve{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px}
+.kit{background:var(--ink);color:var(--on-dark);border-radius:var(--r-lg);padding:clamp(26px,4vw,44px);display:flex;flex-direction:column;gap:22px;overflow:hidden}
+.kit .label{color:rgba(244,241,234,.6)}
+.kit h2{font-size:var(--t-h2)}
+.kit ul{margin:0;padding:0;list-style:none;display:grid;gap:12px;font-size:1.1rem}
+.kit li{display:flex;gap:14px;align-items:baseline}
+.kit li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--sand);transform:translateY(-2px)}
+.kit .price{color:rgba(244,241,234,.7);border-top:1px solid rgba(244,241,234,.16);padding-top:18px}
+.kit img{border-radius:var(--r-md);margin-top:auto}
+form.full{background:var(--card);border-radius:var(--r-lg);padding:clamp(26px,4vw,44px);display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-content:start}
+form.full h3{font-size:2rem}
+.field{display:grid;gap:8px}
+.field label,.field legend{font-size:.95rem;font-weight:500;padding:0}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.text{background:var(--paper);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;padding:14px 16px;width:100%}
+.text:focus{outline:none;border-color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chips label{position:relative;font-weight:400}
+.chips input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chips span{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);transition:all .15s}
+.chips input:checked+span{background:var(--ink);color:var(--on-dark);box-shadow:none}
+.chips input:focus-visible+span{outline:2px solid var(--ink);outline-offset:2px}
+.check{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--ink);margin-top:3px;flex:none}
+.hp{position:absolute;left:-9999px}
+@media (max-width:880px){.reserve{grid-template-columns:minmax(0,1fr)}}
+
+/* faq + footer */
+.faq{max-width:860px}
+.faq h2{font-size:var(--t-h2);margin-bottom:28px}
+.faq details p{color:var(--ink-soft)}
+footer{background:var(--ink);color:rgba(244,241,234,.7);margin:10px;border-radius:var(--r-lg);padding-block:56px 40px;font-size:.9rem}
+footer .wrap{display:grid;gap:28px}
+footer .top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center;color:var(--on-dark)}
+footer .logo{font-size:2.2rem}
+footer p{max-width:60em}
+
+/* floating reserve bar */
+.dock{position:fixed;z-index:25;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140%);width:min(560px,calc(100% - 24px));display:flex;align-items:center;gap:14px;padding:8px 8px 8px 8px;border-radius:999px;background:rgba(247,244,238,.88);box-shadow:0 1px 0 var(--line),0 16px 40px rgba(24,33,31,.14);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.dock.show{transform:translate(-50%,0)}
+.dock img{width:46px;height:46px;border-radius:50%;object-fit:cover;flex:none}
+.dock .t{flex:1;min-width:0;line-height:1.25}
+.dock .t b{display:block;font-weight:500;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock .t span{font-size:.82rem;color:var(--muted)}
+.dock .btn{padding:13px 22px}
+@media (max-width:420px){.dock .t span{display:none}}
+
+/* gentle rise for below-the-fold blocks (visible at rest) */
+.rise{transition:transform .8s cubic-bezier(.2,.7,.2,1),opacity .8s}
+.js .rise.pending{transform:translateY(20px);opacity:.001}
+@media (prefers-reduced-motion:reduce){.rise{transition:none}.js .rise.pending{transform:none;opacity:1}}
+</style>
+
+<nav class="nav" id="nav" aria-label="Main">
+  <a class="logo" href="#top" aria-label="Kinn home">kinn<i></i></a>
+  <ul>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#strips">Strips</a></li>
+    <li><a href="#clinics">For clinics</a></li>
+  </ul>
+  <a class="btn btn-sand" href="#reserve">Join waitlist</a>
+</nav>
+
+<section class="intro" id="top" style="padding:0" aria-label="Close-up of the printed sensor traces pulling back to the whole Kinn knee strip">
+  <div class="intro-pin">
+    <div class="film" id="film">
+      <img class="poster" src="vid/v_001.jpg" alt="" width="1296" height="744">
+      <canvas id="filmCanvas" aria-hidden="true"></canvas>
+      <div class="film-ui">
+        <div class="beats">
+          <div class="beat on" data-in="0" data-out=".3"><span class="label">The tape</span><p class="say">Feels like the athletic tape you already know.</p></div>
+          <div class="beat" data-in=".3" data-out=".62"><span class="label">The sensor</span><p class="say">Silver traces printed right onto the weave. They stretch as your knee bends.</p></div>
+          <div class="beat final" data-in=".62" data-out="1.01">
+            <h1>Tape that tracks your recovery.</h1>
+            <p class="sub">Thin kinesiology tape with printed sensors and a snap-in coin. See how far your joint really moves, every day.</p>
+            <form class="signup" id="heroForm" novalidate>
+              <label class="hp" for="heroBot">Leave empty</label><input class="hp" id="heroBot" name="bot-field" tabindex="-1" autocomplete="off">
+              <label class="hp" for="heroEmail">Email</label>
+              <input id="heroEmail" name="email" type="email" placeholder="Your email" autocomplete="email" required>
+              <button class="btn btn-sand" type="submit">Join waitlist</button>
+            </form>
+            <p class="msg" id="heroMsg" aria-live="polite"><span class="fine">Free to join. No payment.</span></p>
+          </div>
+        </div>
+        <div class="film-foot"><span class="cue" id="cue">Scroll to pull back</span><span class="bar" aria-hidden="true"><i id="barFill"></i></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap statement">
+  <p>Kinn measures how your knee, shoulder, elbow or back actually moves between PT visits. <span>So recovery stops being a guess for you and your physical therapist.</span></p>
+  <div class="row"><a class="btn btn-ink" href="#how">How it works</a><a class="btn btn-line" href="#reserve">Reserve a starter kit</a></div>
+</section>
+
+<div class="band-photo" role="region" aria-label="What Kinn tracks">
+  <img class="bg" src="img/trio.webp" alt="" loading="lazy" width="1800" height="1013">
+  <h2 class="wrap">What Kinn tracks</h2>
+  <div class="marquee">
+    <div class="track"><span class="chip">Knee bend angle</span><span class="chip">Reps and sets</span><span class="chip">Daily streaks</span><span class="chip">Range of motion trends</span><span class="chip">Missed days</span>
+      <span class="chip" aria-hidden="true">Knee bend angle</span><span class="chip" aria-hidden="true">Reps and sets</span><span class="chip" aria-hidden="true">Daily streaks</span><span class="chip" aria-hidden="true">Range of motion trends</span><span class="chip" aria-hidden="true">Missed days</span></div>
+    <div class="track rev"><span class="chip">Shoulder raise</span><span class="chip">Elbow flex</span><span class="chip">Posture</span><span class="chip">Progress your PT can see</span><span class="chip">Hold time</span>
+      <span class="chip" aria-hidden="true">Shoulder raise</span><span class="chip" aria-hidden="true">Elbow flex</span><span class="chip" aria-hidden="true">Posture</span><span class="chip" aria-hidden="true">Progress your PT can see</span><span class="chip" aria-hidden="true">Hold time</span></div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap head">
+    <h2>Stick it on. Snap it in. Move.</h2>
+    <p>No camera, no brace, no app to set up at the clinic. Just tape you'd wear anyway, with the sensor printed in.</p>
+  </div>
+  <div class="rail" id="rail">
+    <article class="slide"><img src="img/flat.webp" alt="Four Kinn strips laid out on an oak table" loading="lazy" style="object-position:30% 50%"><span class="n">01</span><span class="word">Stick</span>
+      <button class="icon-btn" type="button" aria-expanded="false" aria-label="More about sticking the strip">+</button>
+      <div class="more"><p>Pick the strip cut for your joint. Peel the liner and apply it like any kinesiology tape.</p></div></article>
+    <article class="slide"><img src="img/hero.webp" alt="The Kinn coin seated in its dock on a knee strip" loading="lazy" style="object-position:68% 40%"><span class="n">02</span><span class="word">Snap</span>
+      <button class="icon-btn" type="button" aria-expanded="false" aria-label="More about the coin">+</button>
+      <div class="more"><p>The coin clicks into the dock and connects to the printed traces through three gold contacts.</p></div></article>
+    <article class="slide"><img src="vid/v_012.jpg" alt="Close-up of zigzag silver traces printed on the tape" loading="lazy" style="object-position:40% 50%"><span class="n">03</span><span class="word">Move</span>
+      <button class="icon-btn" type="button" aria-expanded="false" aria-label="More about how it senses">+</button>
+      <div class="more"><p>Do your exercises. As the joint bends, the traces stretch. The coin reads that change plus its own motion sensor.</p></div></article>
+    <article class="slide app"><span class="n">04</span>
+      <svg class="mini" viewBox="0 0 240 150" role="img" aria-label="Knee bend gauge reading 112 degrees"><g id="miniGauge"></g></svg>
+      <span class="word">See</span>
+      <button class="icon-btn" type="button" aria-expanded="false" aria-label="More about the app">+</button>
+      <div class="more"><p>Your phone shows today's range, your reps and your streak. If you choose, your PT sees it too.</p></div></article>
+  </div>
+  <div class="wrap rail-nav"><button class="icon-btn" type="button" id="prev" aria-label="Previous">←</button><button class="icon-btn" type="button" id="next" aria-label="Next">→</button></div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap split">
+    <div>
+      <h2>Not a brace. Not a camera.</h2>
+      <div class="acc">
+        <details open><summary>Printed sensors you can't feel</summary><p>Conductive ink is printed straight onto the tape in a zigzag, so it flexes with your skin. No wires, no stitching, no bulk under your clothes.</p></details>
+        <details><summary>The coin moves. The tape is the refill.</summary><p>Everything expensive lives in the 22 mm coin: Bluetooth, a motion sensor and a rechargeable battery. It pops out of a used strip and into a fresh one in a second.</p></details>
+        <details><summary>Your PT sees what happens at home</summary><p>Share your sessions and your therapist sees adherence and range between visits, without asking you to film yourself.</p></details>
+      </div>
+    </div>
+    <div class="spin" id="stage" role="img" aria-label="Kinn knee strip rotating: the coin pops out of the dock, then the strip turns to show its peel-away backing.">
+      <img id="poster" src="spin/f_001.webp" alt="" width="800" height="800">
+      <canvas id="spin" width="800" height="800"></canvas>
+      <span class="hint" id="dragHint">Drag to turn</span>
+      <span class="cap" id="cap">Printed traces loop the kneecap</span>
+    </div>
+  </div>
+</section>
+
+<section class="band-ink">
+  <div class="wrap inner">
+    <span class="label" style="color:rgba(244,241,234,.6)">The gap in physical therapy</span>
+    <h2>Your PT sees you one hour a week. The other 167 are a guess.</h2>
+    <div class="week" id="week" aria-label="168 hours in a week, one highlighted for the clinic visit"></div>
+    <div class="week-key"><span><b style="background:var(--sand)"></b>1 hour in clinic</span><span><b style="background:rgba(244,241,234,.18)"></b>167 hours on your own</span></div>
+    <div class="stat"><strong>76%</strong><span>of patients don't fully stick to their home exercise program.<sup>1</sup> Kinn shows them, and their PT, what's actually happening.</span></div>
+  </div>
+</section>
+
+<section id="strips">
+  <div class="wrap">
+    <div class="head"><h2>A shape for every joint.</h2><p>Every strip has the same dock, so one coin works across all of them.</p></div>
+    <figure class="frame rise" style="margin:0"><img src="img/flat.webp" alt="Four Kinn strips on an oak table: shoulder, knee, elbow, and a spare back strip on its liner" loading="lazy" width="1800" height="1012"></figure>
+    <div class="strips">
+      <article class="strip"><svg viewBox="0 0 44 64" aria-hidden="true"><path d="M8 4 L18 24 L18 40 L8 60 M36 4 L26 24 L26 40 L36 60" stroke="var(--sand)" stroke-width="7" stroke-linecap="round" fill="none"/><ellipse cx="22" cy="32" rx="4" ry="5.5" fill="var(--card)"/></svg><h3>Knee</h3><p>Four tails and a window that frames the kneecap.</p><span class="reads">Bend angle · reps</span></article>
+      <article class="strip"><svg viewBox="0 0 44 64" aria-hidden="true"><path d="M22 4 L22 26 M22 26 L10 60 M22 26 L34 60" stroke="var(--sand)" stroke-width="7" stroke-linecap="round" fill="none"/></svg><h3>Shoulder</h3><p>A Y-strip that wraps the joint from the top.</p><span class="reads">Arm raise · rotation</span></article>
+      <article class="strip"><svg viewBox="0 0 44 64" aria-hidden="true"><path d="M22 10 L22 28 M22 28 L13 56 M22 28 L31 56" stroke="var(--sand)" stroke-width="6" stroke-linecap="round" fill="none"/></svg><h3>Elbow</h3><p>A smaller Y for the elbow and forearm.</p><span class="reads">Flex · extend</span></article>
+      <article class="strip"><svg viewBox="0 0 44 64" aria-hidden="true"><path d="M22 4 L22 60" stroke="var(--sand)" stroke-width="9" stroke-linecap="round" fill="none"/></svg><h3>Back</h3><p>A straight strip along the spine, for posture and bending.</p><span class="reads">Posture · bending</span></article>
+    </div>
+  </div>
+</section>
+
+<section id="app" style="padding-top:0">
+  <div class="wrap">
+    <div class="head"><h2>Recovery you can see, day by day.</h2><p>Kinn turns stretch readings into numbers that mean something: how far you bent, how many reps you did, and whether you're trending up.</p></div>
+    <div class="app-panel">
+      <div class="phones" id="phones">
+        <div class="phone"><div class="screen">
+          <div class="top"><span>Right knee · Day 18</span><span class="dot">Live</span></div>
+          <div><h4>Today's bend</h4><p class="sub">Goal this week: 120°</p></div>
+          <svg id="gauge" viewBox="0 0 240 150" role="img" aria-label="Knee bend gauge: 112 degrees of 140, goal 120"></svg>
+          <div class="tiles">
+            <div class="tile"><b>+4°</b><span>vs last week</span></div>
+            <div class="tile"><b>9 days</b><span>streak</span></div>
+            <div class="tile"><b>3 / 4</b><span>exercises done</span></div>
+            <div class="tile"><b>47</b><span>reps today</span></div>
+          </div>
+        </div></div>
+        <div class="phone"><div class="screen">
+          <div class="top"><span>Session</span><span class="dot">Recording</span></div>
+          <div><h4>Heel slides</h4><p class="sub">Set 2 of 3 · hold 2 s at the top</p></div>
+          <div class="reps"><b>8</b><span class="sub">/ 12 reps</span></div>
+          <svg id="trace" viewBox="0 0 240 130" role="img" aria-label="Knee angle over the last 8 reps, peaking between 104 and 112 degrees"></svg>
+          <div class="rows">
+            <div class="r"><b>Best rep</b><span class="val">112°</span></div>
+            <div class="r"><b>Average</b><span class="val">108°</span></div>
+          </div>
+        </div></div>
+        <div class="phone"><div class="screen">
+          <div class="top"><span>Clinic view</span><span>Example</span></div>
+          <div><h4>Your patients</h4><p class="sub">This week, between visits</p></div>
+          <div class="rows">
+            <div class="r"><b>J.R. · Knee</b><span class="val">108° ↑</span><span class="meta">6 of 7 days</span><span class="pill good">On track</span></div>
+            <div class="r"><b>M.C. · Shoulder</b><span class="val">142° →</span><span class="meta">3 of 7 days</span><span class="pill flag">Missed 3 days</span></div>
+            <div class="r"><b>A.T. · Elbow</b><span class="val">131° ↑</span><span class="meta">7 of 7 days</span><span class="pill good">On track</span></div>
+            <div class="r"><b>D.K. · Knee</b><span class="val">94° ↓</span><span class="meta">5 of 7 days</span><span class="pill flag">Range dropped</span></div>
+          </div>
+        </div></div>
+      </div>
+      <button class="btn btn-line show-all" id="showAll" type="button">Show all screens</button>
+      <p class="fine note">Concept screens. Example data, not real patients.</p>
+    </div>
+  </div>
+</section>
+
+<section id="clinics" style="padding-top:0">
+  <div class="wrap split" style="align-items:start">
+    <div><h2>Know what happens between visits.</h2><p style="color:var(--ink-soft);max-width:30em">For physical therapists: see adherence and range of motion for each patient, without asking them to film themselves. Get in touch if you'd like to pilot Kinn in your clinic.</p></div>
+    <ul class="list">
+      <li><span>Adherence</span><p>Which days each patient actually did their program, and how many reps.</p></li>
+      <li><span>Range</span><p>Bend angle trends per joint, so a stall or a drop shows up before the next appointment.</p></li>
+      <li><span>Billing</span><p>Designed around remote therapeutic monitoring, which US clinics can bill when patients send enough days of data.</p></li>
+      <li><span>Setup</span><p>Hand a patient a strip and a coin. Nothing to install on your side.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section id="reserve" style="padding-top:0">
+  <div class="wrap reserve">
+    <div class="kit">
+      <span class="label">First batch</span>
+      <h2>Starter kit</h2>
+      <ul><li>One Kinn coin with charger</li><li>Three strips for the joint you choose</li><li>Early access to the app</li></ul>
+      <p class="price">Price announced before launch. Reserving is free and holds your place in line.</p>
+      <img src="img/trio.webp" alt="Three Kinn strips with coins: shoulder, knee and elbow" loading="lazy" width="1800" height="1013">
+    </div>
+    <form class="full" id="fullForm" novalidate>
+      <span class="label">Waitlist</span>
+      <h3>Be first to try Kinn.</h3>
+      <label class="hp" for="fullBot">Leave empty</label><input class="hp" id="fullBot" name="bot-field" tabindex="-1" autocomplete="off">
+      <div class="field"><label for="fEmail">Email</label><input class="text" id="fEmail" name="email" type="email" placeholder="you@email.com" autocomplete="email" required></div>
+      <div class="field"><label for="fRole">I'm a…</label>
+        <select class="text" id="fRole" name="role"><option value="">Choose one</option><option>Patient in recovery</option><option>Physical therapist</option><option>Athlete or coach</option><option>Just curious</option></select></div>
+      <fieldset class="field"><legend>Which strips interest you?</legend>
+        <div class="chips">
+          <label for="sKnee"><input type="checkbox" id="sKnee" name="strips" value="knee"><span>Knee</span></label>
+          <label for="sShoulder"><input type="checkbox" id="sShoulder" name="strips" value="shoulder"><span>Shoulder</span></label>
+          <label for="sElbow"><input type="checkbox" id="sElbow" name="strips" value="elbow"><span>Elbow</span></label>
+          <label for="sBack"><input type="checkbox" id="sBack" name="strips" value="back"><span>Back</span></label>
+        </div></fieldset>
+      <label class="check" for="fReserve"><input type="checkbox" id="fReserve" name="reserve" value="yes" checked><span>Reserve a starter kit for me. <span class="fine">Free, no payment now. We'll email the price before anything is charged.</span></span></label>
+      <div class="field"><label for="fNote">What would you use it for? <span class="fine">(optional)</span></label><input class="text" id="fNote" name="note" type="text" placeholder="e.g. tracking my knee after ACL surgery"></div>
+      <div><button class="btn btn-ink" type="submit">Join the waitlist</button></div>
+      <p class="msg light-msg" id="fullMsg" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap faq acc">
+    <h2>Questions</h2>
+    <details><summary>Is Kinn a medical device?</summary><p>Not yet. Kinn is in development and has not been cleared by the FDA. It tracks movement. It doesn't diagnose or treat anything, and it doesn't replace your physical therapist.</p></details>
+    <details><summary>How long does a strip last?</summary><p>We're designing strips to be worn for several days, like regular kinesiology tape. Then you peel it off, snap the coin out, and put on a fresh one.</p></details>
+    <details><summary>Do I need a physical therapist to use it?</summary><p>No. You can use Kinn on your own to track your exercises. Sharing your data with a PT is optional.</p></details>
+    <details><summary>Will it work with my phone?</summary><p>The coin connects over Bluetooth. We're building for iPhone and Android.</p></details>
+    <details><summary>When does it ship, and what will it cost?</summary><p>We're building the first batch now. Everyone on the waitlist hears the price and date first, and reserving costs nothing.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="top"><span class="logo">kinn<i></i></span><a class="btn btn-sand" href="#reserve">Join waitlist</a></div>
+    <p><sup>1</sup> Survey of physical therapy patients by The Ohio State University Wexner Medical Center. Images are product renders and a generated concept film; the design may change. Kinn is in development and not FDA-cleared.</p>
+    <p>© 2026 Kinn</p>
+  </div>
+</footer>
+
+<div class="dock" id="dock" aria-hidden="true">
+  <img src="img/coin.webp" alt="" width="200" height="200">
+  <div class="t"><b>Kinn Starter Kit</b><span>Coin + 3 strips · free to reserve</span></div>
+  <a class="btn btn-sand" href="#reserve" tabindex="-1">Reserve</a>
+</div>
+
+<!-- Netlify Forms detection: a static copy of the fields (not shown) -->
+<form name="waitlist" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="waitlist"><input name="bot-field"><input name="email"><input name="role"><input name="strips"><input name="reserve"><input name="note"><input name="source">
+</form>
+
+<script>
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- intro film: scroll scrubs the frame sequence ---------- */
+(function film() {
+  const sec = document.getElementById('top'), box = document.getElementById('film'), cv = document.getElementById('filmCanvas'), ctx = cv.getContext('2d');
+  const beats = [...sec.querySelectorAll('[data-in]')], cue = document.getElementById('cue'), bar = document.getElementById('barFill');
+  const N = 97, frames = new Array(N); let loaded = 0, target = 0, prog = 0, shown = -1;
+  if (reduce) { sec.classList.add('static'); beats.forEach(b => b.classList.toggle('on', b.classList.contains('final'))); const p = box.querySelector('.poster'); p.src = 'vid/v_097.jpg'; return; }
+  const fit = () => { const r = box.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); shown = -1; };
+  function draw(i) {
+    const img = frames[i]; if (!img || !img.complete || !img.naturalWidth) return false;
+    const W = cv.width, H = cv.height, s = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+    ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h); return true;
+  }
+  // load the first frame, then the rest in order
+  for (let i = 0; i < N; i++) { const im = new Image(); im.decoding = 'async'; im.onload = () => { loaded++; if (i === 0) { box.classList.add('live'); shown = -1; } }; im.src = 'vid/v_' + String(i + 1).padStart(3, '0') + '.jpg'; frames[i] = im; }
+  const read = () => { const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; target = Math.min(1, Math.max(0, -r.top / Math.max(1, span))); };
+  function tick() {
+    prog += (target - prog) * 0.14; if (Math.abs(target - prog) < 0.0005) prog = target;
+    const f = Math.min(N - 1, Math.round(Math.min(1, prog / 0.9) * (N - 1)));
+    if (f !== shown) { let k = f; while (k > 0 && !(frames[k] && frames[k].complete && frames[k].naturalWidth)) k--; if (draw(k)) shown = (k === f) ? f : -1; }
+    beats.forEach(b => b.classList.toggle('on', prog >= +b.dataset.in && prog < +b.dataset.out));
+    cue.classList.toggle('off', prog > 0.03); bar.style.transform = 'scaleX(' + prog.toFixed(3) + ')';
+    requestAnimationFrame(tick);
+  }
+  addEventListener('scroll', read, {passive: true}); addEventListener('resize', fit);
+  fit(); read(); prog = target; requestAnimationFrame(tick);
+})();
+
+/* nav colour + floating reserve bar */
+const nav = document.getElementById('nav'), dock = document.getElementById('dock'), introEl = document.getElementById('top'), reserveEl = document.getElementById('reserve');
+function chrome() {
+  const past = introEl.getBoundingClientRect().bottom < 90;
+  nav.classList.toggle('light', past);
+  const r = reserveEl.getBoundingClientRect(), nearReserve = r.top < innerHeight && r.bottom > 0;
+  const on = past && !nearReserve; dock.classList.toggle('show', on); dock.setAttribute('aria-hidden', on ? 'false' : 'true'); dock.querySelector('a').tabIndex = on ? 0 : -1;
+}
+addEventListener('scroll', chrome, {passive: true}); chrome();
+
+/* week grid */
+const week = document.getElementById('week');
+for (let i = 0; i < 168; i++) { const c = document.createElement('i'); if (i === 105) c.className = 'pt'; week.appendChild(c); }
+
+/* reveal below the fold */
+if ('IntersectionObserver' in window && !reduce) {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('pending'); io.unobserve(e.target); } }), {rootMargin: '0px 0px -8% 0px'});
+  document.querySelectorAll('.rise').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } });
+}
+
+/* carousel: + reveals, arrows scroll */
+document.querySelectorAll('.slide .icon-btn').forEach(b => b.addEventListener('click', () => { const s = b.closest('.slide'), o = s.classList.toggle('open'); b.setAttribute('aria-expanded', o); }));
+const rail = document.getElementById('rail'), step = () => rail.querySelector('.slide').getBoundingClientRect().width + 16;
+document.getElementById('prev').addEventListener('click', () => rail.scrollBy({left: -step(), behavior: reduce ? 'auto' : 'smooth'}));
+document.getElementById('next').addEventListener('click', () => rail.scrollBy({left: step(), behavior: reduce ? 'auto' : 'smooth'}));
+
+/* ---------- 360 spin (drag) ---------- */
+const N = 144, stage = document.getElementById('stage'), cv = document.getElementById('spin'), ctx = cv.getContext('2d');
+const cap = document.getElementById('cap'), hint = document.getElementById('dragHint');
+const frames = new Array(N); let loaded = 0, cur = 0, playing = !reduce, lastT = 0, acc = 0, spinVisible = false;
+const CAPS = [[0, 17, 'Printed traces loop the kneecap'], [17, 50, 'The coin pops out. Only the tape gets replaced'], [50, 74, 'Thin as athletic tape'], [74, 110, 'Peel-away liner on the back'], [110, 144, 'Printed traces loop the kneecap']];
+let capIdx = 0;
+function setCap(f) { const i = CAPS.findIndex(c => f >= c[0] && f < c[1]); if (i !== capIdx && i >= 0) { capIdx = i; cap.textContent = CAPS[i][2]; } }
+function drawSpin(f) { const img = frames[f]; if (!img || !img.complete) return; ctx.clearRect(0, 0, cv.width, cv.height); ctx.drawImage(img, 0, 0, cv.width, cv.height); setCap(f); }
+function loadFrames() { for (let i = 0; i < N; i++) { const im = new Image(); im.decoding = 'async'; im.onload = () => { if (++loaded === N) { stage.classList.add('live'); drawSpin(cur); } }; im.src = 'spin/f_' + String(i + 1).padStart(3, '0') + '.webp'; frames[i] = im; } }
+if ('IntersectionObserver' in window) { const lo = new IntersectionObserver(es => { spinVisible = es[0].isIntersecting; if (spinVisible && !loaded) loadFrames(); }, {rootMargin: '600px 0px'}); lo.observe(stage); } else { spinVisible = true; loadFrames(); }
+function spinTick(t) {
+  if (playing && spinVisible && loaded === N) { acc += Math.min(100, t - (lastT || t)); while (acc >= 1000 / 24) { acc -= 1000 / 24; cur = (cur + 1) % N; } drawSpin(cur); }
+  lastT = t; requestAnimationFrame(spinTick);
+}
+requestAnimationFrame(spinTick);
+let dragX = null, dragF = 0, resume;
+stage.addEventListener('pointerdown', e => { if (loaded < N) return; dragX = e.clientX; dragF = cur; playing = false; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); hint.hidden = true; clearTimeout(resume); });
+stage.addEventListener('pointermove', e => { if (dragX === null) return; const per = stage.clientWidth / N * 1.6; cur = ((dragF + Math.round((e.clientX - dragX) / per)) % N + N) % N; drawSpin(cur); });
+const endDrag = () => { if (dragX === null) return; dragX = null; stage.classList.remove('dragging'); if (!reduce) resume = setTimeout(() => playing = true, 2500); };
+stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
+
+/* ---------- app charts (drawn to scale) ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent && parent.appendChild(n); return n; }
+function gauge(g, dark) {
+  const cx = 120, cy = 128, r = 92, MAX = 140, val = 112, goal = 120, fg = dark ? '#f4f1ea' : '#18211f', track = dark ? '#2a302e' : '#ddd5c8', mute = dark ? '#8c918e' : '#77786f', accent = dark ? '#3ee8bd' : '#25a885';
+  const pt = (d, rr = r) => { const a = Math.PI - (d / MAX) * Math.PI; return [cx + rr * Math.cos(a), cy - rr * Math.sin(a)]; };
+  const arc = (d0, d1) => { const [x0, y0] = pt(d0), [x1, y1] = pt(d1); return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`; };
+  el('path', {d: arc(0, MAX), stroke: track, 'stroke-width': 12, fill: 'none', 'stroke-linecap': 'round'}, g);
+  el('path', {d: arc(0, val), stroke: '#dcb38b', 'stroke-width': 12, fill: 'none', 'stroke-linecap': 'round'}, g);
+  const [ix, iy] = pt(goal, r - 14), [ox, oy] = pt(goal, r + 14);
+  el('line', {x1: ix, y1: iy, x2: ox, y2: oy, stroke: accent, 'stroke-width': 2}, g);
+  el('text', {x: ox + 4, y: oy - 2, fill: accent, 'font-size': 10, 'font-family': 'IBM Plex Mono, monospace'}, g).textContent = goal + '°';
+  [[0, 'start'], [140, 'end']].forEach(([d, an]) => { const [x, y] = pt(d, r); el('text', {x, y: y + 18, fill: mute, 'font-size': 9, 'text-anchor': an === 'start' ? 'middle' : 'middle', 'font-family': 'IBM Plex Mono, monospace'}, g).textContent = d + '°'; });
+  el('text', {x: cx, y: cy - 14, fill: fg, 'font-size': 42, 'font-weight': 300, 'text-anchor': 'middle', 'font-family': 'Hanken Grotesk, sans-serif'}, g).textContent = val + '°';
+}
+gauge(document.getElementById('gauge'), true);
+gauge(document.getElementById('miniGauge'), false);
+(function trace() {
+  const s = document.getElementById('trace'), W = 240, L = 26, B = 112, T = 10, MAX = 120, y = d => B - (d / MAX) * (B - T);
+  [0, 60, 120].forEach(d => { el('line', {x1: L, x2: W, y1: y(d), y2: y(d), stroke: '#2a302e', 'stroke-width': 1}, s); el('text', {x: L - 4, y: y(d) + 3, fill: '#8c918e', 'font-size': 8, 'text-anchor': 'end', 'font-family': 'IBM Plex Mono, monospace'}, s).textContent = d + '°'; });
+  const peaks = [104, 107, 109, 108, 112, 106, 110, 108], per = (W - L) / peaks.length; let d = '';
+  for (let i = 0; i <= 160; i++) { const t = i / 160 * peaks.length, k = Math.min(peaks.length - 1, Math.floor(t)), ph = t - k; const v = 8 + (peaks[k] - 8) * Math.pow(Math.sin(Math.PI * ph), 1.6); d += (i ? 'L' : 'M') + (L + t * per).toFixed(1) + ' ' + y(v).toFixed(1); }
+  el('path', {d: d + `L${W} ${B} L${L} ${B} Z`, fill: 'rgba(220,179,139,.14)'}, s);
+  el('path', {d, stroke: '#dcb38b', 'stroke-width': 2, fill: 'none', 'stroke-linejoin': 'round'}, s);
+  const bx = L + 4.5 * per; el('circle', {cx: bx, cy: y(112), r: 3.5, fill: '#3ee8bd'}, s);
+  el('text', {x: bx, y: y(112) - 7, fill: '#3ee8bd', 'font-size': 9, 'text-anchor': 'middle', 'font-family': 'IBM Plex Mono, monospace'}, s).textContent = '112°';
+})();
+document.getElementById('showAll').addEventListener('click', e => { document.getElementById('phones').classList.add('all'); e.currentTarget.hidden = true; });
+
+/* ---------- waitlist ---------- */
+// Live site: submissions go to Netlify Forms (form name "waitlist"). Without that backend the page says it's a preview.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+async function submit(fields, msg, source) {
+  if (fields['bot-field']) return false;
+  if (!EMAIL_RE.test(fields.email || '')) { msg.classList.remove('ok'); msg.classList.add('warn'); msg.textContent = 'Enter a full email address, like name@example.com.'; return false; }
+  msg.classList.remove('ok', 'warn'); msg.textContent = 'Adding you…';
+  const body = new URLSearchParams({'form-name': 'waitlist', source, ...fields});
+  try {
+    const r = await fetch('/', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body.toString()});
+    if (!r.ok) throw new Error(r.status);
+    msg.classList.add('ok'); msg.textContent = "You're on the list. We'll email " + fields.email + ' when the first batch is ready.';
+    return true;
+  } catch (e) { msg.classList.add('warn'); msg.textContent = 'This is a preview, so nothing was saved. Signups open on the live site.'; return false; }
+}
+document.getElementById('heroForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = e.currentTarget;
+  if (await submit({email: f.email.value.trim(), 'bot-field': f['bot-field'].value}, document.getElementById('heroMsg'), 'hero')) document.getElementById('fEmail').value = f.email.value.trim();
+});
+document.getElementById('fullForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = e.currentTarget;
+  const strips = [...f.querySelectorAll('input[name=strips]:checked')].map(i => i.value).join(', ');
+  await submit({email: f.email.value.trim(), role: f.role.value, strips, reserve: f.reserve.checked ? 'yes' : 'no', note: f.note.value.trim(), 'bot-field': f['bot-field'].value}, document.getElementById('fullMsg'), 'reserve');
+});
+</script>
+
+</body>
+</html>
