@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kinn</title>
+<meta name="description" content="Kinn is building a thin, wearable way to measure knee recovery at home. Join the waitlist.">
+<meta property="og:title" content="Kinn: know your knee">
+<meta property="og:description" content="A thin, wearable way to measure knee recovery at home. Join the waitlist.">
+<meta property="og:image" content="/img/hero.webp">
+<meta name="theme-color" content="#08090a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230b0f14'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23ff5b2e' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one scroll story. Pinned film hero → the gap (3 numbers) → a first look (render bento) → waitlist panel. Ice-grey paper, ink type, ski-safety orange as the single signal colour, tape sand from the product itself. */
+:root{
+  --paper:#edf0f3;
+  --panel:#e2e7ec;
+  --line:#d3dae1;
+  --ink:#0b0f14;
+  --ink-2:#38424d;
+  --muted:#66717d;
+  --flare:#ff5b2e;       /* signal colour: live readouts, the coin, calls to action */
+  --flare-2:#ff7a52;
+  --tape:#d9b28c;
+  --film:#08090a;
+  --on-dark:#f2f4f6;
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  --t-hero:clamp(3rem,8vw,7.5rem);
+  --t-h2:clamp(2.1rem,5vw,4.25rem);
+  --t-say:clamp(1.9rem,4.4vw,3.6rem);
+  --r:26px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:1.0625rem;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{max-width:100%;height:auto;display:block}
+[hidden]{display:none!important}
+h1,h2,h3{margin:0;font-weight:500;letter-spacing:-.035em;line-height:.98;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--flare);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.tag{font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.btn{font:500 1rem/1 var(--sans);border:0;border-radius:999px;padding:16px 24px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;transition:transform .2s,background .2s,box-shadow .2s}
+.btn:active{transform:scale(.97)}
+.btn-flare{background:var(--flare);color:#fff;box-shadow:0 8px 24px -8px rgba(255,91,46,.7)}
+.btn-flare:hover{background:var(--flare-2);box-shadow:0 10px 30px -8px rgba(255,91,46,.85)}
+.btn .arr{transition:transform .25s}.btn:hover .arr{transform:translateX(3px)}
+
+/* nav */
+.nav{position:fixed;z-index:40;top:calc(16px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.nav>*{pointer-events:auto}
+.logo{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:600;font-size:1.35rem;letter-spacing:-.05em;color:var(--on-dark);padding:10px 16px 10px 12px;border-radius:999px;background:rgba(8,9,10,.35);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:background .3s,color .3s}
+.logo b{width:16px;height:16px;border-radius:50%;border:3px solid var(--flare);display:inline-block}
+.nav.light .logo{background:rgba(237,240,243,.8);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.nav .btn{padding:13px 20px;font-size:.95rem}
+
+/* ---------- hero film ---------- */
+.intro{position:relative;height:260vh}
+.pin{position:sticky;top:0;height:100vh;height:100svh;padding:10px;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+.film{position:relative;height:100%;border-radius:var(--r);overflow:hidden;background:var(--film);color:var(--on-dark)}
+.film canvas,.film .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.film canvas{opacity:0;transition:opacity .5s}.film.live canvas{opacity:1}
+.film::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(8,9,10,.35),rgba(8,9,10,0) 22%,rgba(8,9,10,0) 45%,rgba(8,9,10,.88)),linear-gradient(90deg,rgba(8,9,10,.55),rgba(8,9,10,0) 50%)}
+.grain{position:absolute;inset:-50%;z-index:1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1.2s steps(4) infinite}
+@keyframes grain{25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-2%)}75%{transform:translate(-2%,-4%)}}
+.ui{position:absolute;inset:0;z-index:2;display:grid;grid-template-rows:1fr auto;padding:clamp(22px,4vw,56px);padding-top:96px;pointer-events:none}
+.readout{justify-self:end;align-self:start;display:grid;justify-items:end;gap:4px;padding:14px 18px;border-radius:18px;background:rgba(8,9,10,.38);box-shadow:inset 0 0 0 1px rgba(242,244,246,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.readout .tag{color:rgba(242,244,246,.6);display:flex;align-items:center;gap:8px}
+.readout .tag i{width:7px;height:7px;border-radius:50%;background:var(--flare);box-shadow:0 0 10px var(--flare);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.readout strong{font-family:var(--mono);font-weight:400;font-size:clamp(2rem,4vw,3.2rem);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.readout svg{width:120px;height:62px;display:block}
+.beats{position:relative;min-height:16rem}
+.beat{position:absolute;left:0;bottom:0;max-width:720px;pointer-events:none;visibility:hidden}
+.beat.on{visibility:visible;pointer-events:auto}
+.beat .say{font-size:var(--t-say);font-weight:400;letter-spacing:-.03em;line-height:1.04;text-wrap:balance}
+.w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+.w>span{display:inline-block;transform:translateY(105%);transition:transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i) * 45ms)}
+.beat.on .w>span{transform:none}
+.beat.final{display:grid;gap:24px}
+.beat.final .tag{color:var(--flare)}
+.beat.final h1{font-size:var(--t-hero);font-weight:500}
+.beat.final .sub{font-size:clamp(1.05rem,1.6vw,1.25rem);color:rgba(242,244,246,.8);max-width:31em;opacity:0;transform:translateY(10px);transition:opacity .6s .35s,transform .6s .35s}
+.beat.final.on .sub,.beat.final.on .formline,.beat.final.on .fine{opacity:1;transform:none}
+.formline{display:flex;gap:8px;max-width:500px;padding:6px;border-radius:999px;background:rgba(242,244,246,.1);box-shadow:inset 0 0 0 1px rgba(242,244,246,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transform:translateY(10px);transition:opacity .6s .5s,transform .6s .5s,box-shadow .2s}
+.formline:focus-within{box-shadow:inset 0 0 0 1.5px var(--flare)}
+.formline input{flex:1;width:0;min-width:0;background:transparent;border:0;color:var(--on-dark);font:inherit;padding:0 18px}
+.formline input::placeholder{color:rgba(242,244,246,.55)}
+.formline input:focus{outline:none}
+.fine{font-size:.88rem;color:var(--muted)}
+.film .fine{color:rgba(242,244,246,.62);opacity:0;transition:opacity .6s .6s}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:26px}
+.cue{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(242,244,246,.65);transition:opacity .4s;display:flex;align-items:center;gap:10px}
+.cue span{display:inline-block;width:1px;height:22px;background:linear-gradient(var(--on-dark),transparent);animation:drip 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+.cue.off{opacity:0}
+.bar{flex:1;max-width:240px;height:2px;border-radius:2px;background:rgba(242,244,246,.18);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--flare);transform-origin:left;transform:scaleX(0)}
+.msg{font-size:.95rem;min-height:1.5em}
+.msg.ok{color:#ffb39c}.msg.err{color:#ffd0c2}
+@media (max-width:640px){
+  .beats{min-height:21rem}
+  .readout{padding:10px 14px}.readout svg{width:90px;height:46px}
+  .film::after{background:linear-gradient(180deg,rgba(8,9,10,.35),rgba(8,9,10,0) 20%,rgba(8,9,10,0) 32%,rgba(8,9,10,.92) 70%)}
+}
+.intro.static{height:auto}
+.intro.static .pin{position:relative;height:auto}
+.intro.static .film{height:min(92svh,860px)}
+.intro.static .beat:not(.final),.intro.static .cue,.intro.static .bar{display:none}
+.intro.static .beat.final{position:relative;visibility:visible;pointer-events:auto}
+.intro.static .w>span,.intro.static .sub,.intro.static .formline,.intro.static .fine{transform:none;opacity:1;transition:none}
+
+/* ---------- the gap ---------- */
+section{padding-block:clamp(84px,12vw,150px)}
+.gap h2{font-size:var(--t-h2);max-width:13em}
+.gap h2 em{font-style:normal;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:clamp(40px,6vw,72px)}
+.stat{background:var(--panel);border-radius:var(--r);padding:clamp(22px,3vw,34px);display:flex;flex-direction:column;gap:18px;min-height:280px;position:relative;overflow:hidden}
+.stat .num{font-weight:400;font-size:clamp(3.2rem,6.5vw,5.6rem);letter-spacing:-.06em;line-height:.9;font-variant-numeric:tabular-nums;margin-top:auto}
+.stat .num small{font-size:.45em;letter-spacing:-.02em;color:var(--muted);margin-left:.08em}
+.stat p{color:var(--ink-2);max-width:22em}
+.stat .meter{height:4px;border-radius:4px;background:rgba(11,15,20,.08);overflow:hidden}
+.stat .meter i{display:block;height:100%;border-radius:4px;background:var(--flare);width:var(--v);transform-origin:left;transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.js .stat:not(.seen) .meter i{transform:scaleX(0)}
+.src{margin-top:18px;font-size:.8rem;color:var(--muted)}
+@media (max-width:860px){.stats{grid-template-columns:minmax(0,1fr)}.stat{min-height:0}}
+
+/* ---------- first look (bento) ---------- */
+.look .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 40px;margin-bottom:clamp(28px,4vw,48px)}
+.look h2{font-size:var(--t-h2)}
+.look .head p{color:var(--ink-2);max-width:24em}
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:minmax(0,auto);gap:12px;perspective:1200px}
+.tile{position:relative;border-radius:var(--r);overflow:hidden;background:var(--film);color:var(--on-dark);min-height:300px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.tile img.fill{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.tile:hover img.fill{transform:scale(1.05)}
+.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,10,0) 50%,rgba(8,9,10,.7));pointer-events:none}
+.tile .cap{position:absolute;left:24px;right:24px;bottom:22px;z-index:2;display:grid;gap:6px}
+.tile .cap .tag{color:rgba(242,244,246,.6)}
+.tile .cap h3{font-size:clamp(1.4rem,2.4vw,2rem);font-weight:500;letter-spacing:-.03em;line-height:1.05}
+.t-spin{grid-column:span 7;grid-row:span 2;min-height:640px;background:radial-gradient(70% 60% at 50% 42%,#1d2329,var(--film));cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.t-spin.dragging{cursor:grabbing}
+.t-spin .stage{position:absolute;inset:4% 8% 14%}
+.t-spin .stage img,.t-spin .stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.t-spin canvas{opacity:0;transition:opacity .4s}.t-spin.live canvas{opacity:1}.t-spin.live .stage img{opacity:0}
+.t-spin .hint{position:absolute;top:22px;left:24px;z-index:2;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(242,244,246,.55);display:flex;gap:8px;align-items:center}
+.t-spin .hint svg{width:22px;height:12px}
+.t-macro{grid-column:span 5;min-height:314px}
+.t-coin{grid-column:span 5;min-height:314px}
+.t-leg{grid-column:span 5;background:var(--panel);color:var(--ink);min-height:360px}
+.t-leg::after{display:none}
+.t-leg .cap .tag{color:var(--muted)}
+.t-leg svg{position:absolute;inset:6% 6% 30%;width:88%;height:64%}
+.t-trio{grid-column:span 7;min-height:360px}
+@media (max-width:900px){.t-spin,.t-macro,.t-coin,.t-leg,.t-trio{grid-column:1/-1}.t-spin{min-height:min(110vw,560px)}}
+
+/* ---------- waitlist ---------- */
+.join{position:relative;margin:0 10px 10px;border-radius:var(--r);background:var(--ink);color:var(--on-dark);overflow:hidden;isolation:isolate}
+.join::before{content:"";position:absolute;width:70vmax;height:70vmax;left:50%;top:60%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,91,46,.32),rgba(255,91,46,0));z-index:-1;animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-38%,-58%) scale(1.15)}}
+.join .inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,90px);align-items:start}
+.join h2{font-size:var(--t-h2)}
+.join .lead{color:rgba(242,244,246,.72);margin-top:22px;max-width:28em;font-size:1.1rem}
+.join .who{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.join .who span{font-size:.9rem;padding:9px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(242,244,246,.2);color:rgba(242,244,246,.8)}
+form.full{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;background:rgba(242,244,246,.05);box-shadow:inset 0 0 0 1px rgba(242,244,246,.12);border-radius:22px;padding:clamp(22px,3vw,34px);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.field{display:grid;gap:10px}
+.field>label,.field legend{font-size:.92rem;font-weight:500;padding:0}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.text{background:rgba(242,244,246,.06);border:1px solid rgba(242,244,246,.16);border-radius:14px;color:var(--on-dark);font:inherit;padding:15px 16px;width:100%;transition:border-color .2s}
+.text::placeholder{color:rgba(242,244,246,.45)}
+.text:focus{outline:none;border-color:var(--flare)}
+select.text{appearance:none;background-image:linear-gradient(45deg,transparent 50%,rgba(242,244,246,.7) 50%),linear-gradient(135deg,rgba(242,244,246,.7) 50%,transparent 50%);background-position:calc(100% - 20px) 52%,calc(100% - 15px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+select.text option{color:#0b0f14}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{position:relative}
+.seg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.seg span{display:inline-block;padding:11px 16px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(242,244,246,.2);font-size:.95rem;transition:all .2s}
+.seg input:checked+span{background:var(--on-dark);color:var(--ink);box-shadow:none}
+.seg input:focus-visible+span{outline:2px solid var(--flare);outline-offset:2px}
+.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.done{display:grid;gap:12px;justify-items:start}
+.done strong{font-weight:400;font-size:clamp(3rem,6vw,4.5rem);letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.done strong span{color:var(--flare)}
+.burst{position:absolute;pointer-events:none;width:8px;height:8px;border-radius:50%;background:var(--flare)}
+@media (max-width:860px){.join .inner{grid-template-columns:minmax(0,1fr)}}
+footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+
+/* reveal: content rests visible; only items below the fold get the pending state */
+.rv{transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .9s;transition-delay:calc(var(--d,0) * 90ms)}
+.js .rv.pending{opacity:.001;transform:translateY(28px)}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .grain,.cue span,.readout .tag i,.join::before{animation:none}
+  .rv,.w>span,.tile,.tile img.fill{transition:none}
+  .js .rv.pending{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav" aria-label="Main">
+  <a class="logo" href="#top" aria-label="Kinn home"><b></b>kinn</a>
+  <a class="btn btn-flare" href="#join">Join waitlist</a>
+</nav>
+
+<section class="intro" id="top" style="padding:0" aria-label="Close-up of printed sensor traces on tape, pulling back to a knee strip with a small glowing coin">
+  <div class="pin">
+    <div class="film" id="film">
+      <img class="poster" src="vid/v_001.jpg" alt="" width="1296" height="744">
+      <canvas id="filmCanvas" aria-hidden="true"></canvas>
+      <div class="grain" aria-hidden="true"></div>
+      <div class="ui">
+        <div class="readout" aria-hidden="true">
+          <span class="tag"><i></i>Knee flexion</span>
+          <strong id="deg">0°</strong>
+          <svg viewBox="0 0 120 62"><path d="M8 56 A52 52 0 0 1 112 56" fill="none" stroke="rgba(242,244,246,.16)" stroke-width="5" stroke-linecap="round"/><path id="degArc" d="M8 56 A52 52 0 0 1 112 56" fill="none" stroke="#ff5b2e" stroke-width="5" stroke-linecap="round" pathLength="140" stroke-dasharray="0 140"/></svg>
+        </div>
+        <div>
+          <div class="beats">
+            <div class="beat on" data-in="0" data-out=".3"><p class="say split">Every knee recovery has a number.</p></div>
+            <div class="beat" data-in=".3" data-out=".6"><p class="say split">Most people never get to see theirs.</p></div>
+            <div class="beat final" data-in=".6" data-out="1.01">
+              <span class="tag">In development · knee recovery</span>
+              <h1 class="split">Know your knee.</h1>
+              <p class="sub">We're building a thin, wearable way to measure knee recovery at home, from the first bend after surgery to the day you're back on the slope or the court.</p>
+              <form class="formline" id="heroForm" novalidate>
+                <label class="hp" for="heroCompany">Company</label><input class="hp" id="heroCompany" name="company" tabindex="-1" autocomplete="off">
+                <label class="hp" for="heroEmail">Email</label>
+                <input id="heroEmail" name="email" type="email" placeholder="Your email" autocomplete="email" required>
+                <button class="btn btn-flare" type="submit">Join waitlist <span class="arr">→</span></button>
+              </form>
+              <p class="msg fine" id="heroMsg" aria-live="polite">Free. No spam. Early testers hear first.</p>
+            </div>
+          </div>
+          <div class="foot"><span class="cue" id="cue"><span></span>Scroll</span><span class="bar" aria-hidden="true"><i id="barFill"></i></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gap" id="gap">
+  <div class="wrap">
+    <span class="tag rv">The problem</span>
+    <h2 class="rv" style="margin-top:18px">Knee recovery happens at home. <em>Nobody measures it there.</em></h2>
+    <div class="stats">
+      <article class="stat rv" style="--d:0">
+        <span class="tag">Re-injury</span>
+        <div class="num" data-count="29.5" data-dec="1">29.5<small>%</small></div>
+        <div class="meter" style="--v:29.5%"><i></i></div>
+        <p>of young athletes in one study tore an ACL again within two years of returning to sport.<sup>1</sup></p>
+      </article>
+      <article class="stat rv" style="--d:1">
+        <span class="tag">Drop-off</span>
+        <div class="num" data-count="70" data-dec="0">70<small>%</small></div>
+        <div class="meter" style="--v:70%"><i></i></div>
+        <p>of physical therapy patients don't finish their full plan of care.<sup>2</sup></p>
+      </article>
+      <article class="stat rv" style="--d:2">
+        <span class="tag">Visibility</span>
+        <div class="num" data-count="1" data-dec="0">1<small>/168</small></div>
+        <div class="meter" style="--v:.6%"><i></i></div>
+        <p>hours a week most patients spend with their PT. The rest of recovery is a guess.</p>
+      </article>
+    </div>
+    <p class="src">1. Paterno et al., Cincinnati Children's, 78 ACL-reconstructed athletes followed 24 months after return to sport. 2. WebPT, via Kemtai.</p>
+  </div>
+</section>
+
+<section class="look" id="look" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <div><span class="tag rv">A first look</span><h2 class="rv" style="margin-top:18px">Thin as tape.<br>Smart as a lab.</h2></div>
+      <p class="rv">We're not ready to show everything yet. Here's a hint of what we're building and testing.</p>
+    </div>
+    <div class="bento" id="bento">
+      <div class="tile t-spin rv" id="stage" role="img" aria-label="A knee strip turning: a small coin lifts out of its dock, then the strip shows its peel-away backing">
+        <span class="hint"><svg viewBox="0 0 22 12" aria-hidden="true"><path d="M1 6h20M5 2L1 6l4 4M17 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>Drag to turn</span>
+        <div class="stage"><img id="poster" src="spin/f_001.webp" alt="" width="800" height="800"><canvas id="spin" width="800" height="800"></canvas></div>
+        <div class="cap"><span class="tag">01 · Form</span><h3>Thin enough to forget it's there.</h3></div>
+      </div>
+      <div class="tile t-macro rv" style="--d:1"><img class="fill" src="vid/v_010.jpg" alt="Silver zigzag traces printed onto woven tape" loading="lazy" style="object-position:45% 50%"><div class="cap"><span class="tag">02 · Sensing</span><h3>Sensors printed into the weave.</h3></div></div>
+      <div class="tile t-coin rv" style="--d:2"><img class="fill" src="img/hero.webp" alt="A small white coin with a glowing ring seated on the strip" loading="lazy" style="object-position:66% 35%"><div class="cap"><span class="tag">03 · The coin</span><h3>A tiny coin does the thinking.</h3></div></div>
+      <div class="tile t-leg rv" style="--d:1">
+        <svg id="leg" viewBox="0 0 320 220" role="img" aria-label="Animated side view of a leg bending at the knee with a live angle readout"></svg>
+        <div class="cap"><span class="tag">04 · Measured</span><h3>Every bend, every rep, in degrees.</h3></div>
+      </div>
+      <div class="tile t-trio rv" style="--d:2"><img class="fill" src="img/trio.webp" alt="Strips shaped for different joints, each with a coin" loading="lazy" style="object-position:50% 55%"><div class="cap"><span class="tag">05 · Fit</span><h3>Starting with the knee.</h3></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap inner">
+    <div>
+      <span class="tag rv" style="color:var(--flare)">Waitlist</span>
+      <h2 class="rv" style="margin-top:18px">Be first to try it.</h2>
+      <p class="lead rv">We're looking for early testers: people recovering from a knee injury or surgery, the physical therapists who treat them, and athletes who want to get back safely.</p>
+      <div class="who rv"><span>ACL reconstruction</span><span>Meniscus</span><span>Knee replacement</span><span>Back to skiing</span><span>Back to tennis</span><span>Physical therapists</span></div>
+      <p class="fine rv" id="countLine" style="margin-top:28px;color:rgba(242,244,246,.55)" hidden></p>
+    </div>
+    <div class="rv" style="--d:1">
+      <form class="full" id="fullForm" novalidate>
+        <label class="hp" for="fullCompany">Company</label><input class="hp" id="fullCompany" name="company" tabindex="-1" autocomplete="off">
+        <div class="field"><label for="fEmail">Email</label><input class="text" id="fEmail" name="email" type="email" placeholder="you@email.com" autocomplete="email" required></div>
+        <fieldset class="field"><legend>I'm…</legend>
+          <div class="seg">
+            <label for="rP"><input type="radio" id="rP" name="role" value="patient" checked><span>Recovering</span></label>
+            <label for="rT"><input type="radio" id="rT" name="role" value="pt"><span>A physical therapist</span></label>
+            <label for="rA"><input type="radio" id="rA" name="role" value="athlete"><span>An athlete</span></label>
+            <label for="rO"><input type="radio" id="rO" name="role" value="other"><span>Just curious</span></label>
+          </div></fieldset>
+        <div class="field"><label for="fInjury">Knee situation</label>
+          <select class="text" id="fInjury" name="injury">
+            <option value="acl">ACL tear or reconstruction</option>
+            <option value="meniscus">Meniscus</option>
+            <option value="knee-replacement">Knee replacement</option>
+            <option value="patella">Kneecap / patellar tendon</option>
+            <option value="other-knee">Other knee issue</option>
+            <option value="not-injured">Not injured</option>
+          </select></div>
+        <div class="field"><label for="fNote">Anything we should know? <span class="fine" style="color:rgba(242,244,246,.5)">(optional)</span></label><input class="text" id="fNote" name="note" type="text" placeholder="e.g. 4 months post-ACL, want to ski this season"></div>
+        <div><button class="btn btn-flare" type="submit">Join the waitlist <span class="arr">→</span></button></div>
+        <p class="msg" id="fullMsg" aria-live="polite"></p>
+      </form>
+      <div class="done" id="done" hidden aria-live="polite">
+        <span class="tag" style="color:var(--flare)">You're in</span>
+        <strong>You're <span id="pos">#1</span></strong>
+        <p style="color:rgba(242,244,246,.75)">We'll email you when early testing opens. Know someone recovering from a knee injury? Send them this page.</p>
+      </div>
+    </div>
+  </div>
+  <footer><div class="wrap"><span>© 2026 Kinn</span><span>In development. Not a medical device. Images are renders and a generated concept film.</span></div></footer>
+</section>
+
+<script>
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* split headline words for the reveal */
+document.querySelectorAll('.split').forEach(el => {
+  const words = el.textContent.trim().split(/\s+/);
+  el.innerHTML = words.map((w, i) => `<span class="w"><span style="--i:${i}">${w}</span></span>`).join(' ');
+});
+
+/* ---------- hero film: scroll scrubs 97 frames; readout climbs with it ---------- */
+(function film() {
+  const sec = document.getElementById('top'), box = document.getElementById('film'), cv = document.getElementById('filmCanvas'), ctx = cv.getContext('2d');
+  const beats = [...sec.querySelectorAll('[data-in]')], cue = document.getElementById('cue'), bar = document.getElementById('barFill');
+  const deg = document.getElementById('deg'), arc = document.getElementById('degArc');
+  const N = 97, frames = []; let target = 0, prog = 0, shown = -1, lastBeat = -1, lastDrawP = -1;
+  if (reduce) {
+    sec.classList.add('static'); beats.forEach(b => b.classList.toggle('on', b.classList.contains('final')));
+    box.querySelector('.poster').src = 'vid/v_097.jpg'; deg.textContent = '112°'; arc.setAttribute('stroke-dasharray', '112 140'); return;
+  }
+  const fit = () => { const r = box.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); shown = -1; };
+  const ready = im => im && im.complete && im.naturalWidth;
+  // near the end, slide the shot away from the headline: right on wide screens, up on tall ones
+  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  function draw(i) {
+    const im = frames[i]; if (!ready(im)) return false;
+    const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
+    const k = smooth(0.5, 0.85, prog), wide = W / H > 1.15, dx = wide ? W * 0.2 * k : 0, dy = wide ? 0 : -H * 0.17 * k;
+    ctx.fillStyle = '#08090a'; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(im, (W - w) / 2 + dx, (H - h) / 2 + dy, w, h); return true;
+  }
+  for (let i = 0; i < N; i++) { const im = new Image(); im.decoding = 'async'; if (i === 0) im.onload = () => { box.classList.add('live'); shown = -1; }; im.src = 'vid/v_' + String(i + 1).padStart(3, '0') + '.jpg'; frames.push(im); }
+  const read = () => { const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; target = Math.min(1, Math.max(0, -r.top / Math.max(1, span))); };
+  function tick() {
+    prog += (target - prog) * 0.12; if (Math.abs(target - prog) < 0.0004) prog = target;
+    const f = Math.min(N - 1, Math.round(Math.min(1, prog / 0.85) * (N - 1)));
+    if (f !== shown || (prog > 0.5 && Math.abs(prog - lastDrawP) > 0.002)) { lastDrawP = prog; let k = f; while (k > 0 && !ready(frames[k])) k--; if (draw(k)) shown = k === f ? f : -1; }
+    const b = beats.findIndex(x => prog >= +x.dataset.in && prog < +x.dataset.out);
+    if (b !== lastBeat) { beats.forEach((x, i) => x.classList.toggle('on', i === b)); lastBeat = b; }
+    const d = Math.round(112 * Math.min(1, prog / 0.85));
+    deg.textContent = d + '°'; arc.setAttribute('stroke-dasharray', `${d} 140`);
+    cue.classList.toggle('off', prog > 0.03); bar.style.transform = `scaleX(${prog.toFixed(3)})`;
+    requestAnimationFrame(tick);
+  }
+  addEventListener('scroll', read, {passive: true}); addEventListener('resize', fit);
+  fit(); read(); prog = target; requestAnimationFrame(tick);
+})();
+
+/* nav turns light once past the film */
+const nav = document.getElementById('nav'), intro = document.getElementById('top'), joinEl = document.getElementById('join');
+const navTone = () => { const pastIntro = intro.getBoundingClientRect().bottom < 80, r = joinEl.getBoundingClientRect(); nav.classList.toggle('light', pastIntro && !(r.top < 80 && r.bottom > 80)); };
+addEventListener('scroll', navTone, {passive: true}); navTone();
+
+/* reveal + count-up (numbers are already final in the HTML; motion only replays them) */
+if ('IntersectionObserver' in window && !reduce) {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; const el = e.target; el.classList.remove('pending'); io.unobserve(el);
+    if (el.classList.contains('stat')) {
+      el.classList.add('seen'); const n = el.querySelector('.num'), end = +n.dataset.count, dec = +n.dataset.dec, small = n.querySelector('small').outerHTML, t0 = performance.now();
+      const step = t => { const k = Math.min(1, (t - t0) / 1300), v = end * (1 - Math.pow(1 - k, 3)); n.innerHTML = v.toFixed(dec) + small; if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }
+  }), {rootMargin: '0px 0px -10% 0px'});
+  document.querySelectorAll('.rv').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } else if (el.classList.contains('stat')) el.classList.add('seen'); });
+} else document.querySelectorAll('.stat').forEach(s => s.classList.add('seen'));
+
+/* bento tilt */
+if (matchMedia('(hover: hover) and (pointer: fine)').matches && !reduce) {
+  document.querySelectorAll('.tile:not(.t-spin)').forEach(t => {
+    t.addEventListener('pointermove', e => { const r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; t.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`; });
+    t.addEventListener('pointerleave', () => { t.style.transform = ''; });
+  });
+}
+
+/* ---------- 360 spin ---------- */
+(function spin() {
+  const N = 144, stage = document.getElementById('stage'), cv = document.getElementById('spin'), ctx = cv.getContext('2d'), frames = [];
+  let loaded = 0, cur = 0, playing = !reduce, last = 0, acc = 0, vis = false, dragX = null, dragF = 0, resume;
+  const draw = f => { const im = frames[f]; if (!im || !im.complete) return; ctx.clearRect(0, 0, 800, 800); ctx.drawImage(im, 0, 0, 800, 800); };
+  const load = () => { for (let i = 0; i < N; i++) { const im = new Image(); im.onload = () => { if (++loaded === N) { stage.classList.add('live'); draw(cur); } }; im.src = 'spin/f_' + String(i + 1).padStart(3, '0') + '.webp'; frames.push(im); } };
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; if (vis && !frames.length) load(); }, {rootMargin: '600px 0px'}).observe(stage);
+  const tick = t => { if (playing && vis && loaded === N) { acc += Math.min(100, t - (last || t)); while (acc >= 1000 / 24) { acc -= 1000 / 24; cur = (cur + 1) % N; } draw(cur); } last = t; requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  stage.addEventListener('pointerdown', e => { if (loaded < N) return; dragX = e.clientX; dragF = cur; playing = false; stage.classList.add('dragging'); stage.setPointerCapture(e.pointerId); clearTimeout(resume); });
+  stage.addEventListener('pointermove', e => { if (dragX === null) return; const per = stage.clientWidth / N * 1.4; cur = ((dragF + Math.round((e.clientX - dragX) / per)) % N + N) % N; draw(cur); });
+  const end = () => { if (dragX === null) return; dragX = null; stage.classList.remove('dragging'); if (!reduce) resume = setTimeout(() => playing = true, 2500); };
+  stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+})();
+
+/* ---------- animated leg: knee flexion drawn to scale ---------- */
+(function leg() {
+  const svg = document.getElementById('leg'), NS = 'http://www.w3.org/2000/svg';
+  const mk = (t, a) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); svg.appendChild(n); return n; };
+  const H = [110, 26], L1 = 92, L2 = 92, thighDir = 80; // hip point, segment lengths (px), thigh angle from +x (deg, pointing down-right)
+  const rad = d => d * Math.PI / 180;
+  const sweep = mk('path', {fill: 'rgba(255,91,46,.12)', stroke: 'none'});
+  const thigh = mk('line', {stroke: '#0b0f14', 'stroke-width': 16, 'stroke-linecap': 'round'});
+  const shin = mk('line', {stroke: '#0b0f14', 'stroke-width': 14, 'stroke-linecap': 'round'});
+  const foot = mk('line', {stroke: '#0b0f14', 'stroke-width': 10, 'stroke-linecap': 'round'});
+  const tape = mk('path', {stroke: '#d9b28c', 'stroke-width': 9, fill: 'none', 'stroke-linecap': 'round', opacity: .95});
+  const coin = mk('circle', {r: 7, fill: '#f2f4f6', stroke: '#ff5b2e', 'stroke-width': 3});
+  mk('circle', {cx: H[0], cy: H[1], r: 9, fill: '#0b0f14'});
+  const val = mk('text', {x: 236, y: 92, 'font-size': 40, 'font-family': 'Geist Mono, monospace', fill: '#0b0f14', 'text-anchor': 'middle'});
+  const lab = mk('text', {x: 236, y: 112, 'font-size': 9, 'letter-spacing': '1.5', 'font-family': 'Geist Mono, monospace', fill: '#66717d', 'text-anchor': 'middle'}); lab.textContent = 'KNEE FLEXION';
+  const peakT = mk('text', {x: 236, y: 134, 'font-size': 10, 'font-family': 'Geist Mono, monospace', fill: '#ff5b2e', 'text-anchor': 'middle'});
+  let peak = 0, vis = true, t0 = performance.now();
+  new IntersectionObserver(es => vis = es[0].isIntersecting).observe(svg);
+  function frame(now) {
+    requestAnimationFrame(frame); if (!vis) return;
+    const t = reduce ? 0.5 : ((now - t0) / 3200) % 1, flex = 8 + 104 * (0.5 - 0.5 * Math.cos(2 * Math.PI * t));
+    const a1 = rad(thighDir), K = [H[0] + L1 * Math.cos(a1), H[1] + L1 * Math.sin(a1)];
+    const a2 = rad(thighDir + flex), A = [K[0] + L2 * Math.cos(a2), K[1] + L2 * Math.sin(a2)];
+    const a3 = a2 - rad(90), F = [A[0] + 22 * Math.cos(a3), A[1] + 22 * Math.sin(a3)];
+    thigh.setAttribute('x1', H[0]); thigh.setAttribute('y1', H[1]); thigh.setAttribute('x2', K[0]); thigh.setAttribute('y2', K[1]);
+    shin.setAttribute('x1', K[0]); shin.setAttribute('y1', K[1]); shin.setAttribute('x2', A[0]); shin.setAttribute('y2', A[1]);
+    foot.setAttribute('x1', A[0]); foot.setAttribute('y1', A[1]); foot.setAttribute('x2', F[0]); foot.setAttribute('y2', F[1]);
+    // tape wraps the front of the knee: points along each segment, offset to the front side
+    const off = 11, p = (base, ang, d, side) => [base[0] + d * Math.cos(ang) + side * off * Math.cos(ang - rad(90)), base[1] + d * Math.sin(ang) + side * off * Math.sin(ang - rad(90))];
+    const u1 = p(K, a1, -30, 1), u2 = p(K, a2, 30, 1), kf = [K[0] + off * 1.3 * Math.cos((a1 + a2) / 2 - rad(90)), K[1] + off * 1.3 * Math.sin((a1 + a2) / 2 - rad(90))];
+    tape.setAttribute('d', `M${u1[0]} ${u1[1]} Q${kf[0]} ${kf[1]} ${u2[0]} ${u2[1]}`);
+    coin.setAttribute('cx', kf[0]); coin.setAttribute('cy', kf[1]);
+    // swept range wedge from straight (0°) to current flexion, radius 46
+    const r = 46, s0 = a1, s1 = a2, P0 = [K[0] + r * Math.cos(s0), K[1] + r * Math.sin(s0)], P1 = [K[0] + r * Math.cos(s1), K[1] + r * Math.sin(s1)];
+    sweep.setAttribute('d', `M${K[0]} ${K[1]} L${P0[0]} ${P0[1]} A${r} ${r} 0 0 1 ${P1[0]} ${P1[1]} Z`);
+    peak = Math.max(peak * 0.999, flex);
+    val.textContent = Math.round(flex) + '°'; peakT.textContent = 'PEAK ' + Math.round(peak) + '°';
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- waitlist ---------- */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+async function send(data) {
+  const r = await fetch('/api/waitlist', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.ok) throw new Error(j.error || 'Something went wrong. Try again in a minute.');
+  return j;
+}
+function burst(el) {
+  if (reduce) return; const r = el.getBoundingClientRect();
+  for (let i = 0; i < 18; i++) {
+    const d = document.createElement('i'); d.className = 'burst'; document.body.appendChild(d);
+    const a = Math.random() * Math.PI * 2, v = 60 + Math.random() * 90;
+    d.style.left = (r.left + r.width / 2) + 'px'; d.style.top = (r.top + r.height / 2 + scrollY) + 'px'; d.style.position = 'absolute';
+    d.animate([{transform: 'translate(0,0) scale(1)', opacity: 1}, {transform: `translate(${Math.cos(a) * v}px,${Math.sin(a) * v}px) scale(.2)`, opacity: 0}], {duration: 800 + Math.random() * 400, easing: 'cubic-bezier(.2,.8,.2,1)'}).onfinish = () => d.remove();
+  }
+}
+function success(pos) {
+  document.getElementById('fullForm').hidden = true; const done = document.getElementById('done'); done.hidden = false;
+  document.getElementById('pos').textContent = pos ? '#' + pos : 'on the list'; burst(document.getElementById('pos'));
+}
+document.getElementById('heroForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = e.currentTarget, msg = document.getElementById('heroMsg'), email = f.email.value.trim();
+  if (!EMAIL_RE.test(email)) { msg.className = 'msg fine err'; msg.textContent = 'Enter a full email address, like name@example.com.'; return; }
+  msg.className = 'msg fine'; msg.textContent = 'Adding you…';
+  try {
+    const j = await send({email, company: f.company.value, source: 'hero'});
+    msg.className = 'msg fine ok'; msg.textContent = (j.position ? `You're #${j.position} on the list. ` : "You're on the list. ") + 'Tell us about your knee below to get priority.';
+    document.getElementById('fEmail').value = email;
+  } catch (err) { msg.className = 'msg fine err'; msg.textContent = err.message === 'Failed to fetch' ? "Couldn't reach the server. Check your connection and try again." : err.message; }
+});
+document.getElementById('fullForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = e.currentTarget, msg = document.getElementById('fullMsg'), email = f.email.value.trim();
+  if (!EMAIL_RE.test(email)) { msg.className = 'msg err'; msg.textContent = 'Enter a full email address, like name@example.com.'; return; }
+  msg.className = 'msg'; msg.textContent = 'Adding you…';
+  try {
+    const j = await send({email, role: f.role.value, injury: f.injury.value, note: f.note.value.trim(), company: f.company.value, source: 'form'});
+    msg.textContent = ''; success(j.position);
+  } catch (err) { msg.className = 'msg err'; msg.textContent = err.message === 'Failed to fetch' ? "Couldn't reach the server. Check your connection and try again." : err.message; }
+});
+fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) { const c = document.getElementById('countLine'); c.textContent = `${j.count.toLocaleString()} people are already on the list.`; c.hidden = false; } }).catch(() => {});
+</script>
+</body>
+</html>

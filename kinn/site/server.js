@@ -1,0 +1,155 @@
+// Kinn teaser site + waitlist API.
+// Storage: Postgres when DATABASE_URL is set (Railway), otherwise a local JSON file for development.
+// Env vars:
+//   DATABASE_URL     Postgres connection string (Railway sets this when you add a Postgres database and reference it)
+//   ADMIN_TOKEN      secret for /admin/waitlist.csv and /admin/stats (required to read the list)
+//   RESEND_API_KEY   optional: send a welcome email through Resend
+//   FROM_EMAIL       optional: sender for the welcome email, e.g. "Kinn <hello@yourdomain.com>"
+//   PORT             set by Railway
+
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
+
+const app = express();
+app.set('trust proxy', true);
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+
+/* ---------------- storage ---------------- */
+let store;
+if (process.env.DATABASE_URL) {
+  const { Pool } = require('pg');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: /localhost|127\.0\.0\.1|\.railway\.internal/.test(process.env.DATABASE_URL) ? false : { rejectUnauthorized: false },
+  });
+  store = {
+    kind: 'postgres',
+    async init() {
+      await pool.query(`CREATE TABLE IF NOT EXISTS waitlist (
+        id SERIAL PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        role TEXT, injury TEXT, note TEXT, source TEXT,
+        referrer TEXT, user_agent TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`);
+    },
+    async add(row) {
+      const r = await pool.query(
+        `INSERT INTO waitlist (email, role, injury, note, source, referrer, user_agent)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)
+         ON CONFLICT (email) DO UPDATE SET
+           role = COALESCE(NULLIF(EXCLUDED.role,''), waitlist.role),
+           injury = COALESCE(NULLIF(EXCLUDED.injury,''), waitlist.injury),
+           note = COALESCE(NULLIF(EXCLUDED.note,''), waitlist.note)
+         RETURNING id, (xmax = 0) AS inserted`,
+        [row.email, row.role, row.injury, row.note, row.source, row.referrer, row.user_agent]);
+      const pos = await pool.query('SELECT COUNT(*)::int AS n FROM waitlist WHERE id <= $1', [r.rows[0].id]);
+      return { isNew: r.rows[0].inserted, position: pos.rows[0].n };
+    },
+    async count() { return (await pool.query('SELECT COUNT(*)::int AS n FROM waitlist')).rows[0].n; },
+    async all() { return (await pool.query('SELECT * FROM waitlist ORDER BY id')).rows; },
+  };
+} else {
+  const file = path.join(__dirname, 'data', 'waitlist.json');
+  const read = () => { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return []; } };
+  const write = rows => { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(rows, null, 2)); };
+  store = {
+    kind: 'json-file (development only — data is lost on redeploy)',
+    async init() {},
+    async add(row) {
+      const rows = read(); const i = rows.findIndex(r => r.email === row.email);
+      if (i >= 0) { for (const k of ['role', 'injury', 'note']) if (row[k]) rows[i][k] = row[k]; write(rows); return { isNew: false, position: i + 1 }; }
+      rows.push({ id: rows.length + 1, ...row, created_at: new Date().toISOString() }); write(rows);
+      return { isNew: true, position: rows.length };
+    },
+    async count() { return read().length; },
+    async all() { return read(); },
+  };
+}
+
+/* ---------------- helpers ---------------- */
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/;
+const clean = (v, n = 200) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
+const ROLES = ['patient', 'pt', 'athlete', 'surgeon', 'other', ''];
+const INJURIES = ['acl', 'meniscus', 'knee-replacement', 'patella', 'other-knee', 'not-injured', ''];
+
+const hits = new Map();
+function rateLimited(ip) {
+  const now = Date.now(), win = 10 * 60 * 1000, max = 8;
+  const arr = (hits.get(ip) || []).filter(t => now - t < win);
+  arr.push(now); hits.set(ip, arr);
+  if (hits.size > 5000) hits.clear();
+  return arr.length > max;
+}
+function tokenOk(req) {
+  const want = process.env.ADMIN_TOKEN; if (!want) return false;
+  const got = String(req.query.token || req.get('x-admin-token') || '');
+  const a = Buffer.from(got), b = Buffer.from(want);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+async function welcomeEmail(to) {
+  if (!process.env.RESEND_API_KEY || !process.env.FROM_EMAIL) return;
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: process.env.FROM_EMAIL, to,
+        subject: "You're on the Kinn waitlist",
+        text: "Thanks for joining the Kinn waitlist.\n\nWe're building a thin, wearable way to measure knee recovery at home. You'll be among the first to hear when early testing opens.\n\n— The Kinn team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
+      }),
+    });
+  } catch (e) { console.error('welcome email failed', e.message); }
+}
+
+/* ---------------- routes ---------------- */
+app.get('/healthz', (req, res) => res.json({ ok: true, store: store.kind }));
+
+app.post('/api/waitlist', async (req, res) => {
+  try {
+    if (rateLimited(req.ip)) return res.status(429).json({ ok: false, error: 'Too many tries. Wait a few minutes and try again.' });
+    const b = req.body || {};
+    if (clean(b.company)) return res.json({ ok: true, position: null }); // honeypot field: bots fill it, people never see it
+    const email = clean(b.email, 254).toLowerCase();
+    if (!EMAIL_RE.test(email)) return res.status(400).json({ ok: false, error: 'Enter a full email address, like name@example.com.' });
+    const role = ROLES.includes(clean(b.role)) ? clean(b.role) : 'other';
+    const injury = INJURIES.includes(clean(b.injury)) ? clean(b.injury) : 'other-knee';
+    const row = { email, role, injury, note: clean(b.note, 500), source: clean(b.source, 40), referrer: clean(req.get('referer') || '', 300), user_agent: clean(req.get('user-agent') || '', 300) };
+    const out = await store.add(row);
+    if (out.isNew) welcomeEmail(email);
+    res.json({ ok: true, position: out.position, isNew: out.isNew });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, error: "Something went wrong on our side. Try again in a minute." });
+  }
+});
+
+app.get('/api/waitlist/count', async (req, res) => {
+  try { res.json({ count: await store.count() }); } catch { res.json({ count: null }); }
+});
+
+app.get('/admin/waitlist.csv', async (req, res) => {
+  if (!tokenOk(req)) return res.status(401).send('Unauthorized. Add ?token=YOUR_ADMIN_TOKEN');
+  const rows = await store.all();
+  const cols = ['id', 'created_at', 'email', 'role', 'injury', 'note', 'source', 'referrer'];
+  const esc = v => { const s = v == null ? '' : (v instanceof Date ? v.toISOString() : String(v)); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  res.set('Content-Type', 'text/csv; charset=utf-8');
+  res.set('Content-Disposition', 'attachment; filename="kinn-waitlist.csv"');
+  res.send([cols.join(','), ...rows.map(r => cols.map(c => esc(r[c])).join(','))].join('\n'));
+});
+
+app.get('/admin/stats', async (req, res) => {
+  if (!tokenOk(req)) return res.status(401).json({ error: 'unauthorized' });
+  const rows = await store.all(), tally = k => rows.reduce((m, r) => (m[r[k] || 'blank'] = (m[r[k] || 'blank'] || 0) + 1, m), {});
+  res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), bySource: tally('source') });
+});
+
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', setHeaders: (res, p) => { if (p.endsWith('.html')) res.set('Cache-Control', 'no-cache'); } }));
+app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'index.html')));
+
+const port = process.env.PORT || 3000;
+store.init().then(() => app.listen(port, () => console.log(`Kinn site on :${port} (storage: ${store.kind})`)))
+  .catch(e => { console.error('storage init failed', e); process.exit(1); });
