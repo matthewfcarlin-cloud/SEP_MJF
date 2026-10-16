@@ -153,3 +153,22 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 - [ ] Deploy the site on Railway and start driving traffic (X posts, IYA network, ski/tennis communities, PT clinics).
 - [x] Direction: knee recovery (post-op ACL / knee replacement / return to sport). See research notes in chat Oct 14: biggest gaps are return-to-sport decisions (29.5% second ACL injury within 2 yrs) and early post-op stiffness.
 - [ ] Wood-table video of a strip bending (offered, not made yet).
+
+---
+
+## 10. Current focus (Oct 16, 2026): the "know your limit" alert
+
+**Most promising use case (from team meeting):**
+- **Safe-range alert:** an all-day strip that buzzes your phone when you bend an injured joint past a limit. People in rehab want to keep moving and strengthening, but don't know where productive rehab ends and re-injury starts. One teammate's current shoulder injury was the example. Turning that line into actual numbers would be new, and nothing readily available does it.
+- **Wear-all-day mode:** count how much the injured joint is used across the whole day, not just during PT exercises.
+
+**Open questions for interviews (not yet answered):**
+- How is the safe limit set? The PT, the stage of recovery, the patient's own history?
+- Can stretch/angle measurements actually indicate re-injury risk, or only range?
+- Do patients and PTs want this feedback, and how often before it gets annoying?
+
+**Site changes for this focus:**
+- Hero captions: "Rehab means moving an injury without knowing where the line is." and "Push your recovery, not your injury."
+- Mission heading: "KNOW YOUR LIMIT."
+- A new live demo: an abstract strip bends, its printed traces stretch and pulse, a gauge shows the user's line (120°), and an alert appears when a bend passes it. Steps: Wear it all day / Set your line / Move normally / Get a nudge.
+- The intake now also asks "Would a buzz when you push an injury past a safe range help you?" (yes/maybe/no, stored as `alert`) and adds shoulder, ankle and other joints to the injury list.

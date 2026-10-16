@@ -35,17 +35,19 @@ if (process.env.DATABASE_URL) {
         referrer TEXT, user_agent TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`);
+      await pool.query('ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS alert TEXT');
     },
     async add(row) {
       const r = await pool.query(
-        `INSERT INTO waitlist (email, role, injury, note, source, referrer, user_agent)
-         VALUES ($1,$2,$3,$4,$5,$6,$7)
+        `INSERT INTO waitlist (email, role, injury, alert, note, source, referrer, user_agent)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
          ON CONFLICT (email) DO UPDATE SET
            role = COALESCE(NULLIF(EXCLUDED.role,''), waitlist.role),
            injury = COALESCE(NULLIF(EXCLUDED.injury,''), waitlist.injury),
+           alert = COALESCE(NULLIF(EXCLUDED.alert,''), waitlist.alert),
            note = COALESCE(NULLIF(EXCLUDED.note,''), waitlist.note)
          RETURNING id, (xmax = 0) AS inserted`,
-        [row.email, row.role, row.injury, row.note, row.source, row.referrer, row.user_agent]);
+        [row.email, row.role, row.injury, row.alert, row.note, row.source, row.referrer, row.user_agent]);
       const pos = await pool.query('SELECT COUNT(*)::int AS n FROM waitlist WHERE id <= $1', [r.rows[0].id]);
       return { isNew: r.rows[0].inserted, position: pos.rows[0].n };
     },
@@ -61,7 +63,7 @@ if (process.env.DATABASE_URL) {
     async init() {},
     async add(row) {
       const rows = read(); const i = rows.findIndex(r => r.email === row.email);
-      if (i >= 0) { for (const k of ['role', 'injury', 'note']) if (row[k]) rows[i][k] = row[k]; write(rows); return { isNew: false, position: i + 1 }; }
+      if (i >= 0) { for (const k of ['role', 'injury', 'alert', 'note']) if (row[k]) rows[i][k] = row[k]; write(rows); return { isNew: false, position: i + 1 }; }
       rows.push({ id: rows.length + 1, ...row, created_at: new Date().toISOString() }); write(rows);
       return { isNew: true, position: rows.length };
     },
@@ -74,7 +76,8 @@ if (process.env.DATABASE_URL) {
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/;
 const clean = (v, n = 200) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
 const ROLES = ['patient', 'pt', 'athlete', 'surgeon', 'other', ''];
-const INJURIES = ['acl', 'meniscus', 'knee-replacement', 'patella', 'other-knee', 'not-injured', ''];
+const INJURIES = ['acl', 'meniscus', 'knee-replacement', 'patella', 'other-knee', 'shoulder', 'ankle', 'other-joint', 'not-injured', ''];
+const ALERTS = ['yes', 'maybe', 'no', ''];
 
 const hits = new Map();
 function rateLimited(ip) {
@@ -117,7 +120,8 @@ app.post('/api/waitlist', async (req, res) => {
     if (!EMAIL_RE.test(email)) return res.status(400).json({ ok: false, error: 'Enter a full email address, like name@example.com.' });
     const role = ROLES.includes(clean(b.role)) ? clean(b.role) : 'other';
     const injury = INJURIES.includes(clean(b.injury)) ? clean(b.injury) : 'other-knee';
-    const row = { email, role, injury, note: clean(b.note, 500), source: clean(b.source, 40), referrer: clean(req.get('referer') || '', 300), user_agent: clean(req.get('user-agent') || '', 300) };
+    const alert = ALERTS.includes(clean(b.alert)) ? clean(b.alert) : '';
+    const row = { email, role, injury, alert, note: clean(b.note, 500), source: clean(b.source, 40), referrer: clean(req.get('referer') || '', 300), user_agent: clean(req.get('user-agent') || '', 300) };
     const out = await store.add(row);
     if (out.isNew) welcomeEmail(email);
     res.json({ ok: true, position: out.position, isNew: out.isNew });
@@ -134,7 +138,7 @@ app.get('/api/waitlist/count', async (req, res) => {
 app.get('/admin/waitlist.csv', async (req, res) => {
   if (!tokenOk(req)) return res.status(401).send('Unauthorized. Add ?token=YOUR_ADMIN_TOKEN');
   const rows = await store.all();
-  const cols = ['id', 'created_at', 'email', 'role', 'injury', 'note', 'source', 'referrer'];
+  const cols = ['id', 'created_at', 'email', 'role', 'injury', 'alert', 'note', 'source', 'referrer'];
   const esc = v => { const s = v == null ? '' : (v instanceof Date ? v.toISOString() : String(v)); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', 'attachment; filename="kinn-waitlist.csv"');
@@ -144,7 +148,7 @@ app.get('/admin/waitlist.csv', async (req, res) => {
 app.get('/admin/stats', async (req, res) => {
   if (!tokenOk(req)) return res.status(401).json({ error: 'unauthorized' });
   const rows = await store.all(), tally = k => rows.reduce((m, r) => (m[r[k] || 'blank'] = (m[r[k] || 'blank'] || 0) + 1, m), {});
-  res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), bySource: tally('source') });
+  res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), wantsAlert: tally('alert'), bySource: tally('source') });
 });
 
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', setHeaders: (res, p) => { if (p.endsWith('.html')) res.set('Cache-Control', 'no-cache'); } }));
