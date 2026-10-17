@@ -136,6 +136,7 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 - `kinn_spin.py`: 144-frame 360 turntable (transparent PNGs).
 - `kinn_b.py`, `kinn_scene.py`: earlier concepts.
 - `gen_shapes.py`: strip outlines + serpentine traces (needs `shapely`).
+- `kinn_flex.py`: 96-frame knee-strip flex for the site (`python3 kinn_flex.py OUT 96 1440 810 32`; works headless via `pip install bpy`, CPU Cycles ~1 min/frame on 2 cores).
 
 **Higgsfield prompt used** (image-to-video; start frame = trace macro still, end frame = flat-lay still):
 > Continuous slow camera pull-back, one unbroken shot. Start in extreme macro on woven beige kinesiology tape: individual cotton threads and soft fibers in sharp focus, shallow depth of field, a thin zigzag line of printed silver conductive ink running across the weave and catching the light. The camera rises and pulls straight back smoothly. More of the silver traces come into view, curving around an oval cut-out. Keep pulling back to reveal the whole X-shaped knee tape strip lying flat, with a small round white ceramic coin seated in a dock near the top and a thin teal light ring glowing at its edge. Dark studio, soft key light from the upper left, subtle rim light, black background. Photorealistic product cinematography, 100mm macro lens, no people, no text, no camera shake. 6 seconds.
@@ -170,5 +171,5 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 **Site changes for this focus:**
 - Hero captions: "Rehab means moving an injury without knowing where the line is." and "Push your recovery, not your injury."
 - Mission heading: "KNOW YOUR LIMIT."
-- A new live demo: an abstract strip bends, its printed traces stretch and pulse, a gauge shows the user's line (120°), and an alert appears when a bend passes it. Steps: Wear it all day / Set your line / Move normally / Get a nudge.
+- "How it works" is a rendered sequence (Oct 17, replaced an abstract canvas demo): the real knee strip slowly bends in a black void, scrubbed by scroll. Woven fibers and printed silver serpentine traces are visible; the traces flatten and stretch through the bend, signal pulses run toward the coin, and the coin's LED ring lights when flexion passes the line. A flexion readout and gauge (line at 120°) track the frames, and the phone-style alert appears past the line. The four steps (Wear it all day / Set your line / Move normally / Get a nudge) fill in white as you scroll, instead of cycling on a timer. Source: `blender/kinn_flex.py` (runs headless with `pip install bpy`), frames in `site/public/flex/`.
 - The intake now also asks "Would a buzz when you push an injury past a safe range help you?" (yes/maybe/no, stored as `alert`) and adds shoulder, ankle and other joints to the injury list.

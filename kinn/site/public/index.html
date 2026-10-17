@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap">
 <style>
-/* Layout: black stage, one chrome object, very few words. Hero coin snap → film (fiber to knee) → statement (know your limit) → live line demo → join. Monochrome only; colour lives in the object's reflections. */
+/* Layout: black stage, one chrome object, very few words. Hero coin snap → film (fiber to knee) → statement (know your limit) → rendered flex with scroll-filled steps → join. Monochrome only; colour lives in the object's reflections. */
 :root{
   --bg:#000;
   --fg:#ededed;
@@ -93,29 +93,43 @@ a{color:inherit;text-decoration:none}
 .statement p b{color:var(--fg);font-weight:500}
 .statement .src{font-size:11px;color:#5a5a5a;max-width:560px}
 
-/* how: live "line" demo + steps */
-.line{position:relative;padding-block:60px 120px}
-.line-stage{position:relative;width:min(100%,1180px);margin:0 auto;aspect-ratio:16/9;max-width:100%;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.line-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* how: rendered strip flexes with scroll; steps fill in as you go */
+.flex{position:relative;height:420vh}
+.flex .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.flex canvas,.flex .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.flex canvas{opacity:0;transition:opacity .6s}.flex.live canvas{opacity:1}
+.flex .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,0) 22%,rgba(0,0,0,0) 62%,rgba(0,0,0,.92));pointer-events:none}
+.flex .hud{position:absolute;inset:0;z-index:2;pointer-events:none}
 .read{position:absolute;display:grid;gap:4px}
 .read b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
-.r-top{left:0;top:28px}
-.r-top strong{font-weight:300;font-size:clamp(3.2rem,7vw,6rem);letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s}
-.line-stage.over .r-top strong{color:#fff;text-shadow:0 0 24px rgba(255,255,255,.35)}
-.r-bot{left:0;bottom:24px}
-.sim{position:absolute;right:0;bottom:24px;color:#4a4a4a}
-.alert{position:absolute;right:0;top:28px;width:min(300px,62%);display:grid;gap:4px;padding:14px 16px;border-radius:16px;background:var(--fg);color:#000;font-size:13px;line-height:1.35;opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.r-top{left:0;top:calc(76px + env(safe-area-inset-top,0px))}
+.r-top strong{font-weight:300;font-size:clamp(3.2rem,7vw,6rem);letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s,text-shadow .3s}
+.flex.over .r-top strong{color:#fff;text-shadow:0 0 28px rgba(255,255,255,.45)}
+.gauge{width:min(220px,40vw);height:2px;background:#2a2a2a;position:relative;margin-top:6px}
+.gauge i{position:absolute;left:0;top:0;bottom:0;background:var(--fg);width:0}
+.gauge em{position:absolute;top:-6px;bottom:-6px;width:1px;background:var(--fg);left:88.9%}
+.alert{position:absolute;right:0;top:calc(76px + env(safe-area-inset-top,0px));width:min(300px,62%);display:grid;gap:4px;padding:14px 16px;border-radius:16px;background:var(--fg);color:#000;font-size:13px;line-height:1.35;opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)}
 .alert .caps{font-size:10px;color:#555}
 .alert b{font-weight:600;font-size:15px}
-.line-stage.over .alert{opacity:1;transform:none}
-@media (max-width:760px){.line-stage{aspect-ratio:4/5}.alert{top:auto;bottom:64px;width:100%}}
-.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:40px auto 0;width:min(100%,1180px)}
-.step{color:#4a4a4a;transition:color .5s}
-.step b{display:block;font-weight:500;font-size:15px;margin-bottom:6px}
-.step.on{color:var(--fg)}
-.step.on p{color:var(--dim)}
-.step p{font-size:12.5px;line-height:1.5}
-@media (max-width:760px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.flex.over .alert{opacity:1;transform:none}
+.flex.over .alert{animation:buzz .45s linear}
+@keyframes buzz{0%,100%{translate:0}20%,60%{translate:-4px}40%,80%{translate:4px}}
+.steps{position:absolute;left:0;right:0;bottom:calc(32px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
+.step{--f:0;position:relative;padding-top:18px}
+.step::before,.step::after{content:"";position:absolute;left:0;top:0;height:1px}
+.step::before{right:0;background:#262626}
+.step::after{width:calc(var(--f)*100%);background:var(--fg)}
+.step .n{font-size:11px;letter-spacing:.14em;color:#5a5a5a;font-variant-numeric:tabular-nums}
+.step b{display:block;margin:6px 0 8px;font-weight:600;font-size:clamp(17px,1.7vw,24px);letter-spacing:-.02em;text-transform:uppercase;line-height:1.05;
+  background:linear-gradient(90deg,#fff 0 calc(var(--f)*100%),#3a3a3a calc(var(--f)*100% + .01%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.step p{font-size:12.5px;line-height:1.5;color:var(--dim);opacity:calc(var(--f)*1.4 - .2);transform:translateY(calc((1 - var(--f))*10px));filter:blur(calc((1 - min(1,var(--f)*2))*4px))}
+.step.on .n{color:var(--fg)}
+@media (max-width:760px){
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .step{grid-area:1/1;opacity:0;transition:opacity .4s}
+  .step.cur{opacity:1}
+  .alert{top:auto;bottom:calc(150px + env(safe-area-inset-bottom,0px));width:100%}
+}
 
 /* join */
 .join{min-height:100vh;display:grid;align-content:center;gap:56px;padding-block:120px;border-top:1px solid var(--line)}
@@ -184,7 +198,7 @@ footer .small{color:#5a5a5a;font-size:11px}
   html{scroll-behavior:auto}
   .hero .under .cue i{animation:none}
   .hero .lines p{transition:none}
-  .rv,.film .words h2,.statement .big .wd,.step{transition:none}
+  .rv,.film .words h2,.statement .big .wd,.step,.alert{transition:none;animation:none}
   .js .rv.pending{opacity:1;transform:none}
 }
 </style>
@@ -230,26 +244,25 @@ footer .small{color:#5a5a5a;font-size:11px}
   <p class="src rv">Paterno et al., Cincinnati Children's: 29.5% second ACL injury within 24 months of return to sport (n = 78).</p>
 </section>
 
-<section class="line gut" id="how" aria-label="How it works">
-  <div class="line-stage" id="lineStage">
-    <canvas id="lineCv" role="img" aria-label="Animated strip bending at the joint. Printed traces stretch, signals run along them, and an alert appears when the bend passes the set limit."></canvas>
-    <div class="read r-top">
-      <span class="caps small">Flexion</span>
-      <strong id="lDeg">0°</strong>
-      <span class="small">Your line · <b id="lLim">120°</b></span>
+<section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
+  <div class="pin">
+    <img class="poster" src="flex/k_001.webp" alt="" width="1440" height="810">
+    <canvas id="flexCv" role="img" aria-label="Close-up of the woven tape and printed silver traces as the knee strip slowly bends. Signals run along the traces to the coin, and an alert appears when the bend passes the set limit."></canvas>
+    <div class="hud gut">
+      <div class="read r-top">
+        <span class="caps small">Knee flexion</span>
+        <strong id="fDeg">0°</strong>
+        <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
+        <span class="small">Your line · <b>120°</b></span>
+      </div>
+      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">Kinn · now</span><b>Right knee hit <span id="fPeak">121°</span>.</b><span>Your line is 120°. Ease off and keep going.</span></div>
+      <div class="steps" id="steps">
+        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Thin as athletic tape. Under clothes, at work, on the slope.</p></div>
+        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>Set your line</b><p>You and your PT choose a safe range for this stage of recovery.</p></div>
+        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Move normally</b><p>Printed traces stretch as you bend. It counts every bend, not just your exercises.</p></div>
+        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Get a nudge</b><p>Go past your line and your phone buzzes. Ease off, keep going.</p></div>
+      </div>
     </div>
-    <div class="read r-bot">
-      <span class="caps small">Today</span>
-      <span class="small"><b id="lBends">1,248</b> bends · <b id="lOver">2</b> past your line</span>
-    </div>
-    <div class="alert" id="lAlert" aria-hidden="true"><span class="caps">Kinn · now</span><b>Right knee hit <span id="lPeak">128°</span>.</b><span>Your line is 120°. Ease off and keep going.</span></div>
-    <span class="sim small">Simulated</span>
-  </div>
-  <div class="steps" id="steps">
-    <div class="step on"><b>Wear it all day</b><p>Thin as athletic tape. Under clothes, at work, on the slope.</p></div>
-    <div class="step"><b>Set your line</b><p>You and your PT choose a safe range for this stage of recovery.</p></div>
-    <div class="step"><b>Move normally</b><p>It counts every bend, not just the ones in your exercises.</p></div>
-    <div class="step"><b>Get a nudge</b><p>Go past your line and your phone buzzes. Ease off, keep going.</p></div>
   </div>
 </section>
 
@@ -488,125 +501,38 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
   addEventListener('scroll', upd, {passive: true}); upd();
 })();
 
-/* ---------- line demo: a strip bends, its printed traces stretch, signals run, and it warns past the line ---------- */
-(function lineDemo() {
-  const stage = document.getElementById('lineStage'), cv = document.getElementById('lineCv'), ctx = cv.getContext('2d');
-  const out = {deg: document.getElementById('lDeg'), bends: document.getElementById('lBends'), over: document.getElementById('lOver'), peak: document.getElementById('lPeak')};
-  const LIMIT = 120;
-  const PEAKS = [62, 88, 104, 114, 131, 96, 74, 108];   // simulated bends; one goes past the line
-  const CYCLE = 2.1;                                      // seconds per bend
-  let W = 0, H = 0, dpr = 1, vis = false, bends = 1248, overs = 2, lastCycle = -1, overUntil = 0, ripple = -1;
-  const fit = () => { const r = cv.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); };
+/* ---------- flex: scroll bends the rendered strip; steps fill as you go ---------- */
+(function flex() {
+  const sec = document.getElementById('how'), cv = document.getElementById('flexCv'), ctx = cv.getContext('2d');
+  const deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), peak = document.getElementById('fPeak');
+  const steps = [...sec.querySelectorAll('.step')];
+  const N = 96, LIMIT = 120, MAXD = 135, frames = []; let target = 0, prog = 0, shown = -1, started = false;
+  const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); shown = -1; };
   addEventListener('resize', fit); fit();
-  new IntersectionObserver(es => vis = es[0].isIntersecting).observe(stage);
-  const sig = x => 1 / (1 + Math.exp(-x));
-  const N = 260;
-
-  function geometry(theta) {
-    // centreline: straight above and below the joint, bending smoothly through it
-    const portrait = H > W, L = portrait ? H * 0.78 : Math.min(H * 0.86, W * 0.6);
-    const base = portrait ? -Math.PI / 2 : -Math.PI / 2 + 0.35;
-    const pts = [], dir = [], strain = [];
-    let x = 0, y = 0;
-    for (let i = 0; i < N; i++) {
-      const sN = i / (N - 1) * 2 - 1;                      // -1..1 along the strip
-      const ang = base + (theta * Math.PI / 180) * sig(sN / 0.09);
-      if (i) { x += Math.cos(ang) * L / N; y -= Math.sin(ang) * L / N; }
-      pts.push([x, y]); dir.push(ang);
-      strain.push((theta / 140) * Math.exp(-(sN * sN) / 0.018));
-    }
-    // centre the drawing on the joint
-    const j = pts[N >> 1], cx = (portrait ? W * 0.5 : W * 0.56) - j[0], cy = H * (portrait ? 0.52 : 0.5) - j[1];
-    for (const p of pts) { p[0] += cx; p[1] += cy; }
-    return {pts, dir, strain, joint: pts[N >> 1]};
-  }
-  const off = (p, a, d) => [p[0] + Math.cos(a + Math.PI / 2) * d, p[1] - Math.sin(a + Math.PI / 2) * d]; // sideways offset from the centreline
-
-  function draw(theta, t, over) {
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    const g = geometry(theta), w = Math.max(46, Math.min(W, H) * 0.11);
-    const edge = over ? 'rgba(255,255,255,.95)' : 'rgba(237,237,237,.38)';
-    // ribbon edges
-    for (const side of [-1, 1]) {
-      ctx.beginPath();
-      g.pts.forEach((p, i) => { const q = off(p, g.dir[i], side * w / 2); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); });
-      ctx.strokeStyle = edge; ctx.lineWidth = 1; ctx.stroke();
-    }
-    // ribs, spaced wider where the tape stretches
-    ctx.strokeStyle = over ? 'rgba(255,255,255,.22)' : 'rgba(237,237,237,.08)'; ctx.lineWidth = 1;
-    let acc = 0;
-    for (let i = 0; i < N; i++) { acc += 1 + g.strain[i] * 1.6; if (acc >= 7) { acc = 0; const a = off(g.pts[i], g.dir[i], -w / 2), b = off(g.pts[i], g.dir[i], w / 2); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } }
-    // two printed serpentine traces: zigzags flatten and lengthen where the strip stretches
-    const traces = [];
-    for (const lane of [-0.22, 0.22]) {
-      const path = []; let ph = 0;
-      for (let i = 0; i < N; i++) {
-        const st = g.strain[i]; ph += (0.62 / (1 + st * 2.2));
-        const amp = w * 0.085 * (1 - Math.min(0.7, st * 0.9));
-        path.push(off(g.pts[i], g.dir[i], lane * w + Math.sin(ph) * amp));
-      }
-      traces.push(path);
-      ctx.beginPath(); path.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]));
-      ctx.strokeStyle = over ? 'rgba(255,255,255,.9)' : 'rgba(237,237,237,.55)'; ctx.lineWidth = 1.3; ctx.stroke();
-    }
-    // signals travelling along the traces toward the coin end
-    const speed = over ? 0.55 : 0.22;
-    ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    traces.forEach((path, k) => {
-      for (let n = 0; n < 6; n++) {
-        const u = ((t * speed + n / 6 + k * 0.08) % 1), idx = Math.floor((1 - u) * (N - 1)), q = path[idx];
-        const st = g.strain[idx], r = 2.2 + st * 4 + (over ? 1.5 : 0);
-        const grd = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], r * 5);
-        grd.addColorStop(0, `rgba(255,255,255,${0.9})`); grd.addColorStop(0.25, `rgba(255,255,255,${0.35 + st * .4})`); grd.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(q[0], q[1], r * 5, 0, Math.PI * 2); ctx.fill();
-      }
-    });
-    ctx.restore();
-    // coin at the top end of the strip
-    const top = g.pts[N - 1], ta = g.dir[N - 1];
-    const c = [top[0] - Math.cos(ta) * w * 0.9, top[1] + Math.sin(ta) * w * 0.9];
-    ctx.beginPath(); ctx.arc(c[0], c[1], w * 0.36, 0, Math.PI * 2); ctx.fillStyle = '#0c0c0c'; ctx.fill();
-    ctx.strokeStyle = over ? '#fff' : 'rgba(237,237,237,.7)'; ctx.lineWidth = over ? 2 : 1.2; ctx.stroke();
-    // joint gauge: current bend and the line
-    const J = g.joint, R = w * 1.25, a0 = H > W ? Math.PI / 2 : Math.PI / 2 - 0.35; // canvas angle of the straight (0°) direction
-    const toCanvas = deg => a0 - deg * Math.PI / 180;
-    ctx.beginPath(); ctx.arc(J[0], J[1], R, toCanvas(0), toCanvas(140), true); ctx.strokeStyle = 'rgba(237,237,237,.12)'; ctx.lineWidth = 1; ctx.stroke();
-    ctx.beginPath(); ctx.arc(J[0], J[1], R, toCanvas(0), toCanvas(Math.min(theta, 140)), true); ctx.strokeStyle = over ? '#fff' : 'rgba(237,237,237,.7)'; ctx.lineWidth = 2; ctx.stroke();
-    const la = toCanvas(LIMIT), l2 = [J[0] + Math.cos(la) * (R + 14), J[1] + Math.sin(la) * (R + 14)];
-    const lp1 = [J[0] + Math.cos(la) * (R - 10), J[1] + Math.sin(la) * (R - 10)];
-    ctx.beginPath(); ctx.moveTo(lp1[0], lp1[1]); ctx.lineTo(l2[0], l2[1]); ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(237,237,237,.85)'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(237,237,237,.7)'; ctx.font = '500 11px Manrope, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('LINE ' + LIMIT + '°', J[0] + Math.cos(la) * (R + 30), J[1] + Math.sin(la) * (R + 30) + 4);
-    // ripple from the joint when the line is crossed
-    if (ripple >= 0) {
-      const k = (t - ripple) / 1.1;
-      if (k < 1) { ctx.beginPath(); ctx.arc(J[0], J[1], w * 0.6 + k * Math.min(W, H) * 0.45, 0, Math.PI * 2); ctx.strokeStyle = `rgba(255,255,255,${0.5 * (1 - k)})`; ctx.lineWidth = 1.5; ctx.stroke(); }
-    }
-  }
-
-  const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-  const t0 = performance.now();
-  function frame(now) {
-    requestAnimationFrame(frame);
-    if (!vis && !reduce) return;
-    const t = reduce ? 0 : (now - t0) / 1000;
-    const c = Math.floor(t / CYCLE), ph = (t / CYCLE) % 1, peak = PEAKS[c % PEAKS.length];
-    const theta = reduce ? 112 : 6 + (peak - 6) * ease(ph < 0.5 ? ph * 2 : (1 - ph) * 2);
-    if (c !== lastCycle && !reduce) { if (lastCycle >= 0) { bends++; } lastCycle = c; }
-    const isOver = theta > LIMIT;
-    if (isOver && t > overUntil) { overs++; out.peak.textContent = peak + '°'; ripple = t; }
-    if (isOver) overUntil = t + 1.6;
-    const showOver = t < overUntil;
-    stage.classList.toggle('over', showOver);
-    draw(theta, t, isOver);
-    out.deg.textContent = Math.round(theta) + '°';
-    out.bends.textContent = bends.toLocaleString(); out.over.textContent = overs;
-    if (reduce) return;
-  }
-  requestAnimationFrame(frame);
-  const steps = [...document.querySelectorAll('.step')]; let i = 0;
-  if (!reduce) setInterval(() => { steps[i].classList.remove('on'); i = (i + 1) % steps.length; steps[i].classList.add('on'); }, 2400);
-  else steps.forEach(s => s.classList.add('on'));
+  const ready = im => im && im.complete && im.naturalWidth;
+  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
+  const load = () => { const order = []; for (let k = 8; k >= 1; k >>= 1) for (let i = 0; i < N; i += k) if (!order.includes(i)) order.push(i);
+    order.forEach(i => { const im = new Image(); if (!i) im.onload = () => { sec.classList.add('live'); shown = -1; }; im.src = 'flex/k_' + String(i + 1).padStart(3, '0') + '.webp'; frames[i] = im; }); };
+  new IntersectionObserver(es => { if (es[0].isIntersecting && !started) { started = true; load(); } }, {rootMargin: '150% 0px'}).observe(sec);
+  const read = () => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; target = Math.min(1, Math.max(0, -b.top / Math.max(1, span))); };
+  addEventListener('scroll', read, {passive: true}); read();
+  const ease = x => x * x * (3 - 2 * x);
+  let wasOver = false;
+  (function tick() {
+    requestAnimationFrame(tick);
+    prog += (target - prog) * (reduce ? 1 : 0.12); if (Math.abs(target - prog) < 0.0003) prog = target;
+    const fp = Math.min(1, prog / 0.86);                     // frame position; the end holds
+    const f = Math.round(fp * (N - 1));
+    if (f !== shown && started) { let k = f; while (k > 0 && !ready(frames[k])) k--; if (draw(k)) shown = k === f ? f : -1; }
+    const d = ease(f / (N - 1)) * MAXD, over = d >= LIMIT;   // same easing the render used
+    deg.textContent = Math.round(d) + '°'; bar.style.width = (d / MAXD * 100) + '%';
+    if (over && !wasOver) peak.textContent = Math.max(121, Math.round(d)) + '°';
+    if (over !== wasOver) { sec.classList.toggle('over', over); wasOver = over; }
+    let cur = 0;
+    steps.forEach((s, i) => { const a = +s.dataset.a, b = +s.dataset.b, v = Math.min(1, Math.max(0, (prog - a) / (b - a)));
+      s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
+    steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
+  })();
 })();
 
 /* ---------- reveal ---------- */
