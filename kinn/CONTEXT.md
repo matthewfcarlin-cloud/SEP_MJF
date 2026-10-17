@@ -194,3 +194,12 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 - A "Built like tape" section with Matthew's generated product photos was tried and removed (he didn't like them).
 - **The redesign doc** (paper/midnight/lime, hardware hidden) was tried and rejected. It's kept in `archive/website-v4/`.
 - **To validate:** what would actually make someone confident enough to push after an injury?
+
+## 12. AI demo for the hackathon (Oct 17, 2026): "Every Kinn gets smarter"
+
+- **Where:** [`learn/`](learn/), an interactive site (Vite + React, Vercel). Its README has the demo script and the numbers.
+- **Prompt:** Continual Learning. Two loops: each phone learns from its wearer's evening check-ins (online learning), and every night the phones pool what they learned by federated averaging (only model weights leave the phone), so new wearers start smarter. Second track: Design. Scale is a pitch angle (data network effect).
+- **Sensors claimed:** stretch traces (bend), motion (deep bends), a muscle sensor over the quad for muscle fatigue (the KineTape prototype's thin-film pressure sensor), and skin temperature. Still "not a medical device"; it estimates flare-up risk, not tissue strain.
+- **App simplified** from KineTape's 8 tabs to 3: Today (one call: Push / Ease off / Rest, plus your line), Check in (one tap or a sentence Claude reads), Learned (what warns of a flare-up for you, and a timeline).
+- All wearers and readings are simulated; the learning math is real.
+
