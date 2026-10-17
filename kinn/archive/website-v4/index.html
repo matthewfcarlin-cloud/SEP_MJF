@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kinn</title>
+<meta name="description" content="Recovery is full of uncertainty. Kinn is exploring new ways to help you understand your movement, track your progress, and rebuild strength with more confidence.">
+<meta property="og:title" content="Kinn: Get back to what moves you.">
+<meta property="og:description" content="A new perspective on recovery. Currently in development. Join the waitlist for early access.">
+<meta name="theme-color" content="#F3F0E8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230E1A2B'/%3E%3Cpath d='M6 22 Q16 2 26 22' fill='none' stroke='%23D6F04A' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500&display=swap">
+<style>
+/* Layout: warm paper hero with a living line → midnight "space between" with three connected scenes → pinned ribbon that turns movement into reference points → three directions → midnight waitlist (email first, one follow-up) → closing line. No hardware shown. Lime is an accent only. */
+:root{
+  --paper:#F3F0E8; --paper-2:#E9E5DA; --ink:#0E1A2B; --ink-dim:#56606E; --ink-faint:#9A9D9C; --rule:#D6D1C4;
+  --night:#0B1626; --night-2:#132339; --on-night:#E8ECF1; --night-dim:#8C99AC; --night-rule:#22334D;
+  --lime:#D6F04A;
+  --head:'Inter Tight',ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gut:clamp(16px,4vw,56px);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--head);font-weight:500;letter-spacing:-.035em;line-height:.98;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.night :focus-visible{outline-color:var(--lime)}
+.gut{padding-inline:var(--gut)}
+.label{font-family:var(--body);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim)}
+.night .label{color:var(--night-dim)}
+.label i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-right:10px;vertical-align:1px;box-shadow:0 0 0 1px rgba(14,26,43,.25)}
+.night{background:var(--night);color:var(--on-night)}
+.grain{position:relative;isolation:isolate}
+.grain::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.06 0 0 0 0 0.09 0 0 0 0 0.14 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.night.grain::before{opacity:.35;filter:invert(1)}
+canvas{display:block}
+
+/* nav */
+.top{position:fixed;inset:0 0 auto;z-index:20;display:flex;justify-content:space-between;align-items:center;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:12px;transition:background .4s,color .4s}
+.top.solid{background:rgba(243,240,232,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.top.dark{color:var(--on-night)}
+.top.dark.solid{background:rgba(11,22,38,.78)}
+.mark{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:600;font-size:17px;letter-spacing:.22em}
+.mark svg{width:26px;height:16px;overflow:visible}
+.mark path{stroke:currentColor}
+.mark circle{fill:var(--lime);stroke:currentColor;stroke-width:1}
+.top nav{display:flex;align-items:center;gap:clamp(14px,3vw,34px);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase}
+.top nav a:not(.btn){opacity:.75;transition:opacity .2s}.top nav a:not(.btn):hover{opacity:1}
+
+/* buttons (magnetic on desktop) */
+.btn{display:inline-flex;align-items:center;gap:12px;padding:15px 22px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;border:0;cursor:pointer;transition:background .3s,color .3s,box-shadow .3s;will-change:transform}
+.btn .ar{display:inline-block;transition:transform .35s var(--ease)}
+.btn:hover{background:var(--lime);color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.btn:hover .ar{transform:translate(3px,-3px)}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.sm{padding:10px 16px;font-size:11px}
+.night .btn,.top.dark .btn{background:var(--on-night);color:var(--night)}
+.night .btn:hover,.top.dark .btn:hover{background:var(--lime);color:var(--night);box-shadow:none}
+
+/* 1 hero */
+.hero{min-height:100vh;min-height:100svh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:1fr auto;align-items:center;gap:24px;padding-top:110px;padding-bottom:28px}
+.hero h1{font-size:clamp(3.1rem,7.4vw,8rem)}
+.hero .copy{display:grid;gap:30px;align-content:center}
+.hero .lede{max-width:30em;color:var(--ink-dim);font-size:clamp(16px,1.35vw,19px)}
+.hero .cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.hero .cta small{font-size:13px;color:var(--ink-dim);max-width:16em;line-height:1.4}
+.hero .viz{position:relative;height:min(70vh,700px);min-height:340px}
+.hero .viz canvas{position:absolute;inset:0;width:100%;height:100%}
+.tag-illus{position:absolute;right:0;bottom:0;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+.hero .scrollcue{grid-column:1/-1;display:flex;justify-content:space-between;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);border-top:1px solid var(--rule);padding-top:14px}
+
+/* 2 space between */
+.space{padding-block:clamp(110px,16vh,180px) clamp(90px,12vh,140px)}
+.space .head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px 64px;align-items:end}
+.space h2{font-size:clamp(2.6rem,6.2vw,6.4rem);margin-top:22px}
+.space .body{display:grid;gap:16px;color:var(--night-dim);font-size:clamp(16px,1.3vw,18px);max-width:34em}
+.space .body b{color:var(--on-night);font-weight:500}
+.scenes{margin-top:clamp(70px,10vh,120px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative}
+.scenes::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,var(--night-rule),#3B5170 50%,var(--night-rule))}
+.scene{position:relative;padding-top:22px;display:grid;gap:16px;align-content:start}
+.scene+.scene{border-left:1px solid var(--night-rule);padding-left:clamp(14px,2vw,28px)}
+.scene:not(:last-child){padding-right:clamp(14px,2vw,28px)}
+.scene .n{font-size:11px;letter-spacing:.18em;color:var(--night-dim);text-transform:uppercase}
+.scene canvas{width:100%;aspect-ratio:4/3;height:auto}
+.scene q{font-family:var(--head);font-size:clamp(1.4rem,2.2vw,2rem);letter-spacing:-.03em;line-height:1.1;quotes:none;font-style:italic;font-weight:400}
+.scene .dot-node{position:absolute;top:-4px;left:0;width:9px;height:9px;border-radius:50%;background:var(--lime)}
+.scene+.scene .dot-node{left:-5px}
+
+/* 3 approach (pinned ribbon) */
+.approach{height:280vh;position:relative}
+.approach .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:32px;padding-top:72px;padding-bottom:28px}
+.approach .txt{display:grid;gap:22px;align-content:center}
+.approach h2{font-size:clamp(2.4rem,4.8vw,5rem)}
+.approach .lede{color:var(--ink-dim);max-width:31em;font-size:clamp(15px,1.2vw,17px)}
+.prin{display:grid;margin-top:8px;border-top:1px solid var(--rule)}
+.prin div{display:grid;grid-template-columns:44px 1fr;gap:2px 10px;padding:14px 0;border-bottom:1px solid var(--rule);opacity:.18;transform:translateY(8px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.prin div.on{opacity:1;transform:none}
+.prin span{font-size:11px;letter-spacing:.14em;color:var(--ink-dim);padding-top:4px;grid-row:span 2}
+.prin b{font-family:var(--head);font-weight:500;font-size:clamp(1.1rem,1.6vw,1.45rem);letter-spacing:-.02em}
+.prin p{color:var(--ink-dim);font-size:14px}
+.approach .viz{position:relative;height:min(78vh,760px)}
+.approach .viz canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* 4 vision */
+.vision{padding-block:clamp(110px,16vh,180px);background:var(--paper-2)}
+.vision h2{font-size:clamp(2.4rem,5.4vw,5.6rem);max-width:13em;margin-top:22px}
+.dirs{margin-top:clamp(56px,8vh,90px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,44px)}
+.dir{display:grid;gap:14px;align-content:start;border-top:1px solid var(--ink);padding-top:18px}
+.dir .n{font-size:11px;letter-spacing:.18em;color:var(--ink-dim)}
+.dir canvas{width:100%;aspect-ratio:5/4;height:auto;margin-block:6px}
+.dir h3{font-size:clamp(1.6rem,2.6vw,2.4rem)}
+.dir p{color:var(--ink-dim);font-size:15px;max-width:22em}
+.vision .foot{margin-top:40px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+
+/* 5 waitlist */
+.join{position:relative;overflow:hidden;padding-block:clamp(120px,18vh,200px)}
+.join canvas.bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.join .in{position:relative;z-index:1;display:grid;gap:26px;max-width:880px}
+.join h2{font-size:clamp(2.8rem,7vw,7.2rem)}
+.join .body{color:var(--night-dim);max-width:32em;display:grid;gap:10px;font-size:clamp(16px,1.3vw,18px)}
+.signup{display:flex;gap:10px;max-width:620px;margin-top:10px;padding:6px;border-radius:999px;background:rgba(232,236,241,.06);border:1px solid #2B3E5C;transition:border-color .3s}
+.signup:focus-within{border-color:var(--lime)}
+.signup input{flex:1;min-width:0;width:0;background:transparent;border:0;padding:0 18px;font-size:17px;outline:none}
+.signup input::placeholder{color:#6F7E95}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.join .fine{font-size:13px;color:var(--night-dim);font-style:italic;margin-top:6px}
+.msg{font-size:14px;color:#FFB4A8;min-height:1.4em;margin-top:10px}
+.after{display:grid;gap:26px}
+.after[hidden],.q[hidden],.thanks[hidden],#before[hidden]{display:none}
+.after .ok{font-family:var(--head);font-size:clamp(2rem,4vw,3.4rem);letter-spacing:-.03em;line-height:1}
+.after .ok em{font-style:normal;color:var(--lime)}
+.q fieldset{border:0;padding:0;margin:0;display:grid;gap:14px}
+.q legend{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--night-dim);padding:0;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:11px 18px;border-radius:999px;border:1px solid #2F4363;background:transparent;font-size:15px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.chip:hover{border-color:var(--on-night)}
+.chip[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--night)}
+.thanks{color:var(--night-dim);font-size:15px}
+
+/* 6 closing */
+.close{height:230vh;position:relative}
+.close .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;grid-template-rows:1fr auto;overflow:hidden}
+.close canvas{position:absolute;inset:0;width:100%;height:100%}
+.close .words{position:relative;align-self:end;display:grid;gap:22px;justify-items:start;padding-bottom:clamp(40px,9vh,110px)}
+.close h2{font-size:clamp(2.6rem,6.4vw,6.8rem);max-width:12em}
+.close h2 .w{display:inline-block;opacity:var(--o,0);transform:translateY(calc((1 - var(--o,0)) * .3em));filter:blur(calc((1 - var(--o,0)) * 8px))}
+.close .sub{font-family:var(--head);font-size:clamp(1.3rem,2.4vw,2.2rem);letter-spacing:-.02em;color:var(--ink-dim);opacity:var(--o,0)}
+.close .cta{opacity:var(--o,0);transform:translateY(calc((1 - var(--o,0)) * 12px))}
+footer{position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding-block:20px calc(20px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--rule);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim)}
+footer b{color:var(--ink);font-weight:500}
+
+/* mobile */
+@media (max-width:860px){
+  .top nav .hide-s{display:none}
+  .hero{grid-template-columns:1fr;grid-template-rows:auto auto auto;padding-top:96px;gap:8px;align-content:start}
+  .hero .viz{height:40svh;min-height:260px}
+  .hero .copy{gap:20px}
+  .space .head{grid-template-columns:1fr}
+  .scenes{grid-template-columns:1fr}
+  .scene+.scene{border-left:0;padding-left:0;margin-top:40px}
+  .scene+.scene::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--night-rule)}
+  .scene:not(:last-child){padding-right:0}
+  .scene canvas{aspect-ratio:16/9}
+  .scene .dot-node,.scene+.scene .dot-node{left:0;top:-4px}
+  .approach .stick{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:0;padding-top:70px;align-items:stretch}
+  .approach .viz{height:auto;min-height:0}
+  .approach .txt{gap:12px}
+  .approach h2{font-size:clamp(2rem,9vw,2.6rem)}
+  .approach .lede{font-size:14px}
+  .prin div{padding:8px 0}.prin p{display:none}.prin span{grid-row:auto}
+  .dirs{grid-template-columns:1fr;gap:44px}
+  .dir canvas{aspect-ratio:16/9}
+  .signup{flex-direction:column;border-radius:22px;padding:8px}
+  .signup input{width:100%;padding:12px}
+  .signup .btn{justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .prin div,.btn,.btn .ar{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top gut" id="top">
+  <a href="#hero" class="mark" aria-label="Kinn, home"><svg viewBox="0 0 26 16" aria-hidden="true"><path d="M1 15 Q13 -6 25 15" fill="none" stroke-width="1.6" stroke-linecap="round"/><circle cx="13" cy="5" r="2.6"/></svg>KINN</a>
+  <nav aria-label="Main"><a href="#vision" class="hide-s">Our vision</a><a href="#join" class="btn sm mag" data-join>Join the waitlist <span class="ar" aria-hidden="true">↗</span></a></nav>
+</header>
+
+<main>
+<!-- 1 · hero -->
+<section class="hero gut grain" id="hero">
+  <div class="copy">
+    <span class="label"><i></i>Kinn · Currently in development</span>
+    <h1>Get back to what moves you.</h1>
+    <p class="lede">Recovery is full of uncertainty. Kinn is exploring new ways to help you understand your movement, track your progress, and rebuild strength with more confidence.</p>
+    <div class="cta"><a href="#join" class="btn mag" data-join>Get early access <span class="ar" aria-hidden="true">↗</span></a><small>We're building what's next in recovery. Join us early.</small></div>
+  </div>
+  <div class="viz"><canvas id="heroCv" role="img" aria-label="A thin line draws itself into the shape of a bending knee. Points along it light up as it bends."></canvas><span class="tag-illus">Illustrative</span></div>
+  <div class="scrollcue"><span>A new perspective on recovery</span><span>Scroll ↓</span></div>
+</section>
+
+<!-- 2 · the space between -->
+<section class="space night grain gut" id="space" data-dark>
+  <div class="head">
+    <div><span class="label"><i></i>The space between</span><h2>Recovery doesn't happen in the clinic.</h2></div>
+    <div class="body">
+      <p>It happens at home. In the gym. During the exercises you aren't sure you're doing enough of.</p>
+      <p>You're trying to get stronger. To move more freely. To trust your body again. But progress isn't always easy to see, and knowing when to push or pull back isn't always obvious.</p>
+      <p><b>That's the gap we're exploring.</b></p>
+    </div>
+  </div>
+  <div class="scenes">
+    <div class="scene"><span class="dot-node"></span><span class="n">01 · The uncertainty</span><canvas class="sc" data-scene="1" role="img" aria-label="A line makes small, hesitant bends below a faint, uncertain target."></canvas><q>Am I doing enough?</q></div>
+    <div class="scene"><span class="dot-node"></span><span class="n">02 · The hesitation</span><canvas class="sc" data-scene="2" role="img" aria-label="A line bends slowly, then slows and holds before a dashed marker."></canvas><q>Am I pushing too far?</q></div>
+    <div class="scene"><span class="dot-node"></span><span class="n">03 · The waiting</span><canvas class="sc" data-scene="3" role="img" aria-label="Seven days of movement traces, each a little different, with no clear trend."></canvas><q>Am I actually making progress?</q></div>
+  </div>
+</section>
+
+<!-- 3 · a new approach -->
+<section class="approach gut grain" id="vision">
+  <div class="stick">
+    <div class="txt">
+      <span class="label"><i></i>A new approach to recovery</span>
+      <h2>Understand your movement. Rebuild your confidence.</h2>
+      <p class="lede">We're exploring ways to make the physical changes happening during recovery easier to understand. By bringing movement sensing and useful feedback closer to your everyday routine, Kinn aims to help people make more sense of their progress between appointments.</p>
+      <div class="prin" id="prin">
+        <div data-at=".22"><span>01</span><b>Movement, made visible.</b><p>Understand changes in how you move over time.</p></div>
+        <div data-at=".44"><span>02</span><b>Progress, made tangible.</b><p>See more than just how you feel on a particular day.</p></div>
+        <div data-at=".66"><span>03</span><b>Recovery, on your terms.</b><p>Build a better understanding of your progress as you work toward getting back to what you love.</p></div>
+      </div>
+    </div>
+    <div class="viz"><canvas id="ribbonCv" role="img" aria-label="A simple curved line becomes a twisting ribbon as you scroll, then gains reference points and a few measurements."></canvas><span class="tag-illus">Illustrative</span></div>
+  </div>
+</section>
+
+<!-- 4 · the vision -->
+<section class="vision gut grain" id="directions">
+  <span class="label"><i></i>Where this could go</span>
+  <h2>Your comeback is personal. Your progress should be, too.</h2>
+  <div class="dirs">
+    <div class="dir"><span class="n">01</span><canvas class="dv" data-dir="1" role="img" aria-label="A shaky line gradually steadies."></canvas><h3>Rebuild strength</h3><p>For people working to regain strength after an injury.</p></div>
+    <div class="dir"><span class="n">02</span><canvas class="dv" data-dir="2" role="img" aria-label="A joint moves through an arc that widens with each repetition."></canvas><h3>Find your range</h3><p>For people working to restore mobility and comfortable movement.</p></div>
+    <div class="dir"><span class="n">03</span><canvas class="dv" data-dir="3" role="img" aria-label="A sequence of movement traces, like frames of a stride."></canvas><h3>Return with confidence</h3><p>For athletes working toward a return to the activities they love.</p></div>
+  </div>
+  <p class="foot">Illustrative visualizations, not product data.</p>
+</section>
+
+<!-- 5 · waitlist -->
+<section class="join night grain gut" id="join" data-dark>
+  <canvas class="bg" id="joinCv" aria-hidden="true"></canvas>
+  <div class="in">
+    <span class="label"><i></i>Be part of what's next</span>
+    <h2>Your recovery. A new perspective.</h2>
+    <div class="body"><p>We're building Kinn to help people better understand their recovery and move forward with more confidence.</p><p>We're still exploring the possibilities, and we'd love to have you along for the journey.</p></div>
+
+    <div id="before">
+      <form class="signup" id="form" novalidate>
+        <label class="hp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off"></label>
+        <label for="email" class="hp">Your email address</label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Your email address" required>
+        <button class="btn mag" type="submit" id="go"><span class="t">Join the waitlist</span> <span class="ar" aria-hidden="true">↗</span></button>
+      </form>
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <p class="fine">Early access to Kinn. Updates as we build.</p>
+    </div>
+
+    <div class="after" id="after" hidden aria-live="polite">
+      <p class="ok" id="ok">You're on the list.</p>
+      <div class="q" id="q1">
+        <fieldset><legend>Optional · What brings you to Kinn?</legend>
+          <div class="chips" data-field="role">
+            <button type="button" class="chip" data-v="recovering">Recovering from an injury</button>
+            <button type="button" class="chip" data-v="supporting">Supporting someone through recovery</button>
+            <button type="button" class="chip" data-v="clinician">Working in physical therapy or sports medicine</button>
+            <button type="button" class="chip" data-v="movement">Interested in movement and mobility</button>
+            <button type="button" class="chip" data-v="other">Something else</button>
+          </div>
+        </fieldset>
+      </div>
+      <div class="q" id="q2" hidden>
+        <fieldset><legend>Optional · What are you recovering from?</legend>
+          <div class="chips" data-field="injury">
+            <button type="button" class="chip" data-v="acl">ACL</button>
+            <button type="button" class="chip" data-v="meniscus">Meniscus</button>
+            <button type="button" class="chip" data-v="knee-replacement">Knee replacement</button>
+            <button type="button" class="chip" data-v="other-knee">Other knee</button>
+            <button type="button" class="chip" data-v="shoulder">Shoulder</button>
+            <button type="button" class="chip" data-v="ankle">Ankle</button>
+            <button type="button" class="chip" data-v="other-joint">Something else</button>
+          </div>
+        </fieldset>
+      </div>
+      <p class="thanks" id="thanks" hidden>Thank you. That helps us figure out who to build for first.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · closing -->
+<section class="close grain" id="closing">
+  <div class="stick">
+    <canvas id="closeCv" aria-hidden="true"></canvas>
+    <div class="words gut">
+      <h2 id="closeH"><span class="w">There's</span> <span class="w">more</span> <span class="w">to</span> <span class="w">recovery</span> <span class="w">than</span> <span class="w">getting</span> <span class="w">better.</span></h2>
+      <p class="sub" id="closeS">It's learning to trust yourself again.</p>
+      <div class="cta" id="closeC"><a href="#join" class="btn mag" data-join>Join Kinn <span class="ar" aria-hidden="true">↗</span></a></div>
+    </div>
+    <footer class="gut"><span><b>KINN</b> — A new perspective on recovery.</span><span>Currently in development.</span></footer>
+  </div>
+</section>
+</main>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eo = x => 1 - Math.pow(1 - x, 3);
+const C = { ink: '#0E1A2B', dim: '#56606E', lime: '#D6F04A', on: '#E8ECF1', ndim: '#8C99AC', nrule: '#2A3D5B' };
+const F = (w, s) => `${w} ${s}px Inter, system-ui, sans-serif`;
+
+/* A line whose tangent turns smoothly at its middle: the shape of a joint. bend in radians. */
+function bentLine(n, len, bend, rot = 0, w = .16) {
+  const ang = s => rot + bend * (1 / (1 + Math.exp(-s / w)) - .5);
+  const pts = [[0, 0]], ds = 2 / (n - 1);
+  let x = 0, y = 0;
+  for (let i = 1; i < n; i++) { const a = ang(-1 + (i - .5) * ds); x += Math.cos(a) * ds * len / 2; y += Math.sin(a) * ds * len / 2; pts.push([x, y]); }
+  const m = pts[(n - 1) >> 1];
+  return pts.map(p => [p[0] - m[0], p[1] - m[1]]);
+}
+function path(ctx, pts, from = 0, to = pts.length) { ctx.beginPath(); ctx.moveTo(pts[from][0], pts[from][1]); for (let i = from + 1; i < to; i++) ctx.lineTo(pts[i][0], pts[i][1]); }
+function glowDot(ctx, x, y, r, a, col = C.lime, ring = C.ink) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = cl(a);
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r * 5); g.addColorStop(0, 'rgba(214,240,74,.55)'); g.addColorStop(1, 'rgba(214,240,74,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 5, 0, 7); ctx.fill();
+  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+  if (ring) { ctx.strokeStyle = ring; ctx.lineWidth = 1; ctx.stroke(); }
+  ctx.restore();
+}
+
+/* Canvas driver: sizes for DPR, animates only while on screen, one still frame for reduced motion. */
+function stage(cv, draw) {
+  const ctx = cv.getContext('2d'); let W = 0, H = 0, vis = false, raf = 0; const t0 = performance.now();
+  const frame = () => { if (!W || !H) return; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); const d = cv.width / W; ctx.setTransform(d, 0, 0, d, 0, 0); ctx.globalAlpha = 1; draw(ctx, W, H, reduce ? 6 : (performance.now() - t0) / 1000); };
+  const size = () => { const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; cv.width = Math.max(1, Math.round(W * d)); cv.height = Math.max(1, Math.round(H * d)); frame(); };
+  const loop = () => { frame(); if (vis && !reduce) raf = requestAnimationFrame(loop); };
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; cancelAnimationFrame(raf); if (vis) loop(); }, { rootMargin: '80px' }).observe(cv);
+  new ResizeObserver(size).observe(cv);
+  return { frame };
+}
+
+/* ---------- nav: solid after the top, light text over midnight sections ---------- */
+(function nav() {
+  const top = document.getElementById('top'), darks = [...document.querySelectorAll('[data-dark]')];
+  const upd = () => {
+    top.classList.toggle('solid', scrollY > 40);
+    top.classList.toggle('dark', darks.some(s => { const r = s.getBoundingClientRect(); return r.top <= 34 && r.bottom > 34; }));
+  };
+  addEventListener('scroll', upd, { passive: true }); upd();
+})();
+
+/* ---------- magnetic buttons ---------- */
+if (fine && !reduce) document.querySelectorAll('.mag').forEach(b => {
+  b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .22}px,${(e.clientY - r.top - r.height / 2) * .35}px)`; });
+  b.addEventListener('pointerleave', () => { b.style.transition = 'transform .5s var(--ease),background .3s,color .3s,box-shadow .3s'; b.style.transform = ''; setTimeout(() => b.style.transition = '', 500); });
+});
+
+/* ---------- join links: scroll to the form and focus it ---------- */
+document.querySelectorAll('[data-join]').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); document.getElementById('join').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  if (!document.getElementById('before').hidden) setTimeout(() => document.getElementById('email').focus({ preventScroll: true }), reduce ? 0 : 800);
+}));
+
+/* ---------- 1 · hero: the living line ---------- */
+(function hero() {
+  const cv = document.getElementById('heroCv'); let mx = 0, my = 0, tx = 0, ty = 0;
+  if (fine) addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
+  const bendAt = (t, sp) => .2 + (1.05 + .42 * Math.sin(t * .55) + .12 * Math.sin(t * 1.3)) * eo(cl((t - .3) / 2.2)) + sp * .7 + my * .5;
+  const s = stage(cv, (ctx, W, H, t) => {
+    mx += (tx - mx) * .05; my += (ty - my) * .05;
+    const sp = cl(scrollY / innerHeight), N = 181, mid = 90;
+    const len = Math.min(W * 1.1, H * 1.3), cx = W * .5, cy = H * .5;
+    const draw = reduce ? 1 : ease(cl(t / 1.9));
+    const rot = -.06 + mx * .25;
+    ctx.save(); ctx.translate(cx, cy); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let k = 7; k >= 1; k--) {   // ghosts of earlier positions
+      ctx.strokeStyle = C.ink; ctx.globalAlpha = .06 * (1 - k / 8) * draw; ctx.lineWidth = 1; path(ctx, bentLine(N, len, bendAt(t - k * .22, sp), rot)); ctx.stroke();
+    }
+    const b = bendAt(t, sp), pts = bentLine(N, len, b, rot), end = Math.max(2, Math.round(N * draw));
+    ctx.globalAlpha = .045 * draw; ctx.strokeStyle = C.ink; ctx.lineWidth = Math.min(96, W * .12); path(ctx, pts, 34, N - 34); ctx.stroke();   // translucent limb
+    ctx.globalAlpha = .07 * draw; ctx.fillStyle = C.ink; ctx.beginPath(); ctx.ellipse(pts[mid][0], pts[mid][1] - 4, Math.min(44, W * .055), Math.min(38, W * .048), rot, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1; ctx.lineWidth = 1.6; path(ctx, pts, 0, end); ctx.stroke();
+    for (let i = 6; i < end; i += 9) {   // points light up where it bends
+      const s2 = (i - mid) / mid, lit = cl(Math.exp(-(s2 * s2) / (2 * .1 * .1)) * (b - .3) / 1.1);
+      ctx.fillStyle = C.ink; ctx.globalAlpha = .5; ctx.beginPath(); ctx.arc(pts[i][0], pts[i][1], 1.6, 0, 7); ctx.fill();
+      glowDot(ctx, pts[i][0], pts[i][1], 3.2, lit * draw);
+    }
+    const k = pts[mid], a1 = Math.atan2(pts[mid - 22][1] - k[1], pts[mid - 22][0] - k[0]), a2 = Math.atan2(pts[mid + 22][1] - k[1], pts[mid + 22][0] - k[0]);
+    const la = reduce ? 1 : cl((t - 1.6) / .8);
+    ctx.globalAlpha = .55 * la; ctx.lineWidth = 1; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(k[0], k[1], 54, a2, a1); ctx.stroke(); ctx.setLineDash([]);
+    ctx.globalAlpha = la; ctx.fillStyle = C.ink; ctx.font = F(500, 12); ctx.textAlign = 'center'; ctx.fillText(Math.round(b * 180 / Math.PI) + '°', k[0], k[1] + 84);
+    ctx.fillStyle = C.dim; ctx.font = F(500, 9); ctx.fillText('FLEXION', k[0], k[1] + 99);
+    ctx.restore();
+  });
+  addEventListener('scroll', () => reduce && s.frame(), { passive: true });
+})();
+
+/* ---------- 2 · three connected scenes ---------- */
+document.querySelectorAll('canvas.sc').forEach(cv => {
+  const n = +cv.dataset.scene;
+  stage(cv, (ctx, W, H, t) => {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const len = Math.min(W * .7, H * 1.25);
+    if (n === 1) {   // small hesitant reps under a faint, uncertain target
+      ctx.save(); ctx.translate(W * .5, H * .5);
+      const tg = bentLine(91, len, 1.9); ctx.setLineDash([3, 6]); ctx.strokeStyle = C.ndim; ctx.globalAlpha = .3 + .12 * Math.sin(t * 1.7); ctx.lineWidth = 1; path(ctx, tg); ctx.stroke(); ctx.setLineDash([]);
+      ctx.globalAlpha = .75; ctx.fillStyle = C.ndim; ctx.font = F(500, 13); ctx.textAlign = 'center'; ctx.fillText('?', tg[45][0], tg[45][1] - 16);
+      const bAt = tt => .6 + .45 * Math.max(0, Math.sin(tt * 1.5)) * (.7 + .3 * Math.sin(tt * .37));
+      for (let k = 4; k >= 1; k--) { ctx.globalAlpha = .1 * (1 - k / 5); ctx.strokeStyle = C.on; path(ctx, bentLine(91, len, bAt(t - k * .12))); ctx.stroke(); }
+      const p = bentLine(91, len, bAt(t)); ctx.globalAlpha = 1; ctx.strokeStyle = C.on; ctx.lineWidth = 1.5; path(ctx, p); ctx.stroke();
+      glowDot(ctx, p[45][0], p[45][1], 3, .55, C.lime, null); ctx.restore();
+    } else if (n === 2) {   // bends, slows, holds before a marker, releases
+      const T = 6, u = (t % T) / T, hold = 1.75, mk = 2.05;
+      const b = u < .45 ? .25 + (hold - .25) * eo(u / .45) : u < .78 ? hold + .015 * Math.sin(t * 9) : hold - (hold - .25) * ease((u - .78) / .22);
+      ctx.save(); ctx.translate(W * .5, H * .5);
+      ctx.setLineDash([2, 5]); ctx.strokeStyle = C.ndim; ctx.globalAlpha = .55; ctx.lineWidth = 1; path(ctx, bentLine(91, len, mk)); ctx.stroke(); ctx.setLineDash([]);
+      const p = bentLine(91, len, b); ctx.globalAlpha = 1; ctx.strokeStyle = C.on; ctx.lineWidth = 1.5; path(ctx, p); ctx.stroke();
+      const near = cl((b - 1.0) / (hold - 1.0));
+      glowDot(ctx, p[45][0], p[45][1], 3, .25 + .75 * near, C.lime, null);
+      if (u > .45 && u < .78) { ctx.globalAlpha = .7; ctx.fillStyle = C.ndim; ctx.font = F(500, 10); ctx.textAlign = 'center'; ctx.fillText('HOLD', p[45][0], p[45][1] + 34); }
+      ctx.restore();
+    } else {   // seven days, no clear trend
+      const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'], cur = Math.floor(t / 1.1) % 7, gw = W / 7, amp = [.9, 1.05, .8, 1.15, 1.0, .85, 1.1];
+      for (let d = 0; d < 7; d++) {
+        const on = d === cur, ph = on ? Math.max(0, Math.sin((t % 1.1) / 1.1 * Math.PI)) : .6;
+        const p = bentLine(41, Math.min(gw * .8, H * .5), amp[d] * (.3 + .7 * ph) + .2, 0, .2);
+        ctx.save(); ctx.translate(gw * (d + .5), H * .56);
+        ctx.strokeStyle = C.on; ctx.globalAlpha = on ? 1 : .32; ctx.lineWidth = on ? 1.5 : 1; path(ctx, p); ctx.stroke();
+        if (on) glowDot(ctx, p[20][0], p[20][1], 2.6, .9, C.lime, null);
+        ctx.globalAlpha = on ? .95 : .45; ctx.fillStyle = on ? C.on : C.ndim; ctx.font = F(500, 10); ctx.textAlign = 'center'; ctx.fillText(days[d], 0, H * .3);
+        ctx.globalAlpha = .6; ctx.fillStyle = C.nrule; ctx.fillRect(-gw * .3, -H * .2, gw * .6, 1);
+        ctx.globalAlpha = on ? .9 : .4; ctx.fillStyle = on ? C.lime : C.ndim; ctx.fillRect(-gw * .3, -H * .2, gw * .6 * amp[d] / 1.2, 1);
+        ctx.restore();
+      }
+    }
+  });
+});
+
+/* ---------- 3 · pinned ribbon: a line becomes something you can read ---------- */
+(function ribbon() {
+  const sec = document.getElementById('vision'), cv = document.getElementById('ribbonCv'), prin = [...document.querySelectorAll('#prin div')];
+  let p = 0;
+  const upd = () => { const r = sec.getBoundingClientRect(); p = reduce ? 1 : cl(-r.top / (sec.offsetHeight - innerHeight)); prin.forEach(d => d.classList.toggle('on', p >= +d.dataset.at)); };
+  addEventListener('scroll', upd, { passive: true }); upd();
+  const s = stage(cv, (ctx, W, H, t) => {
+    const N = 161, mid = 80, len = Math.min(W * .95, H * 1.1);
+    const bend = .15 + 1.85 * ease(cl(p / .7)), width = Math.min(34, W * .07) * eo(cl((p - .08) / .3));
+    const pts = bentLine(N, len, bend, -.05 + .04 * Math.sin(t * .4));
+    ctx.save(); ctx.translate(W * .5, H * .58); ctx.lineCap = 'round';
+    if (width > .5) {   // twisting ribbon: two edges offset along the normal
+      const L = [], R = [];
+      for (let i = 0; i < N; i++) {
+        const a = pts[Math.min(N - 1, i + 1)], b = pts[Math.max(0, i - 1)], dx = a[0] - b[0], dy = a[1] - b[1], d = Math.hypot(dx, dy) || 1;
+        const tw = Math.cos((i / (N - 1) * 2 - 1) * Math.PI * 1.25 + t * .45) * width / 2;
+        L.push([pts[i][0] - dy / d * tw, pts[i][1] + dx / d * tw]); R.push([pts[i][0] + dy / d * tw, pts[i][1] - dx / d * tw]);
+      }
+      ctx.fillStyle = C.ink; ctx.globalAlpha = .045; ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]); L.forEach(q => ctx.lineTo(q[0], q[1])); for (let i = N - 1; i >= 0; i--) ctx.lineTo(R[i][0], R[i][1]); ctx.fill();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = .8; ctx.globalAlpha = .45; path(ctx, L); ctx.stroke(); path(ctx, R); ctx.stroke();
+      ctx.globalAlpha = .16; for (let i = 0; i < N; i += 4) { ctx.beginPath(); ctx.moveTo(L[i][0], L[i][1]); ctx.lineTo(R[i][0], R[i][1]); ctx.stroke(); }
+    }
+    ctx.globalAlpha = 1; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; path(ctx, pts); ctx.stroke();
+    const ra = cl((p - .4) / .12);
+    [[28, 'A'], [mid, 'B'], [132, 'C']].forEach(([i, lab], k) => {
+      const a = cl(ra * 3 - k); if (a <= 0) return;
+      glowDot(ctx, pts[i][0], pts[i][1], 3.4, a);
+      ctx.globalAlpha = a; ctx.fillStyle = C.ink; ctx.font = F(500, 11); ctx.textAlign = 'center'; ctx.fillText(lab, pts[i][0], pts[i][1] - 18);
+    });
+    const ma = cl((p - .56) / .12);
+    if (ma > 0) {
+      const k = pts[mid], a1 = Math.atan2(pts[mid - 30][1] - k[1], pts[mid - 30][0] - k[0]), a2 = Math.atan2(pts[mid + 30][1] - k[1], pts[mid + 30][0] - k[0]);
+      ctx.globalAlpha = .6 * ma; ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(k[0], k[1], 62, a2, a1); ctx.stroke(); ctx.setLineDash([]);
+      ctx.globalAlpha = ma; ctx.fillStyle = C.ink; ctx.font = F(500, 13); ctx.textAlign = 'center'; ctx.fillText(Math.round(bend * 180 / Math.PI) + '°', k[0], k[1] + 92);
+    }
+    const rg = cl((p - .7) / .12);
+    if (rg > 0) {
+      const y = -H * .44, x0 = -Math.min(W * .4, 260), x1 = -x0, fill = x0 + (x1 - x0) * rg * .82;
+      ctx.globalAlpha = rg * .9; ctx.fillStyle = C.dim; ctx.font = F(500, 10); ctx.textAlign = 'left'; ctx.fillText('RANGE THIS WEEK', x0, y - 10);
+      ctx.textAlign = 'right'; ctx.fillText('0° – ' + Math.round(bend * 180 / Math.PI) + '°', x1, y - 10);
+      ctx.fillStyle = C.ink; ctx.globalAlpha = rg * .15; ctx.fillRect(x0, y, x1 - x0, 1); ctx.globalAlpha = rg; ctx.fillRect(x0, y, fill - x0, 1);
+      glowDot(ctx, fill, y, 2.6, rg);
+    }
+    ctx.restore();
+  });
+  addEventListener('scroll', () => reduce && s.frame(), { passive: true });
+})();
+
+/* ---------- 4 · three directions ---------- */
+document.querySelectorAll('canvas.dv').forEach(cv => {
+  const n = +cv.dataset.dir;
+  stage(cv, (ctx, W, H, t) => {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = C.ink;
+    if (n === 1) {   // a shaky line that steadies
+      const cy = H * .5, M = 160;
+      for (let pass = 2; pass >= 0; pass--) {
+        ctx.globalAlpha = pass ? .1 : 1; ctx.lineWidth = 1.4; ctx.beginPath();
+        for (let i = 0; i <= M; i++) {
+          const u = i / M, x = W * (.06 + .86 * u), damp = Math.pow(1 - u, 1.6);
+          const nz = Math.sin(u * 47 + t * 3 + pass) * .55 + Math.sin(u * 89 - t * 2.1 + pass * 2) * .35 + Math.sin(u * 17 + t) * .3;
+          i ? ctx.lineTo(x, cy + nz * H * .2 * damp) : ctx.moveTo(x, cy + nz * H * .2 * damp);
+        }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = .35; ctx.lineWidth = 1; ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.moveTo(W * .06, cy); ctx.lineTo(W * .94, cy); ctx.stroke(); ctx.setLineDash([]);
+      glowDot(ctx, W * .92, cy, 3.2, 1);
+    } else if (n === 2) {   // an arc that widens with each repetition
+      const px = W * .42, py = H * .84, r = Math.min(W * .42, H * .68), reps = 6, T = 1.6, k = Math.floor(t / T) % reps, u = (t % T) / T, maxA = i => .45 + i * .19;
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= k; i++) { const a = i < k ? maxA(i) : maxA(i) * Math.sin(u * Math.PI); ctx.globalAlpha = i < k ? .15 + .12 * (i / reps) : .5; ctx.beginPath(); ctx.arc(px, py, r * (.5 + i * .08), -a, 0); ctx.stroke(); }
+      const a = -maxA(k) * Math.sin(u * Math.PI);
+      ctx.globalAlpha = .3; ctx.beginPath(); ctx.moveTo(px - r * .4, py); ctx.lineTo(px + r * 1.05, py); ctx.stroke();
+      ctx.globalAlpha = 1; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(px - r * .35, py); ctx.lineTo(px, py); ctx.lineTo(px + Math.cos(a) * r, py + Math.sin(a) * r); ctx.stroke();
+      glowDot(ctx, px, py, 3.4, 1);
+      ctx.globalAlpha = .7; ctx.fillStyle = C.dim; ctx.font = F(500, 10); ctx.textAlign = 'left'; ctx.fillText('REP ' + (k + 1), W * .06, H * .14);
+    } else {   // a sequence of movement traces, like frames of a stride
+      const FR = 8, gap = W * .1, head = (t * 1.6) % (FR + 3), cur = Math.floor(head);
+      for (let i = 0; i < FR; i++) {
+        const age = head - i; if (age < 0) continue;
+        const a = age < 1 ? age : Math.max(.12, 1 - (age - 1) * .22), ph = i / FR * Math.PI * 2;
+        const p = bentLine(61, H * .5, .55 + .75 * Math.abs(Math.sin(ph)), Math.PI / 2 - .25 + .5 * Math.sin(ph), .2);
+        ctx.save(); ctx.translate(W * .14 + i * gap, H * .5); ctx.globalAlpha = a; ctx.lineWidth = i === cur ? 1.6 : 1; path(ctx, p); ctx.stroke();
+        if (i === cur) glowDot(ctx, p[30][0], p[30][1], 3, 1);
+        ctx.restore();
+      }
+    }
+  });
+});
+
+/* ---------- 5 · waitlist background: the line drifts across ---------- */
+stage(document.getElementById('joinCv'), (ctx, W, H, t) => {
+  const len = Math.max(W, H) * 1.5, b = .9 + .5 * Math.sin(t * .25);
+  ctx.save(); ctx.translate(W * .64 + Math.sin(t * .11) * W * .08, H * .6); ctx.lineCap = 'round';
+  for (let k = 0; k < 10; k++) {
+    const p = bentLine(121, len, b - k * .07, -.12 + k * .012);
+    ctx.strokeStyle = C.on; ctx.globalAlpha = k ? .05 : .22; ctx.lineWidth = k ? 1 : 1.2; ctx.translate(0, 9); path(ctx, p); ctx.stroke();
+    if (!k) for (let i = 20; i < 121; i += 20) glowDot(ctx, p[i][0], p[i][1], 2, .25 + .35 * Math.max(0, Math.sin(t * 1.2 - i * .05)), C.lime, null);
+  }
+  ctx.restore();
+});
+
+/* ---------- waitlist: email first, then one optional follow-up ---------- */
+(function form() {
+  const f = document.getElementById('form'), msg = document.getElementById('msg'), go = document.getElementById('go'), gt = go.querySelector('.t');
+  let email = '';
+  const post = body => fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source: 'site', ...body }) })
+    .then(async r => { const j = await r.json().catch(() => ({})); if (!r.ok || !j.ok) throw new Error(j.error || 'Something went wrong. Try again in a moment.'); return j; });
+  f.addEventListener('submit', async e => {
+    e.preventDefault(); msg.textContent = '';
+    const em = f.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { msg.textContent = 'Enter a full email address, like name@example.com.'; f.email.focus(); return; }
+    go.disabled = true; gt.textContent = 'Joining…';
+    try {
+      const j = await post({ email: em, company: f.company.value });
+      email = em;
+      document.getElementById('ok').innerHTML = j.position ? `You're on the list. <em>#${j.position}</em>` : "You're on the list.";
+      document.getElementById('before').hidden = true; document.getElementById('after').hidden = false;
+      document.querySelector('#q1 .chip').focus({ preventScroll: true });
+    } catch (err) { msg.textContent = err.message; }
+    finally { go.disabled = false; gt.textContent = 'Join the waitlist'; }
+  });
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+  document.querySelectorAll('.chips').forEach(g => g.addEventListener('click', async e => {
+    const c = e.target.closest('.chip'); if (!c || !email) return;
+    g.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+    const field = g.dataset.field;
+    post({ email, [field]: c.dataset.v }).catch(() => {});   // follow-ups are optional
+    if (field === 'role') {
+      const rec = c.dataset.v === 'recovering';
+      document.getElementById('q2').hidden = !rec; document.getElementById('thanks').hidden = rec;
+      if (rec) document.querySelector('#q2 .chip').focus({ preventScroll: true });
+    } else document.getElementById('thanks').hidden = false;
+  }));
+})();
+
+/* ---------- 6 · closing: a line stretches across, then bends into a new shape ---------- */
+(function closing() {
+  const sec = document.getElementById('closing'), cv = document.getElementById('closeCv');
+  const ws = [...document.querySelectorAll('#closeH .w')], sub = document.getElementById('closeS'), cta = document.getElementById('closeC');
+  let p = 0;
+  const upd = () => {
+    const r = sec.getBoundingClientRect(); p = reduce ? 1 : cl(-r.top / (sec.offsetHeight - innerHeight));
+    ws.forEach((w, i) => w.style.setProperty('--o', cl((p - .32 - i * .045) / .12).toFixed(3)));
+    sub.style.setProperty('--o', cl((p - .7) / .12).toFixed(3)); cta.style.setProperty('--o', cl((p - .78) / .12).toFixed(3));
+  };
+  addEventListener('scroll', upd, { passive: true }); upd();
+  const s = stage(cv, (ctx, W, H, t) => {
+    const stretch = ease(cl(p / .35)), bend = 1.3 * ease(cl((p - .3) / .5)), N = 161, mid = 80;
+    const len = W * (.18 + .95 * stretch);
+    ctx.save(); ctx.translate(W * .5, H * .3 + bend * H * .05); ctx.strokeStyle = C.ink; ctx.lineCap = 'round';
+    for (let k = 1; k <= 4; k++) { ctx.globalAlpha = .06; ctx.lineWidth = 1; path(ctx, bentLine(N, len, -bend * (1 - k * .12), 0, .22)); ctx.stroke(); }
+    const pts = bentLine(N, len, -bend, 0, .22);
+    ctx.globalAlpha = .9; ctx.lineWidth = 1.4; path(ctx, pts); ctx.stroke();
+    glowDot(ctx, pts[0][0], pts[0][1], 3, stretch); glowDot(ctx, pts[N - 1][0], pts[N - 1][1], 3, stretch);
+    glowDot(ctx, pts[mid][0], pts[mid][1], 3.6, cl((p - .5) / .2) * (.75 + .25 * Math.sin(t * 2)));
+    ctx.restore();
+  });
+  addEventListener('scroll', () => s.frame(), { passive: true });
+})();
+</script>
+</body>
+</html>
