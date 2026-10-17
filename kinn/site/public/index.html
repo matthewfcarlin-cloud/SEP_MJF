@@ -140,19 +140,6 @@ a{color:inherit;text-decoration:none}
   .alert{top:auto;bottom:calc(150px + env(safe-area-inset-bottom,0px));width:100%}
 }
 
-/* photos: the product, as it'll look */
-.photos{display:grid;gap:12px;padding-block:120px 40px}
-.photos figure{margin:0;position:relative;overflow:hidden;background:#d9d7d2}
-.photos img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
-.photos figure.in img{transform:none}
-.photos .wide{aspect-ratio:1672/534}
-.photos .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
-.photos .two figure{aspect-ratio:880/402}
-.photos figcaption{position:absolute;left:14px;bottom:14px;max-width:calc(100% - 28px);padding:9px 12px;border-radius:10px;background:rgba(245,244,241,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;letter-spacing:.02em;color:#2b2b2b}
-.photos figcaption b{display:block;font-weight:600;color:#111;font-size:13px}
-.photos .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
-.photos .hd .big{font-size:clamp(2.6rem,7vw,6.5rem)}
-@media (max-width:760px){.photos figcaption{padding:6px 10px;left:10px;bottom:10px}.photos figcaption span{display:none}.photos .wide{aspect-ratio:4/3}.photos .wide img{object-position:78% 50%}.photos .two{grid-template-columns:minmax(0,1fr)}.photos .hd{flex-direction:column;align-items:flex-start}}
 /* learns */
 .learns{padding-block:100px 140px;display:grid;gap:56px}
 .learns .big{font-size:clamp(2.6rem,8vw,7.5rem)}
@@ -296,15 +283,6 @@ footer .small{color:#5a5a5a;font-size:11px}
         <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b><p>It learns your normal and tells you when to push, ease off, or rest.</p></div>
       </div>
     </div></div>
-  </div>
-</section>
-
-<section class="photos gut" id="product" aria-label="The Kinn strip and coin">
-  <div class="hd"><h2 class="big rv">Built like tape.</h2><p class="small rv" style="max-width:340px">Printed silver traces on stretchy athletic tape. A coin you keep, a strip you replace.</p></div>
-  <figure class="wide"><img src="img/p_knee.webp" alt="A Kinn strip on the side of a person's knee as they sit on a bench, with the coin snapped in." loading="lazy" width="1672" height="534"><figcaption><b>On the knee</b><span>Thin enough to forget under shorts.</span></figcaption></figure>
-  <div class="two">
-    <figure><img src="img/p_kit.webp" alt="A grey Kinn strip with zigzag silver traces lying flat next to its round metal coin." loading="lazy" width="880" height="402"><figcaption><b>Strip and coin</b><span>The coin pops out and moves to the next strip.</span></figcaption></figure>
-    <figure><img src="img/p_traces.webp" alt="Close-up illustration of fine silver traces with a zigzag section that stretches." loading="lazy" width="786" height="402"><figcaption><b>The traces</b><span>Zigzags stretch with every bend. That's the sensor.</span></figcaption></figure>
   </div>
 </section>
 
@@ -611,14 +589,6 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
       s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
     steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
   })();
-})();
-
-/* ---------- photos ease in ---------- */
-(function photos() {
-  const figs = document.querySelectorAll('.photos figure');
-  if (reduce || !('IntersectionObserver' in window)) { figs.forEach(f => f.classList.add('in')); return; }
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), {rootMargin: '0px 0px -10% 0px'});
-  figs.forEach(f => io.observe(f));
 })();
 
 /* ---------- reveal ---------- */

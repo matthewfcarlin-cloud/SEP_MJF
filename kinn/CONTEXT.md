@@ -189,8 +189,8 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
   - New hero captions.
   - The mission scroll text now reads "TRUST YOUR COMEBACK."
   - Flex steps: Wear it all day / Check every rep / Log how it feels / Know when to push. The alert now references your last flare-up.
-  - New "Built like tape" photo section (`img/p_knee`, `p_kit`, `p_traces`, from Matthew's generated images).
   - New "It learns your recovery" section.
   - Intake question changed to "Would an app that tells you when to push and when to rest help your recovery?" (still stored as `alert`).
+- A "Built like tape" section with Matthew's generated product photos was tried and removed (he didn't like them).
 - **The redesign doc** (paper/midnight/lime, hardware hidden) was tried and rejected. It's kept in `archive/website-v4/`.
 - **To validate:** what would actually make someone confident enough to push after an injury?
