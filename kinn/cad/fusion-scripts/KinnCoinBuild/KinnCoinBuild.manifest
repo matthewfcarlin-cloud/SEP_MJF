@@ -1,0 +1,8 @@
+{
+  "autodeskProduct": "Fusion",
+  "type": "script",
+  "author": "Kinn",
+  "description": {"": "KinnCoinBuild"},
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}
