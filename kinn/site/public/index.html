@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Kinn</title>
-<meta name="description" content="Kinn is building a thin strip you wear all day that tells you when you push an injury too far. Join the waitlist.">
+<meta name="description" content="Kinn is a thin strip you wear all day that checks your movement, tracks flare-ups and learns how your body responds, so you know when to push and when to rest. Join the waitlist.">
 <meta property="og:title" content="Kinn">
-<meta property="og:description" content="Know your limit. Join the waitlist.">
+<meta property="og:description" content="Get stronger. Push forward. Trust your comeback. Join the waitlist.">
 <meta property="og:image" content="/img/hero.webp">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Cpath d='M9 4l5 10v4L9 28M23 4l-5 10v4l5 10' stroke='%23ededed' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -89,7 +89,7 @@ a{color:inherit;text-decoration:none}
 .statement .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:40px;overflow:hidden}
 .statement .big{font-size:clamp(3.4rem,11vw,10.5rem);position:relative}
 .statement .big .ch{display:inline-block;color:var(--fg);will-change:opacity,filter,transform}
-.statement .big .w2{display:inline-block;letter-spacing:var(--ls,-.04em);transition:letter-spacing .08s linear}
+.statement .big .w2{display:inline-block;white-space:nowrap;letter-spacing:var(--ls,-.04em);transition:letter-spacing .08s linear}
 .statement.snap .big .w2{transition:letter-spacing .7s cubic-bezier(.2,1.6,.35,1)}
 .statement .big .w2 .ch{transition:text-shadow .5s}
 .statement.snap .big .w2 .ch{text-shadow:0 0 34px rgba(255,255,255,.55)}
@@ -139,6 +139,29 @@ a{color:inherit;text-decoration:none}
   .step.cur{opacity:1}
   .alert{top:auto;bottom:calc(150px + env(safe-area-inset-bottom,0px));width:100%}
 }
+
+/* photos: the product, as it'll look */
+.photos{display:grid;gap:12px;padding-block:120px 40px}
+.photos figure{margin:0;position:relative;overflow:hidden;background:#d9d7d2}
+.photos img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.4s cubic-bezier(.2,.8,.2,1)}
+.photos figure.in img{transform:none}
+.photos .wide{aspect-ratio:1672/534}
+.photos .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.photos .two figure{aspect-ratio:880/402}
+.photos figcaption{position:absolute;left:14px;bottom:14px;max-width:calc(100% - 28px);padding:9px 12px;border-radius:10px;background:rgba(245,244,241,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;letter-spacing:.02em;color:#2b2b2b}
+.photos figcaption b{display:block;font-weight:600;color:#111;font-size:13px}
+.photos .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
+.photos .hd .big{font-size:clamp(2.6rem,7vw,6.5rem)}
+@media (max-width:760px){.photos figcaption{padding:6px 10px;left:10px;bottom:10px}.photos figcaption span{display:none}.photos .wide{aspect-ratio:4/3}.photos .wide img{object-position:78% 50%}.photos .two{grid-template-columns:minmax(0,1fr)}.photos .hd{flex-direction:column;align-items:flex-start}}
+/* learns */
+.learns{padding-block:100px 140px;display:grid;gap:56px}
+.learns .big{font-size:clamp(2.6rem,8vw,7.5rem)}
+.learns .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;border-top:1px solid var(--line);padding-top:28px}
+.learns .cols div{display:grid;gap:10px;align-content:start}
+.learns .cols b{font-weight:500;font-size:clamp(1.2rem,2vw,1.6rem);letter-spacing:-.02em}
+.learns .cols p{color:var(--dim);font-size:14px;max-width:26em}
+.learns .note{color:#5a5a5a;font-size:11px}
+@media (max-width:760px){.learns .cols{grid-template-columns:minmax(0,1fr)}}
 
 /* join */
 .join{min-height:100vh;display:grid;align-content:center;gap:56px;padding-block:120px;border-top:1px solid var(--line)}
@@ -215,7 +238,7 @@ footer .small{color:#5a5a5a;font-size:11px}
 <body>
 
 <header class="top gut">
-  <a class="mark" href="#top" aria-label="Kinn home">Kinn<span>Recovery, measured</span></a>
+  <a class="mark" href="#top" aria-label="Kinn home">Kinn<span>Trust your comeback</span></a>
   <nav aria-label="Main"><a href="#mission">Mission</a><a href="#join" data-join>Join waitlist</a></nav>
 </header>
 
@@ -228,9 +251,9 @@ footer .small{color:#5a5a5a;font-size:11px}
     <div class="tick" aria-hidden="true"><span class="on" data-k="0">01 Coin</span><span data-k="1">02 Snap</span><span data-k="2">03 Strip</span></div>
     <div class="under gut">
       <div class="lines small">
-        <p class="on" data-in="0" data-out=".3">Rehab means moving an injury without knowing where the line is.<br><b>We're building the thing that tells you.</b></p>
+        <p class="on" data-in="0" data-out=".3">Healthy enough to try. Not sure how hard to push.<br><b>Kinn takes the guessing out of recovery.</b></p>
         <p data-in=".3" data-out=".6">A small coin holds the electronics.<br><b>It goes wherever your recovery does.</b></p>
-        <p data-in=".6" data-out="1.1">It snaps into a thin strip you can wear all day.<br><b>Push your recovery, not your injury.</b></p>
+        <p data-in=".6" data-out="1.1">It snaps into a thin strip you can wear all day.<br><b>Get stronger. Push forward. Trust your comeback.</b></p>
       </div>
       <span class="small cue" id="heroCue"><i></i>Scroll</span>
     </div>
@@ -248,8 +271,8 @@ footer .small{color:#5a5a5a;font-size:11px}
 
 <section class="statement gut" id="mission">
   <div class="stick">  <span class="caps small fade" data-o=".0,.08">Mission</span>
-  <h2 class="big" id="lit" aria-label="Know your limit."><span class="w1" aria-hidden="true">Know your</span><br><span class="w2" aria-hidden="true">limit.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
-  <p class="fade" data-o=".74,.86">Rehab works because you move the injured joint. Re-injury happens when you move it too far, too soon, and right now there's no way to see that line. <b>Nearly 1 in 3 young athletes who return to sport after ACL reconstruction tear an ACL again within two years.</b> Kinn is building a thin strip you wear all day. It measures how far your joint bends, counts how much you use it, and nudges your phone when you pass the limit you and your physical therapist set.</p>
+  <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
+  <p class="fade" data-o=".74,.86">Coming back from an injury means pushing a body you don't fully trust yet. Hold back and recovery drags on. Push too hard and you're back at the start. <b>Nearly 1 in 3 young athletes who return to sport after ACL reconstruction tear an ACL again within two years.</b> Kinn is a thin strip you wear all day. It checks your movement, keeps track of flare-ups, and learns how your body responds, so you know when to push and when to rest.</p>
   <p class="src fade" data-o=".8,.92">Paterno et al., Cincinnati Children's: 29.5% second ACL injury within 24 months of return to sport (n = 78).</p>
   </div>
 </section>
@@ -263,24 +286,43 @@ footer .small{color:#5a5a5a;font-size:11px}
         <span class="caps small">Knee flexion</span>
         <strong id="fDeg">0°</strong>
         <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
-        <span class="small">Your line · <b>120°</b></span>
+        <span class="small">Your line · <b>120°</b> · learned from your flare-ups</span>
       </div>
-      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">Kinn · now</span><b>Right knee hit <span id="fPeak">121°</span>.</b><span>Your line is 120°. Ease off and keep going.</span></div>
+      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">Kinn · now</span><b>Right knee hit <span id="fPeak">121°</span>.</b><span>Your last flare-up started past 120°. Ease off and keep going.</span></div>
       <div class="steps" id="steps">
-        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Thin as athletic tape. Under clothes, at work, on the slope.</p></div>
-        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>Set your line</b><p>You and your PT choose a safe range for this stage of recovery.</p></div>
-        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Move normally</b><p>Printed traces stretch as you bend. It counts every bend, not just your exercises.</p></div>
-        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Get a nudge</b><p>Go past your line and your phone buzzes. Ease off, keep going.</p></div>
+        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Thin as athletic tape. Under clothes, at work, on the court.</p></div>
+        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>Check every rep</b><p>It sees whether your exercises hit full range and move the way they should.</p></div>
+        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Log how it feels</b><p>Tap in pain or a flare-up. Kinn lines it up with how you moved that day.</p></div>
+        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b><p>It learns your normal and tells you when to push, ease off, or rest.</p></div>
       </div>
     </div></div>
   </div>
+</section>
+
+<section class="photos gut" id="product" aria-label="The Kinn strip and coin">
+  <div class="hd"><h2 class="big rv">Built like tape.</h2><p class="small rv" style="max-width:340px">Printed silver traces on stretchy athletic tape. A coin you keep, a strip you replace.</p></div>
+  <figure class="wide"><img src="img/p_knee.webp" alt="A Kinn strip on the side of a person's knee as they sit on a bench, with the coin snapped in." loading="lazy" width="1672" height="534"><figcaption><b>On the knee</b><span>Thin enough to forget under shorts.</span></figcaption></figure>
+  <div class="two">
+    <figure><img src="img/p_kit.webp" alt="A grey Kinn strip with zigzag silver traces lying flat next to its round metal coin." loading="lazy" width="880" height="402"><figcaption><b>Strip and coin</b><span>The coin pops out and moves to the next strip.</span></figcaption></figure>
+    <figure><img src="img/p_traces.webp" alt="Close-up illustration of fine silver traces with a zigzag section that stretches." loading="lazy" width="786" height="402"><figcaption><b>The traces</b><span>Zigzags stretch with every bend. That's the sensor.</span></figcaption></figure>
+  </div>
+</section>
+
+<section class="learns gut" id="learns">
+  <h2 class="big rv">It learns<br>your recovery.</h2>
+  <div class="cols">
+    <div class="rv"><span class="caps small">01</span><b>Checks your movement</b><p>Sees whether each rep hits full range and moves the way it should, so your exercises actually count.</p></div>
+    <div class="rv"><span class="caps small">02</span><b>Tracks flare-ups</b><p>Log pain in one tap. Kinn lines it up with how far and how much you moved, and spots what sets it off.</p></div>
+    <div class="rv"><span class="caps small">03</span><b>Knows your normal</b><p>It builds your personal baseline and gets sharper every day you wear it, so it can tell you when to push, ease off, or rest.</p></div>
+  </div>
+  <p class="note rv">The goal: fewer setbacks and a faster comeback. Kinn is in development and is not a medical device.</p>
 </section>
 
 <section class="join gut" id="join">
   <a class="cta rv" href="#join" data-join><span class="big">Join the<br>waitlist</span><span class="arrow" aria-hidden="true">→</span></a>
   <div class="row">
     <p class="small rv">Free. A few quick questions. We only write when there's something to try.</p>
-    <aside class="rv"><b>Early testers wanted.</b> Anyone rehabbing an injury who wants to keep moving without overdoing it, the physical therapists treating them, and athletes on their way back to the slope or the court. <span id="count"></span></aside>
+    <aside class="rv"><b>Early testers wanted.</b> Anyone coming back from an injury who wants to get stronger without guessing: weekend runners, lifters, and athletes on their way back to the slope or the court. <span id="count"></span></aside>
   </div>
 </section>
 
@@ -311,20 +353,20 @@ footer .small{color:#5a5a5a;font-size:11px}
           <option value="other-joint">Another joint</option>
           <option value="not-injured">Not injured</option>
         </select></div>
-      <fieldset class="q"><span class="n" id="alertN">04</span><legend>Would a buzz when you push an injury past a safe range help you?</legend>
+      <fieldset class="q"><span class="n" id="alertN">04</span><legend>Would an app that tells you when to push and when to rest help your recovery?</legend>
         <div class="chips">
           <label for="a1"><input type="radio" id="a1" name="alert" value="yes"><span>Yes</span></label>
           <label for="a2"><input type="radio" id="a2" name="alert" value="maybe"><span>Maybe</span></label>
           <label for="a3"><input type="radio" id="a3" name="alert" value="no"><span>Not really</span></label>
         </div></fieldset>
       <div class="q"><span class="n" id="noteN">05</span><label for="note">Anything we should know? <span class="small">(optional)</span></label>
-        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. shoulder injury, never sure how far is too far"></div></div>
+        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, nervous to start running again"></div></div>
       <div class="send"><button type="submit" class="go">Join the waitlist <span aria-hidden="true">→</span></button><p class="msg" id="msg" aria-live="polite"></p></div>
     </form>
     <div class="done" id="done" hidden aria-live="polite">
       <span class="caps small">You're in</span>
       <h2 class="big" id="pos">You're in.</h2>
-      <p class="small" style="max-width:420px">We'll write when early testing opens. Know someone with a knee injury? Send them this page.</p>
+      <p class="small" style="max-width:420px">We'll write when early testing opens. Know someone coming back from an injury? Send them this page.</p>
       <button type="button" class="go" data-close>Back to the site <span aria-hidden="true">→</span></button>
     </div>
   </div>
@@ -529,7 +571,7 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
     const st = cl((p - STR_A) / (STR_B - STR_A));
     const snap = p > STR_B;
     if (snap !== snapped) { snapped = snap; sec.classList.toggle('snap', snap); }
-    w2.style.setProperty('--ls', snap ? '-.04em' : (-.04 + st * .34).toFixed(3) + 'em');
+    w2.style.setProperty('--ls', snap ? '-.04em' : (-.04 + st * (innerWidth < 700 ? .06 : .2)).toFixed(3) + 'em');
     lim.style.setProperty('--lw', (cl((p - .42) / .12) * 100).toFixed(1) + '%');
     deg.textContent = (snap ? 120 : Math.round(st * 119)) + '°' + (snap ? ' · your line' : '');
     fades.forEach(([el, a, b]) => el.style.setProperty('--o', cl((p - a) / (b - a)).toFixed(3)));
@@ -569,6 +611,14 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
       s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
     steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
   })();
+})();
+
+/* ---------- photos ease in ---------- */
+(function photos() {
+  const figs = document.querySelectorAll('.photos figure');
+  if (reduce || !('IntersectionObserver' in window)) { figs.forEach(f => f.classList.add('in')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), {rootMargin: '0px 0px -10% 0px'});
+  figs.forEach(f => io.observe(f));
 })();
 
 /* ---------- reveal ---------- */

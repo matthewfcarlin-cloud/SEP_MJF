@@ -173,3 +173,24 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 - Mission heading: "KNOW YOUR LIMIT."
 - "How it works" is a rendered sequence (Oct 17, replaced an abstract canvas demo): the real knee strip slowly bends in a black void, scrubbed by scroll. Woven fibers and printed silver serpentine traces are visible; the traces flatten and stretch through the bend, signal pulses run toward the coin, and the coin's LED ring lights when flexion passes the line. A flexion readout and gauge (line at 120°) track the frames, and the phone-style alert appears past the line. The four steps (Wear it all day / Set your line / Move normally / Get a nudge) fill in white as you scroll, instead of cycling on a timer. Source: `blender/kinn_flex.py` (runs headless with `pip install bpy`), frames in `site/public/flex/`.
 - The intake now also asks "Would a buzz when you push an injury past a safe range help you?" (yes/maybe/no, stored as `alert`) and adds shoulder, ankle and other joints to the injury list.
+
+## 11. Direction update (Oct 17, 2026): "Trust your comeback"
+
+- **Who it's for:** anyone coming back from an injury, not just PT patients. The first story is athletes returning after ACL surgery. Matthew wants the app itself to give people the confidence to exercise, or to rest, without relying on a PT to set things up.
+- **Core problem:** people are healthy enough to try but not sure how hard to push. Holding back drags recovery out, and pushing too hard causes setbacks.
+- **Where the AI fits (Matthew's framing):**
+  - Validating movements: did each rep hit full range and move the way it should?
+  - Tracking flare-ups and pain: a one-tap log, lined up with strip data to spot what triggers flare-ups.
+  - Learning the person's normal: a baseline that gets sharper with every day of wear, used to say push, ease off, or rest.
+  - **Goal:** a shorter recovery and fewer setbacks. Claim this as a goal only; "not a medical device".
+- **Pitch angle (Continual Learning track):** the model learns from data only the strip captures (all-day bend, load, range), so its observations get more specific over time. Not just a journaling app on top of a language model.
+- **Site v3.1 changes:**
+  - Tagline: "Trust your comeback".
+  - New hero captions.
+  - The mission scroll text now reads "TRUST YOUR COMEBACK."
+  - Flex steps: Wear it all day / Check every rep / Log how it feels / Know when to push. The alert now references your last flare-up.
+  - New "Built like tape" photo section (`img/p_knee`, `p_kit`, `p_traces`, from Matthew's generated images).
+  - New "It learns your recovery" section.
+  - Intake question changed to "Would an app that tells you when to push and when to rest help your recovery?" (still stored as `alert`).
+- **The redesign doc** (paper/midnight/lime, hardware hidden) was tried and rejected. It's kept in `archive/website-v4/`.
+- **To validate:** what would actually make someone confident enough to push after an injury?
