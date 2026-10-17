@@ -75,7 +75,7 @@ if (process.env.DATABASE_URL) {
 /* ---------------- helpers ---------------- */
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/;
 const clean = (v, n = 200) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
-const ROLES = ['patient', 'pt', 'athlete', 'surgeon', 'other', ''];
+const ROLES = ['recovering', 'supporting', 'clinician', 'movement', 'patient', 'pt', 'athlete', 'surgeon', 'other', ''];
 const INJURIES = ['acl', 'meniscus', 'knee-replacement', 'patella', 'other-knee', 'shoulder', 'ankle', 'other-joint', 'not-injured', ''];
 const ALERTS = ['yes', 'maybe', 'no', ''];
 
@@ -102,7 +102,7 @@ async function welcomeEmail(to) {
       body: JSON.stringify({
         from: process.env.FROM_EMAIL, to,
         subject: "You're on the Kinn waitlist",
-        text: "Thanks for joining the Kinn waitlist.\n\nWe're building a thin, wearable way to measure knee recovery at home. You'll be among the first to hear when early testing opens.\n\n— The Kinn team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
+        text: "Thanks for joining the Kinn waitlist.\n\nWe're exploring new ways to help people understand their recovery and rebuild strength with more confidence. You'll get early access and updates as we build.\n\n— The Kinn team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
       }),
     });
   } catch (e) { console.error('welcome email failed', e.message); }
@@ -118,8 +118,8 @@ app.post('/api/waitlist', async (req, res) => {
     if (clean(b.company)) return res.json({ ok: true, position: null }); // honeypot field: bots fill it, people never see it
     const email = clean(b.email, 254).toLowerCase();
     if (!EMAIL_RE.test(email)) return res.status(400).json({ ok: false, error: 'Enter a full email address, like name@example.com.' });
-    const role = ROLES.includes(clean(b.role)) ? clean(b.role) : 'other';
-    const injury = INJURIES.includes(clean(b.injury)) ? clean(b.injury) : 'other-knee';
+    const role = ROLES.includes(clean(b.role)) ? clean(b.role) : '';
+    const injury = INJURIES.includes(clean(b.injury)) ? clean(b.injury) : '';
     const alert = ALERTS.includes(clean(b.alert)) ? clean(b.alert) : '';
     const row = { email, role, injury, alert, note: clean(b.note, 500), source: clean(b.source, 40), referrer: clean(req.get('referer') || '', 300), user_agent: clean(req.get('user-agent') || '', 300) };
     const out = await store.add(row);
