@@ -109,9 +109,10 @@ M_tape = woven('Tape', (0.014, 0.014, 0.016))
 M_pad = woven('Pad', (0.03, 0.03, 0.034))
 M_ink = trace_mat()
 M_logo, _ = pbsdf('Logo', (0.35, 0.35, 0.36), 0.6, 0.6)
-M_coin, _ = pbsdf('CoinCeramic', (0.86, 0.86, 0.85), 0.34, 0, {'Coat Weight': 0.5, 'Coat Roughness': 0.1})
-M_coinBase, _ = pbsdf('CoinBase', (0.04, 0.04, 0.045), 0.35, 0.3)
-M_engrave, _ = pbsdf('Engrave', (0.55, 0.56, 0.57), 0.5, 0)
+M_coin, _ = pbsdf('CoinCeramic', (0.012, 0.012, 0.014), 0.3, 0, {'Coat Weight': 1.0, 'Coat Roughness': 0.05})  # gloss-black ceramic dome
+M_chrome, _ = pbsdf('Chrome', (0.92, 0.92, 0.93), 0.08, 1.0)
+M_coinBase, _ = pbsdf('CoinBase', (0.10, 0.105, 0.115), 0.36, 0.7)  # graphite base
+M_engrave, _ = pbsdf('Engrave', (0.72, 0.72, 0.73), 0.45, 0)
 M_led, LED = emission('LED', (0.9, 0.95, 1.0), 1.0)
 
 # ---------------- flat geometry (rest pose, mm) ----------------
@@ -215,10 +216,15 @@ def coin_obj():
     me.materials.append(M_coin); me.materials.append(M_coinBase)
     for p in me.polygons:
         if p.center.z < 0.95 * MM: p.material_index = 1
-    bpy.ops.mesh.primitive_torus_add(major_radius=11.15 * MM, minor_radius=0.38 * MM, major_segments=128, minor_segments=12)
-    ring = bpy.context.active_object; ring.location = (0, 0, 1.05 * MM); ring.scale.z = 0.6
-    ring.data.materials.append(M_led); ring.parent = o
-    for p in ring.data.polygons: p.use_smooth = True
+    def torus(rad, minor, z, mat, sz=1.0):
+        bpy.ops.mesh.primitive_torus_add(major_radius=rad * MM, minor_radius=minor * MM, major_segments=160, minor_segments=12)
+        tr = bpy.context.active_object; tr.location = (0, 0, z * MM); tr.scale.z = sz
+        tr.data.materials.append(mat); tr.parent = o
+        for p in tr.data.polygons: p.use_smooth = True
+        return tr
+    torus(11.04, 0.14, 0.5, M_led, 0.8)      # light line around the side
+    torus(10.9, 0.2, 1.0, M_chrome)          # polished chrome seam
+    torus(6.6, 0.07, H + 0.02, M_chrome)     # fine chrome ring on top
     td = bpy.data.curves.new('ct', 'FONT'); td.body = 'kinn'; td.size = 4.2 * MM
     td.align_x = 'CENTER'; td.align_y = 'CENTER'; td.extrude = 0.03 * MM
     t = bpy.data.objects.new('ct', td); col.objects.link(t); t.location = (0, 0, H * MM + 0.01 * MM); t.parent = o
