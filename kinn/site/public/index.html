@@ -84,14 +84,23 @@ a{color:inherit;text-decoration:none}
 .film .cap{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
 .film .meter{font-variant-numeric:tabular-nums;color:var(--fg)}
 
-/* statement */
-.statement{min-height:100vh;display:grid;align-content:center;justify-items:center;text-align:center;gap:48px;padding-block:120px}
-.statement .big{font-size:clamp(3.4rem,11vw,10.5rem)}
-.statement .big .wd{display:inline-block;color:var(--faint);transition:color .6s}
-.statement .big .wd.lit{color:var(--fg)}
+/* statement: pinned; scroll fills each letter, then stretches "limit." until it passes the line and snaps back */
+.statement{height:240vh;position:relative}
+.statement .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:40px;overflow:hidden}
+.statement .big{font-size:clamp(3.4rem,11vw,10.5rem);position:relative}
+.statement .big .ch{display:inline-block;color:var(--fg);will-change:opacity,filter,transform}
+.statement .big .w2{display:inline-block;letter-spacing:var(--ls,-.04em);transition:letter-spacing .08s linear}
+.statement.snap .big .w2{transition:letter-spacing .7s cubic-bezier(.2,1.6,.35,1)}
+.statement .big .w2 .ch{transition:text-shadow .5s}
+.statement.snap .big .w2 .ch{text-shadow:0 0 34px rgba(255,255,255,.55)}
+.statement .lim{position:absolute;left:50%;bottom:-.12em;height:1px;width:var(--lw,0);transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--dim) 12%,var(--dim) 88%,transparent);transition:background .3s}
+.statement .lim span{position:absolute;right:0;top:10px;font-size:11px;letter-spacing:.14em;color:var(--dim);font-weight:400;white-space:nowrap;font-variant-numeric:tabular-nums}
+.statement.snap .lim{background:linear-gradient(90deg,transparent,#fff 12%,#fff 88%,transparent);box-shadow:0 0 18px rgba(255,255,255,.5)}
+.statement.snap .lim span{color:var(--fg)}
 .statement p{max-width:640px;color:var(--dim);font-size:clamp(15px,1.4vw,17px)}
 .statement p b{color:var(--fg);font-weight:500}
 .statement .src{font-size:11px;color:#5a5a5a;max-width:560px}
+.statement .fade{opacity:var(--o,0);transform:translateY(calc((1 - var(--o,0)) * 18px))}
 
 /* how: rendered strip flexes with scroll; steps fill in as you go */
 .flex{position:relative;height:420vh}
@@ -99,16 +108,16 @@ a{color:inherit;text-decoration:none}
 .flex canvas,.flex .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .flex canvas{opacity:0;transition:opacity .6s}.flex.live canvas{opacity:1}
 .flex .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,0) 22%,rgba(0,0,0,0) 62%,rgba(0,0,0,.92));pointer-events:none}
-.flex .hud{position:absolute;inset:0;z-index:2;pointer-events:none}
+.flex .hud{position:absolute;inset:0;z-index:2;pointer-events:none}.flex .hud .box{position:relative;height:100%}
 .read{position:absolute;display:grid;gap:4px}
 .read b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
-.r-top{left:0;top:calc(76px + env(safe-area-inset-top,0px))}
+.r-top{left:0;top:calc(108px + env(safe-area-inset-top,0px))}
 .r-top strong{font-weight:300;font-size:clamp(3.2rem,7vw,6rem);letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s,text-shadow .3s}
 .flex.over .r-top strong{color:#fff;text-shadow:0 0 28px rgba(255,255,255,.45)}
 .gauge{width:min(220px,40vw);height:2px;background:#2a2a2a;position:relative;margin-top:6px}
 .gauge i{position:absolute;left:0;top:0;bottom:0;background:var(--fg);width:0}
 .gauge em{position:absolute;top:-6px;bottom:-6px;width:1px;background:var(--fg);left:88.9%}
-.alert{position:absolute;right:0;top:calc(76px + env(safe-area-inset-top,0px));width:min(300px,62%);display:grid;gap:4px;padding:14px 16px;border-radius:16px;background:var(--fg);color:#000;font-size:13px;line-height:1.35;opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.alert{position:absolute;right:0;top:calc(108px + env(safe-area-inset-top,0px));width:min(300px,62%);display:grid;gap:4px;padding:14px 16px;border-radius:16px;background:var(--fg);color:#000;font-size:13px;line-height:1.35;opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)}
 .alert .caps{font-size:10px;color:#555}
 .alert b{font-weight:600;font-size:15px}
 .flex.over .alert{opacity:1;transform:none}
@@ -198,7 +207,7 @@ footer .small{color:#5a5a5a;font-size:11px}
   html{scroll-behavior:auto}
   .hero .under .cue i{animation:none}
   .hero .lines p{transition:none}
-  .rv,.film .words h2,.statement .big .wd,.step,.alert{transition:none;animation:none}
+  .rv,.film .words h2,.statement .big .ch,.step,.alert{transition:none;animation:none}
   .js .rv.pending{opacity:1;transform:none}
 }
 </style>
@@ -238,17 +247,18 @@ footer .small{color:#5a5a5a;font-size:11px}
 </section>
 
 <section class="statement gut" id="mission">
-  <span class="caps small rv">Mission</span>
-  <h2 class="big" id="lit" aria-label="Know your limit."><span class="wd">Know your</span><br><span class="wd">limit.</span></h2>
-  <p class="rv">Rehab works because you move the injured joint. Re-injury happens when you move it too far, too soon, and right now there's no way to see that line. <b>Nearly 1 in 3 young athletes who return to sport after ACL reconstruction tear an ACL again within two years.</b> Kinn is building a thin strip you wear all day. It measures how far your joint bends, counts how much you use it, and nudges your phone when you pass the limit you and your physical therapist set.</p>
-  <p class="src rv">Paterno et al., Cincinnati Children's: 29.5% second ACL injury within 24 months of return to sport (n = 78).</p>
+  <div class="stick">  <span class="caps small fade" data-o=".0,.08">Mission</span>
+  <h2 class="big" id="lit" aria-label="Know your limit."><span class="w1" aria-hidden="true">Know your</span><br><span class="w2" aria-hidden="true">limit.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
+  <p class="fade" data-o=".74,.86">Rehab works because you move the injured joint. Re-injury happens when you move it too far, too soon, and right now there's no way to see that line. <b>Nearly 1 in 3 young athletes who return to sport after ACL reconstruction tear an ACL again within two years.</b> Kinn is building a thin strip you wear all day. It measures how far your joint bends, counts how much you use it, and nudges your phone when you pass the limit you and your physical therapist set.</p>
+  <p class="src fade" data-o=".8,.92">Paterno et al., Cincinnati Children's: 29.5% second ACL injury within 24 months of return to sport (n = 78).</p>
+  </div>
 </section>
 
 <section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
   <div class="pin">
     <img class="poster" src="flex/k_001.webp" alt="" width="1440" height="810">
     <canvas id="flexCv" role="img" aria-label="Close-up of the woven tape and printed silver traces as the knee strip slowly bends. Signals run along the traces to the coin, and an alert appears when the bend passes the set limit."></canvas>
-    <div class="hud gut">
+    <div class="hud gut"><div class="box">
       <div class="read r-top">
         <span class="caps small">Knee flexion</span>
         <strong id="fDeg">0°</strong>
@@ -262,7 +272,7 @@ footer .small{color:#5a5a5a;font-size:11px}
         <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Move normally</b><p>Printed traces stretch as you bend. It counts every bend, not just your exercises.</p></div>
         <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Get a nudge</b><p>Go past your line and your phone buzzes. Ease off, keep going.</p></div>
       </div>
-    </div>
+    </div></div>
   </div>
 </section>
 
@@ -494,11 +504,37 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
   addEventListener('scroll', read, {passive: true}); addEventListener('resize', fit); fit(); read();
 })();
 
-/* ---------- statement: words light up as they cross the middle ---------- */
+/* ---------- statement: scroll fills letters, stretches "limit." past the line, snaps back ---------- */
 (function lit() {
-  const wds = [...document.querySelectorAll('#lit .wd')];
-  const upd = () => wds.forEach(w => { const r = w.getBoundingClientRect(); w.classList.toggle('lit', reduce || r.top < innerHeight * 0.62); });
-  addEventListener('scroll', upd, {passive: true}); upd();
+  const sec = document.getElementById('mission'), h = document.getElementById('lit');
+  const w2 = h.querySelector('.w2'), lim = h.querySelector('.lim'), deg = document.getElementById('limDeg');
+  const fades = [...sec.querySelectorAll('.fade')].map(el => [el, ...el.dataset.o.split(',').map(Number)]);
+  const chars = [];
+  h.querySelectorAll('.w1,.w2').forEach(w => {
+    const t = w.textContent; w.textContent = '';
+    for (const c of t) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? '\u00a0' : c; w.appendChild(s); chars.push(s); }
+  });
+  const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const N = chars.length, FILL_END = .5, STR_A = .5, STR_B = .7;
+  let snapped = false;
+  const upd = () => {
+    const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
+    const p = reduce ? 1 : cl(-r.top / span);
+    chars.forEach((c, i) => {
+      const k = cl((p / FILL_END) * (N + 4) - i, 0, 4) / 4;          // each letter takes ~4 slots to settle
+      c.style.opacity = (.16 + .84 * k).toFixed(3);
+      c.style.filter = k < 1 ? `blur(${((1 - k) * 10).toFixed(1)}px)` : 'none';
+      c.style.transform = `translateY(${((1 - k) * .22).toFixed(3)}em)`;
+    });
+    const st = cl((p - STR_A) / (STR_B - STR_A));
+    const snap = p > STR_B;
+    if (snap !== snapped) { snapped = snap; sec.classList.toggle('snap', snap); }
+    w2.style.setProperty('--ls', snap ? '-.04em' : (-.04 + st * .34).toFixed(3) + 'em');
+    lim.style.setProperty('--lw', (cl((p - .42) / .12) * 100).toFixed(1) + '%');
+    deg.textContent = (snap ? 120 : Math.round(st * 119)) + '°' + (snap ? ' · your line' : '');
+    fades.forEach(([el, a, b]) => el.style.setProperty('--o', cl((p - a) / (b - a)).toFixed(3)));
+  };
+  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', upd); upd();
 })();
 
 /* ---------- flex: scroll bends the rendered strip; steps fill as you go ---------- */
