@@ -343,8 +343,8 @@ footer .small{color:#5a5a5a;font-size:11px}
     </form>
     <div class="done" id="done" hidden aria-live="polite">
       <span class="caps small">You're in</span>
-      <h2 class="big" id="pos">You're in.</h2>
-      <p class="small" style="max-width:420px">We'll write when early testing opens. Know someone coming back from an injury? Send them this page.</p>
+      <h2 class="big" id="pos">Thank you.</h2>
+      <p class="small" style="max-width:420px">We'll keep in touch. Know someone coming back from an injury? Send them this page.</p>
       <button type="button" class="go" data-close>Back to the site <span aria-hidden="true">→</span></button>
     </div>
   </div>
@@ -390,8 +390,6 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
 
   const S = 0.04; // scene units per mm
   const chrome = new THREE.MeshPhysicalMaterial({color: 0xd8d8d8, metalness: 1, roughness: 0.09, iridescence: 0.7, iridescenceIOR: 1.5, iridescenceThicknessRange: [250, 800], clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.5});
-  const darkChrome = new THREE.MeshPhysicalMaterial({color: 0x8e8e8e, metalness: 1, roughness: 0.2, iridescence: 0.2, iridescenceIOR: 1.4, iridescenceThicknessRange: [300, 700], envMapIntensity: 1.2});
-  const ceramic = new THREE.MeshPhysicalMaterial({color: 0xf1f1f1, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.1});
   const ringMat = new THREE.MeshBasicMaterial({color: 0xffffff, toneMapped: false});
 
   // the strip, lying flat
@@ -399,7 +397,79 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
   const shape = new THREE.Shape(KNEE.ext.map(V)); KNEE.holes.forEach(h => shape.holes.push(new THREE.Path(h.map(V))));
   const stripGeo = new THREE.ExtrudeGeometry(shape, {depth: 1.2, bevelEnabled: true, bevelThickness: 0.8, bevelSize: 1.2, bevelSegments: 4, curveSegments: 6});
   stripGeo.scale(S, S, S); stripGeo.rotateX(-Math.PI / 2);
-  const strip = new THREE.Mesh(stripGeo, darkChrome); strip.receiveShadow = true; scene.add(strip);
+  // printed traces → mask texture (R = ink, G = distance from the dock, 0..1), in the strip's mm space
+  const traceTex = (() => {
+    const K = 8, cw = 128 * K, ch = 272 * K, c = document.createElement('canvas'); c.width = cw; c.height = ch;
+    const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, cw, ch); g.lineCap = 'round'; g.lineJoin = 'round';
+    const X = x => (x + 64) * K, Y = y => (136 - y) * K;
+    for (const sx of [-1, 1]) {
+      const base = [[sx * 4, 36]];
+      for (let i = 0; i <= 40; i++) { const a = Math.PI / 2 - Math.PI * i / 40; base.push([sx * 23 * Math.cos(a) * (0.6 + 0.4 * Math.cos(a)) + sx * 3, -6 + 28 * Math.sin(a)]); }
+      base.push([sx * 26, -40], [sx * 40, -100]);
+      const cum = [0]; for (let i = 1; i < base.length; i++) cum.push(cum[i - 1] + Math.hypot(base[i][0] - base[i - 1][0], base[i][1] - base[i - 1][1]));
+      const L = cum[cum.length - 1];
+      const at = d => { let i = 1; while (i < cum.length - 1 && cum[i] < d) i++; const u = (d - cum[i - 1]) / ((cum[i] - cum[i - 1]) || 1), a = base[i - 1], b = base[i], dx = b[0] - a[0], dy = b[1] - a[1], n = Math.hypot(dx, dy) || 1; return [a[0] + dx * u, a[1] + dy * u, -dy / n, dx / n]; };
+      for (const lane of [-1.3, 1.3]) {
+        let prev = null;
+        for (let d = 0; d <= L; d += 0.2) {
+          const [x, y, nx, ny] = at(d), o = lane + 0.9 * Math.sin(2 * Math.PI * d / 3.4), pt = [X(x + nx * o), Y(y + ny * o)];
+          if (prev) { g.strokeStyle = `rgb(255,${Math.round(d / L * 255)},0)`; g.lineWidth = 0.55 * K; g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(pt[0], pt[1]); g.stroke(); }
+          prev = pt;
+        }
+      }
+      const e = base[base.length - 1]; g.fillStyle = 'rgb(255,255,0)'; g.beginPath(); g.arc(X(e[0]), Y(e[1]), 1.8 * K, 0, 7); g.fill();
+    }
+    const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
+  })();
+  // woven tape: threads weave themselves in, then silver traces print and light up after the snap
+  const U = {uWeave: {value: 0}, uPrint: {value: 0}, uE: {value: 0}, uSince: {value: 0}, uT: {value: 0}, uTrace: {value: traceTex}};
+  const fabric = new THREE.MeshPhysicalMaterial({color: 0xffffff, roughness: 0.84, metalness: 0, sheen: 0.4, sheenRoughness: 0.5, sheenColor: new THREE.Color(0x4a4f58), envMapIntensity: 0.35, side: THREE.DoubleSide});
+  fabric.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, U);
+    sh.vertexShader = 'varying vec2 vKUv;\n' + sh.vertexShader.replace('#include <uv_vertex>', '#include <uv_vertex>\n  vKUv = uv;');
+    sh.fragmentShader = `varying vec2 vKUv;
+uniform float uWeave, uPrint, uE, uSince, uT; uniform sampler2D uTrace;
+float kh(float n){ return fract(sin(n * 127.1) * 43758.5453); }
+vec3 kBump(vec3 p, vec3 n, float h){ vec3 sx = dFdx(p), sy = dFdy(p); vec3 r1 = cross(sy, n), r2 = cross(n, sx); float det = dot(sx, r1); vec2 dh = vec2(dFdx(h), dFdy(h)); return normalize(abs(det) * n - sign(det) * (dh.x * r1 + dh.y * r2)); }
+` + sh.fragmentShader
+      .replace('#include <map_fragment>', `#include <map_fragment>
+  vec2 q = vKUv / .9; vec2 id = floor(q); vec2 f = fract(q);
+  float ay = clamp((vKUv.y + 136.) / 272., 0., 1.), ax = clamp((vKUv.x + 64.) / 128., 0., 1.);
+  if (mod(id.x, 2.) > .5) ay = 1. - ay; if (mod(id.y, 2.) > .5) ax = 1. - ax;
+  float wGrow = (uWeave - kh(id.x + 3.1) * .3) / .45, fGrow = (uWeave - .3 - kh(id.y + 7.7) * .25) / .4;
+  float warpOn = step(ay, wGrow), weftOn = step(ax, fGrow);
+  float wp = sin(3.14159 * f.x), fp = sin(3.14159 * f.y);
+  bool warpTop = mod(id.x + id.y, 2.) < .5;
+  float topOn = warpTop ? warpOn : weftOn, botOn = warpTop ? weftOn : warpOn;
+  float topP = warpTop ? wp : fp, botP = warpTop ? fp : wp;
+  float along = warpTop ? f.y : f.x;
+  float kH = 0., shade = 0., tip = 0.;
+  if (topOn > .5 && topP > .14) { kH = topP * (.75 + .25 * sin(3.14159 * along)); shade = 1.; tip = warpTop ? wGrow - ay : fGrow - ax; }
+  else if (botOn > .5 && botP > .14) { kH = botP * .55; shade = .72; tip = warpTop ? fGrow - ax : wGrow - ay; }
+  else if (uWeave > .985) { kH = 0.; shade = .35; tip = 1.; }
+  else discard;
+  vec2 fq = floor(vKUv * (warpTop == (topOn > .5) ? vec2(22., 3.) : vec2(3., 22.)));
+  float fib = .86 + .28 * fract(sin(dot(fq, vec2(12.9898, 78.233))) * 43758.5453);
+  diffuseColor.rgb = vec3(.07, .072, .078) * shade * (.62 + .55 * kH) * fib;
+  vec4 tm = texture2D(uTrace, vec2((vKUv.x + 64.) / 128., (vKUv.y + 136.) / 272.));
+  float kTr = smoothstep(.35, .7, tm.r) * uPrint, kG = tm.g;
+  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.42, .43, .45), kTr);
+  kH = mix(kH, 1.15, kTr);
+  float kTip = (1. - smoothstep(0., .035, tip)) * (1. - smoothstep(.9, 1., uWeave));`)
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n  roughnessFactor = mix(roughnessFactor, .42, kTr);')
+      .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\n  metalnessFactor = mix(metalnessFactor, 1., kTr);')
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n  normal = kBump(-vViewPosition, normal, kH * .016);')
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+  float front = uSince * .85;
+  float lit = uE * (1. - smoothstep(front - .02, front + .02, kG));
+  float band = uE * exp(-pow((kG - front) / .035, 2.)) * step(uSince, 1.6);
+  float pulse = pow(max(0., sin((kG * 9. - uT * 1.8) * 3.14159)), 14.);
+  float flick = .85 + .15 * sin(uT * 37. + kG * 80.);
+  totalEmissiveRadiance += vec3(.84, .93, 1.) * kTr * (lit * (.18 + 2.2 * pulse) * flick + band * 5.);
+  totalEmissiveRadiance += vec3(.75, .8, .9) * kTip * kH * kH * .55 * (1. - kTr);`);
+  };
+  const edgeMat = new THREE.MeshStandardMaterial({color: 0x1b1c1f, roughness: 0.9});
+  const strip = new THREE.Mesh(stripGeo, [fabric, edgeMat]); strip.receiveShadow = true; scene.add(strip);
   const TOP = 2.8 * S; // tape top surface incl. bevel
   const D = new THREE.Vector3(0, TOP, -42 * S); // dock centre
   // dock: raised ring + three contacts
@@ -414,13 +484,18 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
   const R = 11 * S, H = 3.2 * S;
   const baseProf = [[0.001, 0], [R - 0.6 * S, 0], [R, 0.5 * S], [R, 1.0 * S]].map(V);
   const domeProf = [[R, 1.0 * S]]; for (let i = 1; i <= 24; i++) { const t = i / 24; domeProf.push([R - 3.5 * S * (1 - Math.cos(t * Math.PI / 2)), 1.0 * S + 2.2 * S * Math.sin(t * Math.PI / 2)]); } domeProf.push([0.001, H]);
-  const cb = new THREE.Mesh(new THREE.LatheGeometry(baseProf, 96), chrome); cb.castShadow = true; coin.add(cb);
-  const cd = new THREE.Mesh(new THREE.LatheGeometry(domeProf.map(V), 96), ceramic); cd.castShadow = true; coin.add(cd);
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(R - 0.12 * S, 0.24 * S, 12, 120), ringMat); ring.rotation.x = Math.PI / 2; ring.position.y = 1.05 * S; ring.scale.z = 0.6; coin.add(ring);
-  // engraved wordmark on top
-  const tc = document.createElement('canvas'); tc.width = tc.height = 256; const tg = tc.getContext('2d'); tg.fillStyle = 'rgba(120,120,120,.85)'; tg.font = '600 62px Manrope, Helvetica, Arial, sans-serif'; tg.textAlign = 'center'; tg.textBaseline = 'middle'; tg.fillText('kinn', 128, 134);
+  // coin: gloss-black ceramic dome, graphite base, a polished chrome line at the seam, a light line around the side
+  const graphite = new THREE.MeshPhysicalMaterial({color: 0x2a2c30, metalness: 0.6, roughness: 0.38, envMapIntensity: 0.7});
+  const blackCeramic = new THREE.MeshPhysicalMaterial({color: 0x050506, roughness: 0.35, clearcoat: 0.9, clearcoatRoughness: 0.06, envMapIntensity: 0.55});
+  const cb = new THREE.Mesh(new THREE.LatheGeometry(baseProf, 96), graphite); cb.castShadow = true; coin.add(cb);
+  const cd = new THREE.Mesh(new THREE.LatheGeometry(domeProf.map(V), 96), blackCeramic); cd.castShadow = true; coin.add(cd);
+  const seam = new THREE.Mesh(new THREE.TorusGeometry(R - 0.1 * S, 0.2 * S, 16, 160), chrome); seam.rotation.x = Math.PI / 2; seam.position.y = 1.0 * S; coin.add(seam);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(R + 0.04 * S, 0.12 * S, 10, 160), ringMat); ring.rotation.x = Math.PI / 2; ring.position.y = 0.5 * S; ring.scale.z = 0.8; coin.add(ring);
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(6.6 * S, 0.07 * S, 8, 140), chrome); halo.rotation.x = Math.PI / 2; halo.position.y = H + 0.02 * S; coin.add(halo);
+  // wordmark on top
+  const tc = document.createElement('canvas'); tc.width = tc.height = 256; const tg = tc.getContext('2d'); tg.fillStyle = 'rgba(214,214,214,.9)'; tg.font = '600 60px Manrope, Helvetica, Arial, sans-serif'; tg.textAlign = 'center'; tg.textBaseline = 'middle'; tg.fillText('kinn', 128, 134);
   const ttex = new THREE.CanvasTexture(tc); ttex.encoding = THREE.sRGBEncoding;
-  const word = new THREE.Mesh(new THREE.CircleGeometry(7 * S, 48), new THREE.MeshStandardMaterial({map: ttex, transparent: true, roughness: 0.5, depthWrite: false})); word.rotation.x = -Math.PI / 2; word.position.y = H + 0.002; coin.add(word);
+  const word = new THREE.Mesh(new THREE.CircleGeometry(6.2 * S, 48), new THREE.MeshStandardMaterial({map: ttex, transparent: true, roughness: 0.4, depthWrite: false})); word.rotation.x = -Math.PI / 2; word.position.y = H + 0.002; coin.add(word);
 
   // light for soft contact shadow under the coin
   const key = new THREE.DirectionalLight(0xffffff, 0.6); key.position.set(-2, 8, 4); key.target.position.copy(D); key.castShadow = true;
@@ -473,7 +548,11 @@ document.getElementById('posterPath').setAttribute('d', pathD(KNEE.ext) + pathD(
     if (!settled && wasSnapped) { wasSnapped = false; snapT = -1; }
     const since = snapT < 0 ? 99 : (now - snapT) / 1000;
     const burst = Math.exp(-since * 4);
-    ringMat.color.setScalar(lerp(1.2, 1.2 + 9 * burst, settled ? 1 : 0));
+    ringMat.color.setScalar(settled ? 2.2 + 9 * burst : 0.55 + 0.25 * Math.sin(t * 2));
+    // tape: weave in on load + scroll, print traces, electrify after the snap
+    U.uWeave.value = reduce ? 1 : ss(seg(p, 0.26, 0.54));
+    U.uPrint.value = ss(seg(U.uWeave.value, 0.82, 1));
+    U.uE.value = settled ? 1 : 0; U.uSince.value = settled ? since : 0; U.uT.value = t;
     wave.material.opacity = settled ? 0.7 * Math.exp(-since * 3) : 0;
     const wr = (12.5 + 60 * (1 - Math.exp(-since * 3.2))) * S; wave.scale.set(wr, wr, 1);
     flashEl.style.opacity = settled ? (0.9 * burst).toFixed(3) : 0;
@@ -618,8 +697,7 @@ form.addEventListener('submit', async e => {
     const j = await res.json().catch(() => ({}));
     if (!res.ok || !j.ok) throw new Error(j.error || 'Something went wrong. Try again in a minute.');
     form.hidden = true; document.getElementById('done').hidden = false;
-    document.getElementById('pos').textContent = j.position ? `You're #${j.position}.` : "You're in.";
-    dlg.querySelector('.done .go').focus();
+        dlg.querySelector('.done .go').focus();
   } catch (err) { msg.className = 'msg err'; msg.textContent = err.message === 'Failed to fetch' ? "Couldn't reach the server. Check your connection and try again." : err.message; }
 });
 fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) document.getElementById('count').textContent = `${j.count.toLocaleString()} already on the list.`; }).catch(() => {});
