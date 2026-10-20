@@ -5,12 +5,14 @@
 //   ADMIN_TOKEN      secret for /admin/waitlist.csv and /admin/stats (required to read the list)
 //   RESEND_API_KEY   optional: send a welcome email through Resend
 //   FROM_EMAIL       optional: sender for the welcome email, e.g. "Kinn <hello@yourdomain.com>"
+//   ANTHROPIC_API_KEY optional: lets Claude read typed check-ins on /learn (the page falls back to reading them on the device)
 //   PORT             set by Railway
 
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { checkin } = require('./checkin');
 
 const app = express();
 app.set('trust proxy', true);
@@ -79,14 +81,18 @@ const ROLES = ['recovering', 'supporting', 'clinician', 'movement', 'patient', '
 const INJURIES = ['acl', 'meniscus', 'knee-replacement', 'patella', 'other-knee', 'shoulder', 'ankle', 'other-joint', 'not-injured', ''];
 const ALERTS = ['yes', 'maybe', 'no', ''];
 
-const hits = new Map();
-function rateLimited(ip) {
-  const now = Date.now(), win = 10 * 60 * 1000, max = 8;
-  const arr = (hits.get(ip) || []).filter(t => now - t < win);
-  arr.push(now); hits.set(ip, arr);
-  if (hits.size > 5000) hits.clear();
-  return arr.length > max;
+function rateLimiter(max, win = 10 * 60 * 1000) {
+  const hits = new Map();
+  return ip => {
+    const now = Date.now();
+    const arr = (hits.get(ip) || []).filter(t => now - t < win);
+    arr.push(now); hits.set(ip, arr);
+    if (hits.size > 5000) hits.clear();
+    return arr.length > max;
+  };
 }
+const rateLimited = rateLimiter(8);
+const checkinLimited = rateLimiter(30);
 function tokenOk(req) {
   const want = process.env.ADMIN_TOKEN; if (!want) return false;
   const got = String(req.query.token || req.get('x-admin-token') || '');
@@ -129,6 +135,11 @@ app.post('/api/waitlist', async (req, res) => {
     console.error(e);
     res.status(500).json({ ok: false, error: "Something went wrong on our side. Try again in a minute." });
   }
+});
+
+app.post('/api/checkin', (req, res) => {
+  if (checkinLimited(req.ip)) return res.status(429).json({ error: 'Too many check-ins. Wait a few minutes and try again.' });
+  checkin(req, res);
 });
 
 app.get('/api/waitlist/count', async (req, res) => {
