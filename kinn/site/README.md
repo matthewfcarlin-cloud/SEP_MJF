@@ -29,6 +29,13 @@ Sign up at resend.com, verify a sending domain, then add:
 
 New signups then get a short "You're on the waitlist" email. Without these variables, nothing is sent.
 
+## The "How Kinn learns" page (/learn)
+
+`public/learn/` is a built page: the interactive continual-learning demo from [`../learn/`](../learn/). Edit it there and run `npm run build` in `kinn/learn`, which writes into `public/learn/`. Typed check-ins on that page go to `POST /api/checkin`, where Claude reads them. To turn that on, add:
+- `ANTHROPIC_API_KEY` = your Anthropic API key
+
+Without it, the page reads check-ins on the device instead and still works.
+
 ## Run locally
 
 ```
@@ -39,7 +46,9 @@ ADMIN_TOKEN=dev npm start   # http://localhost:3000
 Without `DATABASE_URL`, signups go to `data/waitlist.json`. That's for local testing only, because Railway's disk resets on every deploy.
 
 ## Files
-- `server.js`: static site + `/api/waitlist`, `/api/waitlist/count`, `/admin/waitlist.csv`, `/admin/stats`, `/healthz`
+- `server.js`: static site + `/api/waitlist`, `/api/waitlist/count`, `/api/checkin`, `/admin/waitlist.csv`, `/admin/stats`, `/healthz`
+- `checkin.js`: the `/api/checkin` route (Claude reads a typed check-in for `/learn`)
+- `public/learn/`: the built "How Kinn learns" page (source in `../learn/`)
 - `public/index.html`: the page
 - `public/vid/`: 97 frames of the Higgsfield pull-back, scrubbed by scroll
 - `public/spin/`: 144 frames of the 360 turntable render

@@ -1,6 +1,7 @@
 /**
- * The evening check-in: one tap, or a sentence. Claude turns a sentence into this shape
- * (api/checkin.ts); `readLocally` is the on-device fallback when Claude isn't reachable.
+ * The evening check-in: one tap, or a sentence. Claude turns a sentence into this shape on the
+ * Kinn site's server (kinn/site/checkin.js, which mirrors these fields); `readLocally` is the
+ * on-device fallback when Claude isn't reachable.
  * Only `feel` becomes a label for the model: a flare-up or not.
  */
 export type Feel = 'good' | 'sore' | 'flare';
@@ -20,18 +21,6 @@ export const FEEL_LABEL: Record<Feel, string> = { good: 'Felt good', sore: 'A bi
 
 /** Sore is normal in rehab; only a flare-up counts as "pushed too far". */
 export const isFlare = (c: Pick<CheckIn, 'feel'>) => c.feel === 'flare';
-
-export const CHECKIN_SCHEMA = {
-  type: 'object',
-  properties: {
-    feel: { type: 'string', enum: ['good', 'sore', 'flare'] },
-    pain: { type: ['integer', 'null'], minimum: 0, maximum: 10 },
-    activity: { type: ['string', 'null'] },
-    summary: { type: 'string' },
-  },
-  required: ['feel', 'pain', 'activity', 'summary'],
-  additionalProperties: false,
-} as const;
 
 /** Checks an answer from the API before the app trusts it. */
 export function parseCheckIn(raw: unknown, readBy: CheckIn['readBy']): CheckIn | null {

@@ -197,7 +197,7 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 
 ## 12. AI demo for the hackathon (Oct 17, 2026): "Every Kinn gets smarter"
 
-- **Where:** [`learn/`](learn/), an interactive site (Vite + React, Vercel). Its README has the demo script and the numbers.
+- **Where:** a page on the Kinn site at `/learn` (linked from the header, the "It learns your recovery" section and the footer). Source in [`learn/`](learn/) (Vite + React), built into `site/public/learn/`; the site's server reads typed check-ins with Claude (`site/checkin.js`, needs `ANTHROPIC_API_KEY` on Railway). Its README has the demo script and the numbers.
 - **Prompt:** Continual Learning. Two loops: each phone learns from its wearer's evening check-ins (online learning), and every night the phones pool what they learned by federated averaging (only model weights leave the phone), so new wearers start smarter. Second track: Design. Scale is a pitch angle (data network effect).
 - **Sensors claimed:** stretch traces (bend), motion (deep bends), a muscle sensor over the quad for muscle fatigue (the KineTape prototype's thin-film pressure sensor), and skin temperature. Still "not a medical device"; it estimates flare-up risk, not tissue strain.
 - **App simplified** from KineTape's 8 tabs to 3: Today (one call: Push / Ease off / Rest, plus your line), Check in (one tap or a sentence Claude reads), Learned (what warns of a flare-up for you, and a timeline).

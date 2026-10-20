@@ -81,9 +81,15 @@ export function App() {
   return (
     <div className="page">
       <header className="top">
-        <span className="wordmark">KINN</span>
+        <a className="wordmark" href="/" aria-label="Kinn home">
+          KINN
+        </a>
         <span className="top-sub">How Kinn learns</span>
         <span className="pill">Simulated data</span>
+        <nav className="top-nav" aria-label="Kinn site">
+          <a href="/">Home</a>
+          <a href="/#join">Join waitlist</a>
+        </nav>
       </header>
 
       <section className="intro">

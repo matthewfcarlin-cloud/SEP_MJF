@@ -1,6 +1,6 @@
 # Kinn · How it learns
 
-An interactive demo of Kinn's AI for the hackathon's **Continual Learning** track: the knee-recovery tape gets smarter from each wearer and from everyone. A story rail, the phone app (Today / Check in / Learned) and the charts all run on one real learning engine fed by simulated wearers.
+The source for the **/learn** page of the Kinn site (`kinn/site`). An interactive demo of Kinn's AI for the hackathon's **Continual Learning** track: the knee-recovery tape gets smarter from each wearer and from everyone. A story rail, the phone app (Today / Check in / Learned) and the charts all run on one real learning engine fed by simulated wearers.
 
 ## What it shows
 
@@ -54,11 +54,11 @@ cd kinn/learn
 npm install
 npm run dev          # http://localhost:5173
 npm test             # engine tests (incl. that src/data/curves.json is current)
-npm run build        # typecheck + build to dist/
+npm run build        # typecheck + build into ../site/public/learn/
 npm run precompute   # regenerate src/data/curves.json after changing the engine
 ```
 
-**Deploy on Vercel:** import the repo, set **Root Directory** to `kinn/learn` (Vite is detected), and add `ANTHROPIC_API_KEY` to read typed check-ins with Claude (`api/checkin.ts`). Without a key, or in `npm run dev`, typed check-ins are read on the device by keywords, and the app labels which one read it.
+**Publish to the site:** `npm run build` writes the page into `../site/public/learn/` (commit that folder). The Kinn site on Railway serves it at `/learn/`, and its server answers `/api/checkin` (`kinn/site/checkin.js`). Add `ANTHROPIC_API_KEY` to the Railway service so Claude reads typed check-ins; without it they're read on the device by keywords, and the app labels which one read it. For live check-ins in `npm run dev`, also run the site (`cd ../site && npm start`); the dev server forwards `/api` to it.
 
 ## How it's built
 
@@ -67,4 +67,4 @@ npm run precompute   # regenerate src/data/curves.json after changing the engine
 - `src/engine/hero.ts`: Maya's days, mornings (call, line, fatigue cap, record) and the "what Kinn learned" timeline, all computed.
 - `src/engine/curves.ts`: the chart numbers, precomputed into `src/data/curves.json`.
 - `src/ui/`: phone, gauge, charts (hand-built SVG with hover, direct labels and a table view), panel.
-- `api/checkin.ts`: Vercel function; Claude (structured JSON output) turns a sentence into a check-in.
+- `kinn/site/checkin.js` (in the site, not here): the `/api/checkin` route, where Claude (structured JSON output) turns a sentence into a check-in.
