@@ -108,8 +108,8 @@ export function Week({ run, day, onBack }: { run: HeroRun; day: number; onBack: 
       <section className="card">
         <p className="label">Your line, each morning</p>
         <svg viewBox="0 0 220 76" width="100%" height="76" aria-label={`Your line went from ${week.lineStart ?? '—'}° to ${week.lineEnd ?? '—'}°`}>
-          <polyline points={pts.join(' ')} fill="none" stroke="var(--a-ink)" strokeWidth="2.5" strokeLinejoin="round" />
-          {lastV !== undefined && <circle cx={x(week.lines.length - 1)} cy={y(lastV)} r="4" fill="var(--a-ink)" />}
+          <polyline points={pts.join(' ')} fill="none" stroke="var(--a-sand)" strokeWidth="2.5" strokeLinejoin="round" />
+          {lastV !== undefined && <circle cx={x(week.lines.length - 1)} cy={y(lastV)} r="4" fill="var(--a-sand)" />}
         </svg>
         <div className="axis">
           <span>{week.lineStart ?? '—'}°</span>

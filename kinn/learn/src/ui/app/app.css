@@ -1,14 +1,21 @@
-/* The Kinn app, in the brand system: graphite grounds, ceramic ink and greys; colour only for the day's call. Was: the coin's teal as the
-   only light, Barlow Condensed for numbers and calls, Manrope for everything you read. */
+/* The Kinn app, in the brand system: warm graphite grounds, ceramic ink, and a quiet earth palette (sand, clay, stone, sage) for
+   labels, cards and charts. Saturated colour only for the day's call; the coin's light and charge stay grey and white.
+   Barlow Condensed for numbers and calls, Manrope for everything you read. */
 
 .kinn-app {
-  --a-ground: #08090a;
-  --a-surface: #121417;
-  --a-surface-2: #1b1e22;
-  --a-line: #2a2e33;
+  --a-ground: #0b0a09;
+  --a-surface: #171512;
+  --a-surface-2: #221f1b;
+  --a-line: #322e29;
   --a-ink: #f2f1ec;
-  --a-muted: #9aa0a6;
-  --a-faint: #6b7178;
+  --a-muted: #a59f95;
+  --a-faint: #736c62;
+  /* earth neutrals */
+  --a-sand: #d8c4a0;
+  --a-sand-deep: #2b251d;
+  --a-clay: #c98d6c;
+  --a-stone: #7d7468;
+  --a-sage: #9fae92;
   --a-signal: var(--ring);
   --a-on-signal: var(--on-ring);
 }
@@ -146,7 +153,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--a-muted);
+  color: var(--a-sand);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -331,6 +338,15 @@
   cursor: pointer;
 }
 
+.session-card {
+  background: linear-gradient(135deg, #3a3126, var(--a-sand-deep) 70%);
+  box-shadow: inset 0 0 0 1px #4a3f30;
+}
+
+.session-card .label {
+  color: var(--a-sand);
+}
+
 .session-card.rest-day {
   cursor: default;
 }
@@ -345,7 +361,7 @@
   align-items: flex-start;
   gap: 2px;
   box-shadow: inset 0 0 0 1px var(--a-line);
-  background: transparent;
+  background: linear-gradient(135deg, #1b1f22, var(--a-surface) 70%);
 }
 
 .session-card > span:first-child,
@@ -367,7 +383,7 @@
   gap: 12px;
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(36, 39, 43, 0.94);
+  background: rgba(40, 35, 29, 0.95);
   backdrop-filter: blur(12px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   font-size: 13px;
@@ -521,7 +537,7 @@
   gap: 8px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: var(--a-surface);
+  background: linear-gradient(180deg, rgba(216, 196, 160, 0.04), transparent 45%), var(--a-surface);
 }
 
 .diff-row {
@@ -597,11 +613,11 @@
 }
 
 .bar-you {
-  background: var(--a-ink);
+  background: var(--a-sand);
 }
 
 .bar-fleet {
-  background: #4a4f55;
+  background: var(--a-stone);
 }
 
 .events {
@@ -630,15 +646,15 @@
 }
 
 .event-flare::before {
-  border-color: var(--a-ink);
-  background: var(--a-ink);
+  border-color: var(--a-clay);
+  background: var(--a-clay);
 }
 .event-line::before {
   border-color: var(--a-muted);
 }
 .event-insight::before {
-  border-color: var(--a-ink);
-  background: var(--a-ink);
+  border-color: var(--a-sand);
+  background: var(--a-sand);
 }
 
 .event .body-strong {
@@ -730,7 +746,7 @@
   grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid var(--a-line);
   padding: 8px 8px 22px;
-  background: #0a0b0c;
+  background: #0d0c0a;
 }
 
 .tab {
@@ -812,7 +828,7 @@
 }
 
 .seg {
-  stroke: #24282d;
+  stroke: #2a2620;
   transition: stroke 0.25s;
 }
 
@@ -896,7 +912,7 @@
   gap: 6px;
   padding: 6px 13px 6px 10px;
   border-radius: 999px;
-  background: rgba(18, 20, 23, 0.92);
+  background: rgba(23, 21, 18, 0.92);
   box-shadow: inset 0 0 0 1px var(--a-line);
   font-family: var(--display);
   font-weight: 600;
@@ -908,6 +924,11 @@
 
 .dial-stage {
   margin: 2px 0 -2px;
+}
+
+/* A soft warm light behind the top of each main screen, like the coin sitting on sand. */
+.screen {
+  background: radial-gradient(130% 42% at 50% 0%, rgba(216, 196, 160, 0.09), transparent 70%);
 }
 
 .center-text {
@@ -935,7 +956,8 @@
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--a-surface);
+  background: var(--a-sand-deep);
+  color: var(--a-sand);
   font-size: 11.5px;
   font-variant-numeric: tabular-nums;
 }
@@ -960,7 +982,7 @@
 }
 
 .week-strip .wday:not(.today) {
-  color: #8a9096;
+  color: var(--a-stone);
 }
 
 .wday.future {
@@ -974,8 +996,8 @@
 }
 
 .wday.today {
-  background: var(--a-surface);
-  box-shadow: inset 0 0 0 1px var(--a-line);
+  background: var(--a-sand-deep);
+  box-shadow: inset 0 0 0 1px #5a4c39;
 }
 
 .wday-n {
@@ -1005,7 +1027,7 @@
 }
 
 .wday-flare.on {
-  background: var(--a-ink);
+  background: var(--a-clay);
 }
 
 .card-head {
@@ -1048,13 +1070,13 @@
 }
 
 .driver-bar i.raises {
-  background: var(--a-ink);
+  background: var(--a-clay);
 }
 .driver-bar i.lowers {
-  background: #5d636a;
+  background: var(--a-sage);
 }
 .driver-bar i.neutral {
-  background: var(--a-faint);
+  background: var(--a-stone);
 }
 
 .driver-effect {
@@ -1064,7 +1086,11 @@
 }
 
 .driver-effect.raises {
-  color: var(--a-ink);
+  color: var(--a-clay);
+}
+
+.driver-effect.lowers {
+  color: var(--a-sage);
 }
 
 .ribbon {
@@ -1078,7 +1104,7 @@
 .ribbon i {
   display: block;
   border-radius: 2px 2px 1px 1px;
-  background: #4a5056;
+  background: var(--a-stone);
   min-height: 3px;
 }
 
@@ -1087,7 +1113,7 @@
 }
 
 .ribbon i.past {
-  background: var(--a-ink);
+  background: var(--a-clay);
 }
 
 .ribbon-axis {
@@ -1119,7 +1145,7 @@
 /* trends */
 
 .card svg .grid {
-  stroke: #1f2327;
+  stroke: #26221d;
 }
 
 .card svg .tick {
@@ -1129,38 +1155,38 @@
 }
 
 .line-path {
-  stroke: var(--a-ink);
+  stroke: var(--a-sand);
 }
 
 .line-end {
-  fill: var(--a-ink);
+  fill: var(--a-sand);
 }
 
 .peak-dot {
-  fill: #6b7178;
+  fill: var(--a-stone);
 }
 
 .flare-mark {
-  fill: var(--a-ink);
+  fill: var(--a-clay);
 }
 
 .legend .lg-line {
   height: 2px;
-  background: var(--a-ink);
+  background: var(--a-sand);
 }
 
 .legend .lg-peak {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #6b7178;
+  background: var(--a-stone);
 }
 
 .legend .lg-flare {
   width: 3px;
   height: 8px;
   border-radius: 2px;
-  background: var(--a-ink);
+  background: var(--a-clay);
 }
 
 /* ------------------------------------------------------------ the opening */
@@ -1354,8 +1380,8 @@
   background: radial-gradient(circle at 35% 28%, #3a3e44, #121417 55%, #050607);
   box-shadow:
     0 0 0 2px #8b9096,
-    0 0 0 14px rgba(61, 219, 184, 0.12),
-    0 0 40px rgba(61, 219, 184, 0.3);
+    0 0 0 14px rgba(242, 241, 236, 0.06),
+    0 0 40px rgba(242, 241, 236, 0.18);
 }
 
 @media (prefers-reduced-motion: reduce) {
