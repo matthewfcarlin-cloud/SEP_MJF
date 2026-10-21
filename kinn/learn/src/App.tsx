@@ -7,7 +7,7 @@ import { runHero } from './engine/hero';
 import { DAYS } from './engine/sim';
 import { buildStory, type Focus } from './story';
 import { Panel } from './ui/Panel';
-import { Phone, type CheckInResult, type Tab } from './ui/Phone';
+import { Phone, type CheckInResult, type Screen } from './ui/Phone';
 
 const curves = curvesJson as Curves;
 const story = buildStory(curves);
@@ -19,7 +19,7 @@ export function App() {
   const [stepIndex, setStepIndex] = useState(0);
   const [day, setDay] = useState(1);
   const [fleetIndex, setFleetIndex] = useState(FULL);
-  const [tab, setTab] = useState<Tab>('today');
+  const [screen, setScreen] = useState<Screen>(story[0].screen);
   const [focus, setFocus] = useState<Focus>('phone');
   const [overrides, setOverrides] = useState<Record<number, boolean>>({});
   const [result, setResult] = useState<CheckInResult | null>(null);
@@ -34,7 +34,7 @@ export function App() {
     setStepIndex(i);
     setDay(s.day);
     setFleetIndex(s.fleetIndex);
-    setTab(s.tab);
+    setScreen(s.screen);
     setFocus(s.focus);
     setPlaying(false);
     setResult(null);
@@ -143,6 +143,7 @@ export function App() {
                     if (day >= DAYS) setDay(1);
                     setPlaying((p) => !p);
                     setResult(null);
+                    setScreen((s) => (s === 'start' || s === 'connect' || s === 'session' ? 'today' : s));
                   }}
                 >
                   {playing ? '❚❚' : '▶'}
@@ -156,6 +157,7 @@ export function App() {
                   onChange={(e) => {
                     setDay(Number(e.target.value));
                     setResult(null);
+                    setScreen((s) => (s === 'start' || s === 'connect' ? 'today' : s));
                   }}
                 />
               </div>
@@ -204,10 +206,10 @@ export function App() {
             run={run}
             day={day}
             fleet={fleet}
-            tab={tab}
-            onTab={(t) => {
-              setTab(t);
-              if (t !== 'checkin') setResult(null);
+            screen={screen}
+            onScreen={(s) => {
+              setScreen(s);
+              if (s !== 'checkin') setResult(null);
             }}
             liveBend={liveBend}
             onCheckIn={onCheckIn}
@@ -215,7 +217,7 @@ export function App() {
             onNextDay={() => {
               setDay((d) => Math.min(DAYS, d + 1));
               setResult(null);
-              setTab('today');
+              setScreen(day < DAYS ? 'connect' : 'today');
             }}
           />
           <p className="phone-note">{step.focus === 'phone' ? 'This is the app. Tap around.' : 'The app updates as you drag.'}</p>

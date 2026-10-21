@@ -6,11 +6,11 @@ import { count, pct } from './engine/advice';
 import type { Curves } from './engine/curves';
 import { HERO, STORY_FLARE_DAY, runHero } from './engine/hero';
 import { AGE_LABEL, INJURY_LABEL, SENSOR_LABEL, SENSORS, type Age, type Injury } from './engine/sim';
-import type { Tab } from './ui/Phone';
+import type { Screen } from './ui/Phone';
 
 export type Focus = 'phone' | 'fleet' | 'weekly';
 
-export type Step = { id: string; title: string; body: string; day: number; fleetIndex: number; tab: Tab; focus: Focus };
+export type Step = { id: string; title: string; body: string; day: number; fleetIndex: number; screen: Screen; focus: Focus };
 
 const last = <T,>(xs: T[]) => xs[xs.length - 1];
 
@@ -38,7 +38,7 @@ export function buildStory(curves: Curves): Step[] {
       body: `${HERO.age}, ${HERO.sport} player, recovering from an ${INJURY_LABEL.acl}. On day one Kinn already has a call for her and a line of ${d1.line}°. It starts from what ${count(fleet.devices)} earlier recoveries taught it, then adjusts to her.`,
       day: 1,
       fleetIndex: full,
-      tab: 'today',
+      screen: 'start',
       focus: 'phone',
     },
     {
@@ -47,7 +47,16 @@ export function buildStory(curves: Curves): Step[] {
       body: `Three weeks of her own days later, her line has moved from ${d1.line}° to ${d21.line}°, and Kinn has found her strongest warning sign: ${SENSOR_LABEL[top].toLowerCase()}. Its morning calls have been right ${pct(d21.record ?? 0.5)} of the time.`,
       day: 21,
       fleetIndex: full,
-      tab: 'learned',
+      screen: 'learned',
+      focus: 'phone',
+    },
+    {
+      id: 'session',
+      title: 'A session with a coach',
+      body: `On a Push day, her PT's exercises run live: the strip checks that every rep reaches full range and holds, and the muscle sensor sees her quad tire before the reps get shorter. Press Start session on the phone.`,
+      day: 21,
+      fleetIndex: full,
+      screen: 'session',
       focus: 'phone',
     },
     {
@@ -56,7 +65,7 @@ export function buildStory(curves: Curves): Step[] {
       body: `Day ${STORY_FLARE_DAY}: her knee swelled after practice. Tap “Flare-up” on the phone, or type it in your own words. Kinn updates her model before morning, and you can see what changed.`,
       day: STORY_FLARE_DAY,
       fleetIndex: full,
-      tab: 'checkin',
+      screen: 'checkin',
       focus: 'phone',
     },
     {
@@ -65,7 +74,7 @@ export function buildStory(curves: Curves): Step[] {
       body: `Each night, phones send back model updates, never readings. With no other wearers, a newcomer like ${HERO.name} gets calls right ${pct(mine.rates[0])} of the time in week one, close to a coin flip. With ${count(last(curves.fleetSizes))} wearers: ${pct(last(mine.rates))}. Rarer recoveries need more people: for a ${INJURY_LABEL[rareInjury].toLowerCase()} ${AGE_LABEL[rareAge]}, it takes about ${count(rareEnough)}. Drag the fleet to see it.`,
       day: 1,
       fleetIndex: 0,
-      tab: 'today',
+      screen: 'start',
       focus: 'fleet',
     },
     {
@@ -74,7 +83,7 @@ export function buildStory(curves: Curves): Step[] {
       body: `Everyone else's data alone stays near ${pct(Math.max(...fleetOnly))}. Your data alone starts near a coin flip (${pct(youOnly[0])}). Together: ${pct(both[0])} in week one and ${pct(last(both))} by week six. Every check-in teaches your Kinn, and every Kinn teaches the next person's.`,
       day: 42,
       fleetIndex: full,
-      tab: 'learned',
+      screen: 'week',
       focus: 'weekly',
     },
   ];
