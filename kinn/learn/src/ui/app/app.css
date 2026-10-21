@@ -1,14 +1,21 @@
-/* The Kinn app, in the brand system: graphite grounds, ceramic ink, the coin's teal as the
-   only light, Barlow Condensed for numbers and calls, Manrope for everything you read. */
+/* The Kinn app, in the brand system: warm graphite grounds, ceramic ink, and a quiet earth palette (sand, clay, stone, sage) for
+   labels, cards and charts. Saturated colour only for the day's call; the coin's light and charge stay grey and white.
+   Barlow Condensed for numbers and calls, Manrope for everything you read. */
 
 .kinn-app {
-  --a-ground: #08090a;
-  --a-surface: #121417;
-  --a-surface-2: #1b1e22;
-  --a-line: #2a2e33;
+  --a-ground: #0b0a09;
+  --a-surface: #171512;
+  --a-surface-2: #221f1b;
+  --a-line: #322e29;
   --a-ink: #f2f1ec;
-  --a-muted: #9aa0a6;
-  --a-faint: #6b7178;
+  --a-muted: #a59f95;
+  --a-faint: #736c62;
+  /* earth neutrals */
+  --a-sand: #d8c4a0;
+  --a-sand-deep: #2b251d;
+  --a-clay: #c98d6c;
+  --a-stone: #7d7468;
+  --a-sage: #9fae92;
   --a-signal: var(--ring);
   --a-on-signal: var(--on-ring);
 }
@@ -39,6 +46,8 @@
 }
 
 .status-bar {
+  position: relative;
+  z-index: 5;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -144,7 +153,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--a-muted);
+  color: var(--a-sand);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -229,194 +238,6 @@
   color: var(--learning);
 }
 
-/* ring */
-
-.ring {
-  position: relative;
-  flex: none;
-}
-
-.ring svg {
-  position: absolute;
-  inset: 0;
-}
-
-.ring-track {
-  stroke: var(--a-surface-2);
-}
-
-.ring-arc {
-  stroke: currentColor;
-}
-
-.ring-over {
-  stroke: var(--rest);
-  stroke-opacity: 0.35;
-}
-
-.ring-tick {
-  stroke: var(--a-signal);
-}
-
-.ring.draw .ring-arc {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: draw-arc 0.9s 0.15s ease-out forwards;
-}
-
-.ring.draw .ring-tick {
-  opacity: 0;
-  animation: land 0.3s 0.95s ease-out forwards;
-}
-
-@keyframes draw-arc {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes land {
-  from {
-    opacity: 0;
-    transform: scale(1.4);
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.ring-tick {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.ring-center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.ring-word {
-  font-family: var(--display);
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-.ring-num {
-  font-family: var(--display);
-  font-weight: 600;
-  line-height: 0.92;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
-}
-
-.ring-label {
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--a-muted);
-}
-
-/* coin + connect */
-
-.coin-wrap {
-  position: relative;
-  display: grid;
-  place-items: center;
-}
-
-.coin-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  overflow: visible;
-}
-
-.coin-ring circle {
-  stroke: var(--a-signal);
-  filter: drop-shadow(0 0 8px rgba(61, 219, 184, 0.55));
-}
-
-.coin-ring.draw circle {
-  stroke-dashoffset: var(--circ);
-  animation: draw-coin 0.8s 0.1s ease-out forwards;
-}
-
-@keyframes draw-coin {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.coin {
-  position: relative;
-  border-radius: 50%;
-  gap: 2px;
-  align-content: center;
-  background: radial-gradient(circle at 35% 28%, #3a3e44, #121417 55%, #050607);
-  box-shadow:
-    0 0 0 2px #8b9096,
-    0 20px 40px rgba(0, 0, 0, 0.7),
-    inset 0 2px 8px rgba(255, 255, 255, 0.12);
-  display: grid;
-  place-items: center;
-}
-
-.coin span {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--a-ink);
-  opacity: 0.85;
-}
-
-.connect {
-  width: 100%;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--a-signal);
-}
-
-.fade {
-  opacity: 0;
-  animation: fade-up 0.45s ease-out forwards;
-}
-.fade-1 {
-  animation-delay: 0.9s;
-}
-.fade-2 {
-  animation-delay: 1.1s;
-}
-.fade-3 {
-  animation-delay: 1.3s;
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 /* buttons */
 
 .btn,
@@ -440,9 +261,8 @@
 }
 
 .btn-signal {
-  background: var(--a-signal);
-  color: var(--a-on-signal);
-  box-shadow: 0 0 24px rgba(61, 219, 184, 0.3);
+  background: var(--a-ink);
+  color: var(--a-ground);
 }
 
 .btn-signal.small {
@@ -518,6 +338,15 @@
   cursor: pointer;
 }
 
+.session-card {
+  background: linear-gradient(135deg, #3a3126, var(--a-sand-deep) 70%);
+  box-shadow: inset 0 0 0 1px #4a3f30;
+}
+
+.session-card .label {
+  color: var(--a-sand);
+}
+
 .session-card.rest-day {
   cursor: default;
 }
@@ -532,7 +361,7 @@
   align-items: flex-start;
   gap: 2px;
   box-shadow: inset 0 0 0 1px var(--a-line);
-  background: transparent;
+  background: linear-gradient(135deg, #1b1f22, var(--a-surface) 70%);
 }
 
 .session-card > span:first-child,
@@ -554,7 +383,7 @@
   gap: 12px;
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(36, 39, 43, 0.94);
+  background: rgba(40, 35, 29, 0.95);
   backdrop-filter: blur(12px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   font-size: 13px;
@@ -614,7 +443,7 @@
   text-align: center;
   font-size: 15px;
   font-weight: 600;
-  color: var(--a-signal);
+  color: var(--a-ink);
 }
 
 .session-actions {
@@ -708,7 +537,7 @@
   gap: 8px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: var(--a-surface);
+  background: linear-gradient(180deg, rgba(216, 196, 160, 0.04), transparent 45%), var(--a-surface);
 }
 
 .diff-row {
@@ -784,11 +613,11 @@
 }
 
 .bar-you {
-  background: var(--a-ink);
+  background: var(--a-sand);
 }
 
 .bar-fleet {
-  background: #4a4f55;
+  background: var(--a-stone);
 }
 
 .events {
@@ -817,15 +646,15 @@
 }
 
 .event-flare::before {
-  border-color: var(--rest);
-  background: var(--rest);
+  border-color: var(--a-clay);
+  background: var(--a-clay);
 }
 .event-line::before {
-  border-color: var(--a-signal);
+  border-color: var(--a-muted);
 }
 .event-insight::before {
-  border-color: var(--a-ink);
-  background: var(--a-ink);
+  border-color: var(--a-sand);
+  background: var(--a-sand);
 }
 
 .event .body-strong {
@@ -894,7 +723,7 @@
 }
 
 .switch.on {
-  background: var(--a-signal);
+  background: var(--a-ink);
 }
 
 .switch.on::after {
@@ -917,7 +746,7 @@
   grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid var(--a-line);
   padding: 8px 8px 22px;
-  background: #0a0b0c;
+  background: #0d0c0a;
 }
 
 .tab {
@@ -957,6 +786,612 @@
   }
   .bar,
   .switch::after {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------ the coin dial (Today's tracker) */
+
+.coin-dial {
+  position: relative;
+  flex: none;
+}
+
+.coin-dial::before {
+  /* the coin's light spilling onto the ground, in the call's colour */
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--glow, var(--a-signal)) 13%, transparent) 0%, transparent 70%);
+  filter: blur(18px);
+  transition: background 0.5s;
+}
+
+.coin-dial.glow-push {
+  --glow: var(--a-signal);
+}
+.coin-dial.glow-ease {
+  --glow: var(--ease);
+}
+.coin-dial.glow-rest {
+  --glow: var(--rest);
+}
+.coin-dial.glow-learning,
+.coin-dial.glow-live {
+  --glow: #8a8f95;
+}
+
+.coin-dial svg {
+  position: absolute;
+  inset: 0;
+}
+
+.seg {
+  stroke: #2a2620;
+  transition: stroke 0.25s;
+}
+
+.seg.over {
+  stroke: #1d2024;
+}
+
+.seg.on.live {
+  stroke: var(--a-ink);
+}
+
+.seg.on {
+  stroke: currentColor;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+.dial-tick {
+  stroke: var(--a-ink);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+}
+
+.dial-coin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.dial-coin img,
+.flat-coin {
+  position: absolute;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  border-radius: 50%;
+}
+
+.flat-coin {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 35% 28%, #3a3e44, #121417 55%, #050607);
+  box-shadow: 0 0 0 2px #8b9096;
+}
+
+.dial-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.dial-num {
+  font-family: var(--display);
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.dial-label {
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #c7cbcf;
+}
+
+.dial-call {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px 6px 10px;
+  border-radius: 999px;
+  background: rgba(23, 21, 18, 0.92);
+  box-shadow: inset 0 0 0 1px var(--a-line);
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dial-stage {
+  margin: 2px 0 -2px;
+}
+
+/* A soft warm light behind the top of each main screen, like the coin sitting on sand. */
+.screen {
+  background: radial-gradient(130% 42% at 50% 0%, rgba(216, 196, 160, 0.09), transparent 70%);
+}
+
+.center-text {
+  text-align: center;
+  padding: 0 4px;
+}
+
+/* ------------------------------------------------------------ today */
+
+.today-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.today-top .eyebrow {
+  margin: 0;
+}
+
+.coin-chip {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--a-sand-deep);
+  color: var(--a-sand);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.wday {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px 0 5px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.week-strip .wday:not(.today) {
+  color: var(--a-stone);
+}
+
+.wday.future {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.wday.future .wday-dot {
+  box-shadow: inset 0 0 0 1px var(--a-line);
+  background: none;
+}
+
+.wday.today {
+  background: var(--a-sand-deep);
+  box-shadow: inset 0 0 0 1px #5a4c39;
+}
+
+.wday-n {
+  font-size: 10px;
+  color: var(--a-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.wday.today .wday-n {
+  color: var(--a-ink);
+  font-weight: 700;
+}
+
+.wday-dot {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.wday-flare {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.wday-flare.on {
+  background: var(--a-clay);
+}
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.driver {
+  display: grid;
+  grid-template-columns: 1fr 76px 74px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.driver-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--a-surface-2);
+}
+
+.driver-bar::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--a-faint);
+}
+
+.driver-bar i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+}
+
+.driver-bar i.raises {
+  background: var(--a-clay);
+}
+.driver-bar i.lowers {
+  background: var(--a-sage);
+}
+.driver-bar i.neutral {
+  background: var(--a-stone);
+}
+
+.driver-effect {
+  font-size: 11px;
+  text-align: right;
+  color: var(--a-muted);
+}
+
+.driver-effect.raises {
+  color: var(--a-clay);
+}
+
+.driver-effect.lowers {
+  color: var(--a-sage);
+}
+
+.ribbon {
+  height: 56px;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  align-items: end;
+  gap: 2px;
+}
+
+.ribbon i {
+  display: block;
+  border-radius: 2px 2px 1px 1px;
+  background: var(--a-stone);
+  min-height: 3px;
+}
+
+.ribbon i.off {
+  background: var(--a-surface-2);
+}
+
+.ribbon i.past {
+  background: var(--a-clay);
+}
+
+.ribbon-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: var(--a-faint);
+  margin-top: -2px;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--a-line);
+}
+
+.mini-grid > div {
+  display: grid;
+  gap: 2px;
+}
+
+.mini-grid .caption {
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+/* trends */
+
+.card svg .grid {
+  stroke: #26221d;
+}
+
+.card svg .tick {
+  font-size: 9px;
+  fill: var(--a-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.line-path {
+  stroke: var(--a-sand);
+}
+
+.line-end {
+  fill: var(--a-sand);
+}
+
+.peak-dot {
+  fill: var(--a-stone);
+}
+
+.flare-mark {
+  fill: var(--a-clay);
+}
+
+.legend .lg-line {
+  height: 2px;
+  background: var(--a-sand);
+}
+
+.legend .lg-peak {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--a-stone);
+}
+
+.legend .lg-flare {
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--a-clay);
+}
+
+/* ------------------------------------------------------------ the opening */
+
+.opening {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: radial-gradient(120% 70% at 50% 38%, #111417 0%, var(--a-ground) 60%);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    opacity 0.55s ease-in,
+    visibility 0s linear 0.55s;
+}
+
+.opening.phase-open {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.opening-canvas-host,
+.opening-canvas,
+.opening-traces {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.opening-traces {
+  pointer-events: none;
+}
+
+.trace {
+  fill: none;
+  stroke: #c9cdd1;
+  stroke-width: 1.4;
+  stroke-opacity: 0.4;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+}
+
+.trace.thin {
+  stroke-width: 0.9;
+  stroke-opacity: 0.22;
+}
+
+.pulse {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 28 calc(var(--len) * 1px);
+  stroke-dashoffset: 28;
+  opacity: 0;
+}
+
+.phase-traces .trace,
+.phase-open .trace {
+  animation: trace-draw 0.75s var(--d) cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.phase-traces .pulse,
+.phase-open .pulse {
+  animation: trace-pulse 0.85s var(--d) ease-in forwards;
+}
+
+@keyframes trace-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes trace-pulse {
+  0% {
+    opacity: 1;
+    stroke-dashoffset: 28;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: calc(var(--len) * -1px);
+  }
+}
+
+.shock {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.phase-click .shock,
+.phase-traces .shock {
+  animation: shock 0.7s ease-out forwards;
+}
+
+@keyframes shock {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+    stroke-width: 3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+    stroke-width: 0.5;
+  }
+}
+
+.corner {
+  opacity: 0;
+}
+
+.phase-traces .corner,
+.phase-open .corner {
+  animation: corner 1s 0.55s ease-out forwards;
+}
+
+@keyframes corner {
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.25;
+  }
+}
+
+.opening-words {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 66%;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
+}
+
+.phase-click .opening-words,
+.phase-traces .opening-words,
+.phase-open .opening-words {
+  opacity: 1;
+  transform: none;
+}
+
+.opening-headline {
+  margin: 0 0 8px;
+  font-size: 27px;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.opening-sub {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--a-muted);
+}
+
+.opening-skip {
+  position: absolute;
+  bottom: 26px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--a-faint);
+}
+
+.opening.reduced {
+  transition-duration: 0.3s;
+}
+
+.opening-static-coin {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #3a3e44, #121417 55%, #050607);
+  box-shadow:
+    0 0 0 2px #8b9096,
+    0 0 0 14px rgba(242, 241, 236, 0.06),
+    0 0 40px rgba(242, 241, 236, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seg,
+  .coin-dial::before {
+    transition: none;
+  }
+  .opening-words {
+    opacity: 1;
+    transform: none;
     transition: none;
   }
 }

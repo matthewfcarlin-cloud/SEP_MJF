@@ -5,18 +5,22 @@ import type { Weights } from '../engine/model';
 import { IconLearned, IconToday, IconYou } from './app/bits';
 import { CheckInDone, CheckInScreen, type CheckInResult } from './app/Evening';
 import { Learned, Week, You } from './app/Insights';
-import { Connect, Start, Today } from './app/Morning';
+import { connectHeadline, overnightNote } from '../engine/daily';
+import { Intro } from './app/Intro';
+import { Start, Today } from './app/Morning';
 import { Session } from './app/Session';
 import './app/app.css';
 
 export type { CheckInResult };
 
 /** Every screen of the app. Today, Learned and You are tabs; the rest open from them. */
-export type Screen = 'start' | 'connect' | 'today' | 'session' | 'checkin' | 'learned' | 'week' | 'you';
+export type Screen = 'start' | 'today' | 'session' | 'checkin' | 'learned' | 'week' | 'you';
+
+/** The opening animation: the first time the app opens, or each new morning when the coin connects. */
+export type Opening = { id: number; kind: 'first' | 'morning' };
 
 const TAB_OF: Record<Screen, 'today' | 'learned' | 'you' | null> = {
   start: null,
-  connect: null,
   today: 'today',
   session: 'today',
   checkin: 'today',
@@ -35,9 +39,12 @@ type Props = {
   onCheckIn: (input: { feel: Feel } | { text: string }) => Promise<void>;
   result: CheckInResult | null;
   onNextDay: () => void;
+  onDay: (d: number) => void;
+  opening: Opening | null;
+  onOpened: () => void;
 };
 
-export function Phone({ run, day, fleet, screen, onScreen, liveBend, onCheckIn, result, onNextDay }: Props) {
+export function Phone({ run, day, fleet, screen, onScreen, liveBend, onCheckIn, result, onNextDay, onDay, opening, onOpened }: Props) {
   const m = run.mornings[day - 1];
   const prev = day > 1 ? run.mornings[day - 2] : null;
   const past = liveBend !== null && m.line !== null && liveBend > m.line && screen === 'today';
@@ -47,9 +54,6 @@ export function Phone({ run, day, fleet, screen, onScreen, liveBend, onCheckIn, 
   switch (screen) {
     case 'start':
       body = <Start m={m} devices={fleet.devices} onStart={() => onScreen('today')} />;
-      break;
-    case 'connect':
-      body = <Connect m={m} prev={prev} day={day} onDone={() => onScreen('today')} />;
       break;
     case 'session':
       body = <Session key={day} m={m} day={day} onBack={() => onScreen('today')} />;
@@ -72,7 +76,7 @@ export function Phone({ run, day, fleet, screen, onScreen, liveBend, onCheckIn, 
       body = <You day={day} />;
       break;
     default:
-      body = <Today run={run} m={m} day={day} liveBend={liveBend} onCheckIn={() => onScreen('checkin')} onSession={() => onScreen('session')} />;
+      body = <Today run={run} m={m} day={day} liveBend={liveBend} onCheckIn={() => onScreen('checkin')} onSession={() => onScreen('session')} onDay={onDay} />;
   }
 
   return (
@@ -99,9 +103,17 @@ export function Phone({ run, day, fleet, screen, onScreen, liveBend, onCheckIn, 
             </span>
           </div>
         )}
-        <div className="app-body" key={`${screen}-${day}`}>
+        <div className="app-body" key={`${screen}-${day}-${opening?.id ?? 0}`}>
           {body}
         </div>
+        {opening && (
+          <Intro
+            key={opening.id}
+            headline={opening.kind === 'first' ? 'Hi. Let’s learn your knee.' : connectHeadline(m)}
+            sub={opening.kind === 'first' ? 'Coin connected. Strip on your right knee.' : `Day ${day}. ${overnightNote(m, prev)}`}
+            onDone={onOpened}
+          />
+        )}
         {tab && (
           <nav className="tab-bar" aria-label="App sections">
             <TabButton active={tab === 'today'} label="Today" icon={<IconToday />} onClick={() => onScreen('today')} />

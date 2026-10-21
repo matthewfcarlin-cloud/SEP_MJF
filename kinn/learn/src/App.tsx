@@ -7,7 +7,7 @@ import { runHero } from './engine/hero';
 import { DAYS } from './engine/sim';
 import { buildStory, type Focus } from './story';
 import { Panel } from './ui/Panel';
-import { Phone, type CheckInResult, type Screen } from './ui/Phone';
+import { Phone, type CheckInResult, type Opening, type Screen } from './ui/Phone';
 
 const curves = curvesJson as Curves;
 const story = buildStory(curves);
@@ -25,6 +25,7 @@ export function App() {
   const [result, setResult] = useState<CheckInResult | null>(null);
   const [liveBend, setLiveBend] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [opening, setOpening] = useState<Opening | null>({ id: 1, kind: 'first' });
 
   const fleet = curves.fleets[fleetIndex];
   const run = useMemo(() => runHero(fleet.weights, fleet.devices, overrides), [fleet, overrides]);
@@ -144,7 +145,7 @@ export function App() {
                     if (day >= DAYS) setDay(1);
                     setPlaying((p) => !p);
                     setResult(null);
-                    setScreen((s) => (s === 'start' || s === 'connect' || s === 'session' ? 'today' : s));
+                    setScreen((s) => (s === 'start' || s === 'session' ? 'today' : s));
                   }}
                 >
                   {playing ? '❚❚' : '▶'}
@@ -158,7 +159,7 @@ export function App() {
                   onChange={(e) => {
                     setDay(Number(e.target.value));
                     setResult(null);
-                    setScreen((s) => (s === 'start' || s === 'connect' ? 'today' : s));
+                    setScreen((s) => (s === 'start' ? 'today' : s));
                   }}
                 />
               </div>
@@ -218,10 +219,22 @@ export function App() {
             onNextDay={() => {
               setDay((d) => Math.min(DAYS, d + 1));
               setResult(null);
-              setScreen(day < DAYS ? 'connect' : 'today');
+              setScreen('today');
+              if (day < DAYS) setOpening({ id: Date.now(), kind: 'morning' });
             }}
+            onDay={(d) => {
+              setDay(d);
+              setResult(null);
+            }}
+            opening={opening}
+            onOpened={() => setOpening(null)}
           />
-          <p className="phone-note">{step.focus === 'phone' ? 'This is the app. Tap around.' : 'The app updates as you drag.'}</p>
+          <p className="phone-note">
+            {step.focus === 'phone' ? 'This is the app. Tap around.' : 'The app updates as you drag.'}{' '}
+            <button type="button" className="link-button" onClick={() => setOpening({ id: Date.now(), kind: day === 1 ? 'first' : 'morning' })}>
+              Replay the opening
+            </button>
+          </p>
         </div>
 
         <Panel curves={curves} fleetIndex={fleetIndex} run={run} day={day} focus={focus} liveBend={liveBend} onLiveBend={setLiveBend} />

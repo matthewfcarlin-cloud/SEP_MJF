@@ -44,7 +44,11 @@ Side demo: drag "Try it: bend the knee" past her line and the phone buzzes. The 
 
 ## The app's screens
 
-Starting point (day 1) → morning connect ("Ready for another day.") → **Today** (the ring: call and line; yesterday's muscle fatigue and deep bends against her normal; today's session; tonight's check-in) → guided **session** → evening **check-in** → "Got it" → next morning. Tabs: **Today**, **Learned** (what warns of a flare-up for you, the week recap, the timeline) and **You** (coin, strip, PT sharing, learning switch). The look follows the Kinn brand system: graphite and ceramic, the coin's teal as the only light, Barlow Condensed for numbers, Manrope for text.
+- **Opening** (first open and every new morning): a live 3D coin (`src/ui/app/coin3d.ts`, the same model as the site's hero, Three.js 0.147) floats, turns to face you and clicks into place with a teal flash, then charge runs along printed traces to the four corners and the app opens (`Intro.tsx`). Tap to skip; under reduced motion it's a still coin and the words.
+- **Today:** the coin is the dial (`CoinDial.tsx`): a render of the coin from above inside its light ring, lit up to your line in the call's colour, coral past it, a teal tick at the line. Above it, the last seven days' calls (tap to open a day); below it, what's behind today's call (each signal's pull in her own model) and yesterday on the strip hour by hour (peak bend, minutes past her line, deep bends, muscle fatigue). Then today's session and tonight's check-in.
+- **Session** (live reps through the coin dial), **Check-in** → "Got it", **Learned** (day-by-day chart, warning signs, week recap, timeline), **You** (coin, strip, PT sharing, learning switch).
+
+The look follows the Kinn brand system: graphite and ceramic, the coin's teal as the only light, Barlow Condensed for numbers, Manrope for text.
 
 ## Tracks
 
@@ -71,6 +75,7 @@ npm run precompute   # regenerate src/data/curves.json after changing the engine
 - `src/engine/model.ts`: logistic model, online learning on the phone (pulled toward the fleet model), federated averaging across phones, balanced-accuracy scoring.
 - `src/engine/hero.ts`: Maya's days, mornings (call, line, fatigue cap, record) and the "what Kinn learned" timeline, all computed.
 - `src/engine/curves.ts`: the chart numbers, precomputed into `src/data/curves.json`.
+- `src/engine/intraday.ts`: a day hour by hour (drawn from that day's readings) and what's behind the morning call.
 - `src/engine/session.ts`, `daily.ts`: the guided session (planned reps, live frames, full range, when the quad tired) and the daily readouts (what changed overnight, readings against her normal, the week recap, coin and strip).
 - `src/ui/Phone.tsx` + `src/ui/app/`: the app's screens, the Today ring and its styles (`app.css`); `src/ui/`: charts (hand-built SVG with hover, direct labels and a table view) and the panel.
 - `kinn/site/checkin.js` (in the site, not here): the `/api/checkin` route, where Claude (structured JSON output) turns a sentence into a check-in.
