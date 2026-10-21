@@ -88,6 +88,7 @@ export function App() {
         <span className="pill">Simulated data</span>
         <nav className="top-nav" aria-label="Kinn site">
           <a href="/">Home</a>
+          <a href="/progress/">Progress</a>
           <a href="/#join">Join waitlist</a>
         </nav>
       </header>
