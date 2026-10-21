@@ -82,7 +82,7 @@ export function App() {
     <div className="page">
       <header className="top">
         <a className="wordmark" href="/" aria-label="Kinn home">
-          KINN
+          <img src={`${import.meta.env.BASE_URL}brand/kinn-lockup-ceramic.svg`} width={75} height={22} alt="" />
         </a>
         <span className="top-sub">How Kinn learns</span>
         <span className="pill">Simulated data</span>

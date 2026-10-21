@@ -115,6 +115,13 @@
   text-align: center;
 }
 
+.start-logo {
+  align-self: center;
+  height: 24px;
+  width: auto;
+  margin-top: 10px;
+}
+
 .fill {
   flex: 1;
 }
@@ -352,6 +359,8 @@
 .coin {
   position: relative;
   border-radius: 50%;
+  gap: 2px;
+  align-content: center;
   background: radial-gradient(circle at 35% 28%, #3a3e44, #121417 55%, #050607);
   box-shadow:
     0 0 0 2px #8b9096,
