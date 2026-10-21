@@ -69,7 +69,7 @@ export type Morning = {
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 
 /** The typical day lately: her last 7 days of readings, averaged. Day 1 uses an average day. */
-function typicalZ(days: Day[], day: number): Record<Sensor, number> {
+export function typicalZ(days: Day[], day: number): Record<Sensor, number> {
   const recent = days.filter((d) => d.day < day && d.day >= day - 7);
   return Object.fromEntries(SENSORS.map((s) => [s, mean(recent.map((d) => d.z[s]))])) as Record<Sensor, number>;
 }

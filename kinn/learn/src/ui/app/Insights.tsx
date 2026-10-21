@@ -3,7 +3,7 @@ import { count, pct } from '../../engine/advice';
 import { STRIP_DAYS, deviceStatus, lastWeek } from '../../engine/daily';
 import { HERO, type HeroRun, type LearnedEvent, type Morning } from '../../engine/hero';
 import type { Weights } from '../../engine/model';
-import { INJURY_LABEL, SENSORS, SENSOR_LABEL, sensorIndex, type Sensor } from '../../engine/sim';
+import { INJURY_LABEL, SENSORS, SENSOR_LABEL, displayReadings, sensorIndex, type Sensor } from '../../engine/sim';
 import { Back, Row } from './bits';
 
 type Fleet = { devices: number; weights: Weights };
@@ -29,6 +29,7 @@ export function Learned({ run, m, day, fleet, onWeek }: { run: HeroRun; m: Morni
           <span className="metric small">{week.right !== null ? pct(week.right) : '—'}</span>
         </button>
       )}
+      {day > 2 && <Trend run={run} day={day} />}
       <section className="card">
         <p className="label">What warns of a flare-up for you</p>
         <div className="legend" aria-hidden="true">
@@ -181,5 +182,66 @@ export function You({ day }: { day: number }) {
       </section>
       <p className="fine">Kinn is in development and is not a medical device. It tracks and suggests; it doesn’t diagnose or treat.</p>
     </div>
+  );
+}
+
+/** Her line each morning, each day's peak bend, and the flare-ups, from day 1 to today. */
+function Trend({ run, day }: { run: HeroRun; day: number }) {
+  const W = 300;
+  const Hh = 132;
+  const pad = { l: 28, r: 8, t: 8, b: 18 };
+  const days = Array.from({ length: day }, (_, i) => i + 1);
+  const lines = days.map((d) => run.mornings[d - 1].line);
+  const peaks = days.slice(0, -1).map((d) => displayReadings(run.days[d - 1]).flexDeg);
+  const vals = [...lines.filter((v): v is number => v !== null), ...peaks];
+  const lo = Math.floor((Math.min(...vals) - 4) / 10) * 10;
+  const hi = Math.ceil((Math.max(...vals) + 4) / 10) * 10;
+  const x = (d: number) => pad.l + ((d - 1) / Math.max(1, day - 1)) * (W - pad.l - pad.r);
+  const y = (v: number) => pad.t + (1 - (v - lo) / (hi - lo)) * (Hh - pad.t - pad.b);
+  const path = lines
+    .map((v, i) => (v === null ? null : `${x(i + 1).toFixed(1)},${y(v).toFixed(1)}`))
+    .filter(Boolean)
+    .join(' ');
+  const ticks = [lo, Math.round((lo + hi) / 2 / 10) * 10, hi];
+  const lastLine = lines[lines.length - 1];
+  return (
+    <section className="card">
+      <div className="card-head">
+        <p className="label">Day by day</p>
+        <span className="caption">day 1–{day}</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${Hh}`} width="100%" aria-label={`Your line went from ${lines.find((v) => v !== null) ?? '—'}° to ${lastLine ?? '—'}° over ${day} days`}>
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1={pad.l} x2={W - pad.r} y1={y(t)} y2={y(t)} className="grid" />
+            <text x={pad.l - 6} y={y(t)} className="tick" textAnchor="end" dominantBaseline="middle">
+              {t}°
+            </text>
+          </g>
+        ))}
+        {peaks.map((v, i) => (
+          <circle key={i} cx={x(i + 1)} cy={y(v)} r="2.2" className="peak-dot" />
+        ))}
+        <polyline points={path} fill="none" className="line-path" strokeWidth="2.4" strokeLinejoin="round" />
+        {lastLine !== null && <circle cx={x(day)} cy={y(lastLine)} r="4" className="line-end" />}
+        {days.slice(0, -1).map((d) =>
+          run.days[d - 1].flare ? <rect key={d} x={x(d) - 1.5} y={Hh - pad.b + 5} width="3" height="8" rx="1.5" className="flare-mark" /> : null,
+        )}
+      </svg>
+      <div className="legend">
+        <span>
+          <i className="lg-line" />
+          Your line
+        </span>
+        <span>
+          <i className="lg-peak" />
+          Peak bend
+        </span>
+        <span>
+          <i className="lg-flare" />
+          Flare-up
+        </span>
+      </div>
+    </section>
   );
 }

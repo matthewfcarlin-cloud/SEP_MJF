@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Morning } from '../../engine/hero';
 import { REPS, frameAt, planSession, repCue, sessionDuration, sessionStats } from '../../engine/session';
 import { Back } from './bits';
-import { Ring } from './Ring';
+import { CoinDial } from './CoinDial';
 
 /** The demo plays reps at double speed so a full set fits in about 20 seconds. */
 const SPEED = 2;
@@ -80,7 +80,7 @@ export function Session({ m, day, onBack }: { m: Morning; day: number; onBack: (
         Session · {plan.exercise.name} to {plan.target}°
       </p>
       <div className="center">
-        <Ring call="push" line={m.line} live={frame.bend} size={200} />
+        <CoinDial call="push" line={m.line} live={frame.bend} size={230} />
       </div>
       <div className="stats">
         <Stat value={`${Math.min(frame.done, REPS)}/${REPS}`} label="reps" />

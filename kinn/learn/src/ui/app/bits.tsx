@@ -1,25 +1,5 @@
 import type { ReactNode } from 'react';
 
-/** The coin from above: black ceramic, chrome seam, the wordmark. `glow` lights its ring. */
-export function Coin({ size = 140, glow = false, draw = false }: { size?: number; glow?: boolean; draw?: boolean }) {
-  const r = size / 2 + 12;
-  const c = r + 4;
-  const circ = 2 * Math.PI * r;
-  return (
-    <div className="coin-wrap" style={{ width: size + 32, height: size + 32 }}>
-      {glow && (
-        <svg className={`coin-ring${draw ? ' draw' : ''}`} viewBox={`0 0 ${c * 2} ${c * 2}`} width={c * 2} height={c * 2} aria-hidden="true">
-          <circle cx={c} cy={c} r={r} fill="none" strokeWidth="3" strokeDasharray={circ} style={{ ['--circ' as string]: circ }} transform={`rotate(-90 ${c} ${c})`} />
-        </svg>
-      )}
-      <div className="coin" style={{ width: size, height: size }}>
-        <Mark size={size * 0.3} />
-        <span style={{ fontSize: size * 0.15 }}>kinn</span>
-      </div>
-    </div>
-  );
-}
-
 /** The logo mark: the coin's ring with a teal tick at your line. */
 export function Mark({ size = 24 }: { size?: number }) {
   return (
