@@ -190,7 +190,7 @@ function Yesterday({ d, line, fatigue }: { d: DayDetail; line: number | null; fa
           <span className="caption">peak bend</span>
         </div>
         <div>
-          <span className={`metric small${d.minutesPastLine ? ' call-rest' : ''}`}>{d.minutesPastLine}m</span>
+          <span className="metric small">{d.minutesPastLine}m</span>
           <span className="caption">past your line</span>
         </div>
         <div>

@@ -6,7 +6,7 @@ import { coinSnapshot } from './coin3d';
 /**
  * The Today dial is the coin itself, seen from above, with its light ring as the gauge: 0–150°
  * of knee bend around a 270° arc of light segments. Segments up to your line glow in the call's
- * colour; past the line they're coral; a teal tick marks the line (the logo's tick).
+ * colour; past the line they're dark; a white tick marks the line (the logo's tick).
  * With `live`, segments light up to the knee's bend right now.
  */
 const START = 225;
@@ -39,12 +39,12 @@ export function CoinDial({ call, line, live = null, size = 250 }: { call: Call; 
     const [x1, y1] = pt(deg, rInner);
     const [x2, y2] = pt(deg, rOuter);
     let cls = 'seg';
-    if (deg <= lit) cls += live !== null ? (line !== null && deg > line ? ' on call-rest' : ' on call-push') : ` on call-${call}`;
+    if (deg <= lit) cls += live !== null ? (line !== null && deg > line ? ' on call-rest' : ' on live') : ` on call-${call}`;
     else if (line !== null && deg > line) cls += ' over';
     return <line key={i} className={cls} x1={x1} y1={y1} x2={x2} y2={y2} />;
   });
   const tick = line !== null ? [pt(line, rInner - size * 0.035), pt(line, rOuter + size * 0.035)] : null;
-  const glow = live !== null ? (past ? 'rest' : 'push') : call;
+  const glow = live !== null ? (past ? 'rest' : 'live') : call;
 
   return (
     <div className={`coin-dial glow-${glow}`} style={{ width: size, height: size }}>
@@ -69,7 +69,7 @@ export function CoinDial({ call, line, live = null, size = 250 }: { call: Call; 
           )}
         </div>
       </div>
-      <span className={`dial-call ${live !== null ? (past ? 'call-rest' : 'call-push') : `call-${call}`}`}>
+      <span className={`dial-call ${live !== null ? (past ? 'call-rest' : '') : `call-${call}`}`}>
         <CallShape call={live !== null ? (past ? 'rest' : 'push') : call} />
         {live !== null ? (past ? 'Ease off' : 'Live') : CALL_WORD[call]}
       </span>

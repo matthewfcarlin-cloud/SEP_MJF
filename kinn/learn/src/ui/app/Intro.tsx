@@ -73,7 +73,7 @@ export function Intro({ headline, sub, onDone }: { headline: string; sub: string
     cam.lookAt(0, offsetY, 0);
     r.compile(scene, cam);
 
-    const teal = new THREE.Color(0x3ddbb8);
+    const dim = new THREE.Color(0x8a8f95);
     const white = new THREE.Color(0xffffff);
     let start = -1;
     let last = '';
@@ -97,8 +97,8 @@ export function Intro({ headline, sub, onDone }: { headline: string; sub: string
       const open = ease(seg(t, TRACE_END, DONE));
       g.position.z -= open * 2.5;
       g.position.y += open * 0.3;
-      // Its light: white while floating, teal from the click.
-      coin.ring.color.copy(white).lerp(teal, seg(t, CLICK - 0.05, CLICK + 0.1));
+      // Its light: dim while floating, full white from the click.
+      coin.ring.color.copy(dim).lerp(white, seg(t, CLICK - 0.05, CLICK + 0.1));
       r.render(scene, cam);
       const p = t < CLICK ? 'float' : t < CLICK + 0.25 ? 'click' : t < TRACE_END ? 'traces' : 'open';
       if (p !== last) {
@@ -135,11 +135,11 @@ export function Intro({ headline, sub, onDone }: { headline: string; sub: string
             </feMerge>
           </filter>
           <radialGradient id="corner">
-            <stop offset="0" stopColor="#3ddbb8" stopOpacity=".55" />
-            <stop offset="1" stopColor="#3ddbb8" stopOpacity="0" />
+            <stop offset="0" stopColor="#e8eaec" stopOpacity=".22" />
+            <stop offset="1" stopColor="#e8eaec" stopOpacity="0" />
           </radialGradient>
         </defs>
-        <circle className="shock" cx={cx} cy={cy} r={rPx} fill="none" stroke="#3ddbb8" strokeWidth="2" />
+        <circle className="shock" cx={cx} cy={cy} r={rPx} fill="none" stroke="#e8eaec" strokeWidth="2" />
         {traces.map((t, i) => (
           <g key={i} style={{ ['--d' as string]: `${t.delay}s`, ['--len' as string]: t.len }}>
             <path className={`trace${t.thin ? ' thin' : ''}`} d={t.d} />
