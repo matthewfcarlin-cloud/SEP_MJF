@@ -33,13 +33,18 @@ Keep the claims honest: it estimates the chance of a flare-up and suggests a lim
 
 Use **Next →** or the arrow keys.
 
-1. **Meet Maya:** day one, a call and a line already, from 3,000 earlier recoveries.
-2. **It learns her:** day 21, the line has moved 93° → 123° and the Learned tab shows her strongest warning sign (muscle fatigue).
-3. **Tell it how it went:** tap Flare-up (or type "knee swelled after practice, 6/10"). The phone shows what that answer changed for tomorrow: Rest instead of Push, line 121° instead of 128°.
-4. **Every Kinn learns:** the fleet is set to 0. Maya's phone says "Learning you". Drag the fleet up and watch the call, the line and the chart come back.
-5. **It never stops:** the weekly chart: alone it starts at a coin flip, the fleet alone plateaus, together it's best and keeps improving.
+1. **Meet Maya:** the starting point. "Kinn starts from 3,000 recoveries like yours" with her first line (93°). Tap **Start day 1** for Today.
+2. **It learns her:** day 21, the Learned tab. Her line has moved 93° → 123° and muscle fatigue is her strongest warning sign. Open the week recap.
+3. **A session with a coach:** press **Start session**. Ten reps play live through the ring; full range, holds and the rep where her quad tired are counted.
+4. **Tell it how it went:** tap **Flare-up** (or type "knee swelled after practice, 6/10"). "Got it" shows what that answer changed: Rest instead of Push, line 121° instead of 128°. Tap **See tomorrow** for the morning connect ("Rest today. It's part of the work."), then Today.
+5. **Every Kinn learns:** the fleet is set to 0, so the starting point reads "Kinn starts from scratch". Drag the fleet up and the line comes back.
+6. **It never stops:** day 42, the week recap and the weekly chart: alone it starts at a coin flip, the fleet alone plateaus, together it's best and keeps improving.
 
-Side demo: drag "Try it: bend the knee" past her line and the phone buzzes.
+Side demo: drag "Try it: bend the knee" past her line and the phone buzzes. The You tab shows the coin, strip life (reorder) and the "Help other Kinns learn" switch.
+
+## The app's screens
+
+Starting point (day 1) → morning connect ("Ready for another day.") → **Today** (the ring: call and line; yesterday's muscle fatigue and deep bends against her normal; today's session; tonight's check-in) → guided **session** → evening **check-in** → "Got it" → next morning. Tabs: **Today**, **Learned** (what warns of a flare-up for you, the week recap, the timeline) and **You** (coin, strip, PT sharing, learning switch). The look follows the Kinn brand system: graphite and ceramic, the coin's teal as the only light, Barlow Condensed for numbers, Manrope for text.
 
 ## Tracks
 
@@ -66,5 +71,6 @@ npm run precompute   # regenerate src/data/curves.json after changing the engine
 - `src/engine/model.ts`: logistic model, online learning on the phone (pulled toward the fleet model), federated averaging across phones, balanced-accuracy scoring.
 - `src/engine/hero.ts`: Maya's days, mornings (call, line, fatigue cap, record) and the "what Kinn learned" timeline, all computed.
 - `src/engine/curves.ts`: the chart numbers, precomputed into `src/data/curves.json`.
-- `src/ui/`: phone, gauge, charts (hand-built SVG with hover, direct labels and a table view), panel.
+- `src/engine/session.ts`, `daily.ts`: the guided session (planned reps, live frames, full range, when the quad tired) and the daily readouts (what changed overnight, readings against her normal, the week recap, coin and strip).
+- `src/ui/Phone.tsx` + `src/ui/app/`: the app's screens, the Today ring and its styles (`app.css`); `src/ui/`: charts (hand-built SVG with hover, direct labels and a table view) and the panel.
 - `kinn/site/checkin.js` (in the site, not here): the `/api/checkin` route, where Claude (structured JSON output) turns a sentence into a check-in.
