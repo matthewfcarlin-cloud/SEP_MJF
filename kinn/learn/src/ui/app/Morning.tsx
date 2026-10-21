@@ -12,6 +12,7 @@ const weekOf = (day: number) => Math.ceil(day / 7);
 export function Start({ m, devices, onStart }: { m: Morning; devices: number; onStart: () => void }) {
   return (
     <div className="screen center-screen">
+      <img className="start-logo" src={`${import.meta.env.BASE_URL}brand/kinn-lockup-ceramic.svg`} width={82} height={24} alt="kinn" />
       <div className="fill center">
         <Ring call={m.call} line={m.line} size={190} draw />
         {devices > 0 ? (

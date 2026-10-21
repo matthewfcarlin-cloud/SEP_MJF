@@ -13,7 +13,8 @@ export function Coin({ size = 140, glow = false, draw = false }: { size?: number
         </svg>
       )}
       <div className="coin" style={{ width: size, height: size }}>
-        <span style={{ fontSize: size * 0.17 }}>kinn</span>
+        <Mark size={size * 0.3} />
+        <span style={{ fontSize: size * 0.15 }}>kinn</span>
       </div>
     </div>
   );

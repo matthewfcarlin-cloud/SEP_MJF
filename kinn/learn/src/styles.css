@@ -73,6 +73,12 @@ button:disabled {
   border-bottom: 1px solid var(--line);
 }
 
+.wordmark img {
+  display: block;
+  height: 22px;
+  width: auto;
+}
+
 .wordmark {
   color: inherit;
   text-decoration: none;
