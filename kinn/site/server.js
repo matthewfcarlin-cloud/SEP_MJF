@@ -162,7 +162,9 @@ app.get('/admin/stats', async (req, res) => {
   res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), wantsAlert: tally('alert'), bySource: tally('source') });
 });
 
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', setHeaders: (res, p) => { if (p.endsWith('.html')) res.set('Cache-Control', 'no-cache'); } }));
+// Only the demo's hashed build files can be cached for long; everything else (pages, progress
+// screenshots, brand files) keeps its name when it changes, so browsers re-check it on every visit.
+app.use(express.static(path.join(__dirname, 'public'), { setHeaders: (res, p) => res.set('Cache-Control', p.includes(`${path.sep}learn${path.sep}assets${path.sep}`) ? 'public, max-age=31536000, immutable' : 'no-cache') }));
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const port = process.env.PORT || 3000;
