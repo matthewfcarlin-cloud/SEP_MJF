@@ -14,6 +14,7 @@ export type Action =
   | { type: 'setProfile'; profile: Profile }
   | { type: 'useSample' }
   | { type: 'addActivity'; date: string; activity: ManualActivity; intensity: Intensity; id: string }
+  | { type: 'removeActivity'; id: string }
   | { type: 'addPain'; date: string; t: number; pain: number; doing: Doing | undefined; id: string }
   | { type: 'answerSettle'; id: string; settled: Settled; t: number }
   | { type: 'setCheckIn'; date: string; pain: number; swelling: Swelling }
@@ -53,6 +54,8 @@ export function reducer(state: AppState, action: Action): AppState {
       const log: ActivityLog = { id: action.id, date: action.date, activity: action.activity, intensity: action.intensity }
       return withData(state, { activityLogs: [...state.data.activityLogs, log] })
     }
+    case 'removeActivity':
+      return withData(state, { activityLogs: state.data.activityLogs.filter((l) => l.id !== action.id) })
     case 'addPain': {
       const base = { id: action.id, t: action.t, date: action.date, pain: action.pain }
       const log: PainLog = action.doing ? { ...base, doing: action.doing } : base

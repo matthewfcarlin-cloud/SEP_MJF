@@ -2,11 +2,15 @@ import * as Notifications from 'expo-notifications'
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, router } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
-import { useColorScheme } from 'react-native'
+import { LogBox, useColorScheme } from 'react-native'
 
+import { installDevLogMirror } from '@/dev-log-mirror'
 import { StoreProvider } from '@/store/provider'
 import '@/notifications'
 
+installDevLogMirror()
+// Known noisy React Native Animated warning raised by a navigation dependency; nothing in our code listens to it.
+LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.'])
 SplashScreen.preventAutoHideAsync()
 
 function useNotificationTaps() {

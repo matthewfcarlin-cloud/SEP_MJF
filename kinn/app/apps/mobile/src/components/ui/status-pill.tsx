@@ -13,13 +13,19 @@ export const statusColor: Record<Status, ColorToken> = {
   'ease-off': 'warn',
 }
 
-export function StatusPill({ status, large = false }: { readonly status: Status; readonly large?: boolean }) {
+interface StatusPillProps {
+  readonly status: Status
+  readonly large?: boolean
+  readonly align?: 'flex-start' | 'center'
+}
+
+export function StatusPill({ status, large = false, align = 'flex-start' }: StatusPillProps) {
   const colors = useColors()
   const tone = colors[statusColor[status]]
   return (
     <View
       style={{
-        alignSelf: 'flex-start',
+        alignSelf: align,
         flexDirection: 'row',
         alignItems: 'center',
         gap: space.sm,

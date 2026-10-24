@@ -19,6 +19,7 @@ export interface Store {
   readonly setProfile: (profile: Profile) => void
   readonly startWithSample: () => void
   readonly addActivity: (activity: ManualActivity, intensity: Intensity) => void
+  readonly removeActivity: (id: string) => void
   readonly addPain: (pain: number, doing: Doing | undefined) => string
   readonly answerSettle: (id: string, settled: Settled) => void
   readonly setCheckIn: (pain: number, swelling: Swelling) => void
@@ -87,6 +88,7 @@ export function StoreProvider({ children }: { readonly children: ReactNode }) {
       setProfile: (profile) => dispatch({ type: 'setProfile', profile }),
       startWithSample: () => dispatch({ type: 'useSample' }),
       addActivity: (activity, intensity) => dispatch({ type: 'addActivity', id: newId('act'), date: today, activity, intensity }),
+      removeActivity: (id) => dispatch({ type: 'removeActivity', id }),
       addPain,
       answerSettle: (id, settled) => dispatch({ type: 'answerSettle', id, settled, t: Date.now() }),
       setCheckIn: (pain, swelling) => dispatch({ type: 'setCheckIn', date: today, pain, swelling }),
