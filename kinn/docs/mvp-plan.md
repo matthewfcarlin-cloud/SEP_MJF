@@ -104,3 +104,6 @@ Open:
 - Today opens on a tick-arc recovery dial (status-coloured), decision kept on recovery progress rather than load.
 - Onboarding is three short steps with goal chips; "Start over from onboarding" in settings.
 - Dev client: hot reload is unreliable, so relaunch the app after edits; a dev-only log mirror sends console warnings to the Metro terminal; the LogBox toast is suppressed in development builds.
+- Progress: range charts have area fill, numbered milestone flags, date axis and a labelled reference line; each card shows gains since day 1 and this week; the top card names the next milestone with degrees to go.
+- Pain sheet: graded scale with word labels and a Logged confirmation; check-in previews the status it will set.
+- Note: after `simctl launch`, the first tab tap lands before the tab bar is ready; wait ~12 s or tap twice.
