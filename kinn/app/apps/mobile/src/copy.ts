@@ -107,10 +107,16 @@ export const copy = {
 
   insights: {
     title: 'Insights',
-    subtitle: 'What tends to come before a flare-up',
+    subtitle: 'What comes before a flare-up',
     flareCount: (n: number) => (n === 1 ? '1 flare-up in the last 30 days' : `${n} flare-ups in the last 30 days`),
     empty: 'Not enough flare-ups yet to see a pattern. That’s a good thing.',
     observationNote: 'These are things that happened before, not causes.',
+    timelineTitle: 'Last 30 days',
+    legendFlare: 'Flare-up morning',
+    legendBefore: 'Day before',
+    legendMatched: (what: string) => `${what} day`,
+    dayBefore: 'Day before',
+    morningOf: 'Morning of',
     prevalenceNote: (pct: number) => `Happened before only ${pct}% of mornings.`,
     loadContrastTitle: 'Knee load the day before',
     beforeFlare: 'before a flare-up',

@@ -37,6 +37,14 @@ describe('seedDataset', () => {
     expect(view.milestones.map((m) => m.kind)).toContain('bike-range')
   })
 
+  test('timeline marks flare mornings and the days before them', () => {
+    expect(view.timeline).toHaveLength(31)
+    expect(view.timeline.filter((d) => d.mark === 'flare')).toHaveLength(4)
+    const before = view.timeline.filter((d) => d.mark === 'before-flare')
+    expect(before).toHaveLength(4)
+    expect(before.filter((d) => d.activities.includes('game'))).toHaveLength(3)
+  })
+
   test('is deterministic', () => {
     expect(seedDataset(TODAY)).toEqual(seedDataset(TODAY))
   })

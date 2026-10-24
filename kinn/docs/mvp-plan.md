@@ -107,3 +107,4 @@ Open:
 - Progress: range charts have area fill, numbered milestone flags, date axis and a labelled reference line; each card shows gains since day 1 and this week; the top card names the next milestone with degrees to go.
 - Pain sheet: graded scale with word labels and a Logged confirmation; check-in previews the status it will set.
 - Note: after `simctl launch`, the first tab tap lands before the tab bar is ready; wait ~12 s or tap twice.
+- Insights: hero card draws the pattern on a 30-day timeline (flare mornings, the day before, matched activity days), load contrast as proportional bars, flare rows show the day-before load and activity chip.
