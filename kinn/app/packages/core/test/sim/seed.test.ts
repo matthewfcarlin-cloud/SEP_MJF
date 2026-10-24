@@ -1,0 +1,43 @@
+import { deriveToday } from '../../src/manual/derive'
+import { seedDataset, SEED_DAYS } from '../../src/sim/seed'
+import { containsBannedWord } from '../../src/copy/banned'
+
+const TODAY = '2026-10-26'
+
+describe('seedDataset', () => {
+  const data = seedDataset(TODAY)
+  const view = deriveToday(data, TODAY)
+
+  test('covers 21 days plus a check-in for today', () => {
+    expect(data.activityLogs).toHaveLength(SEED_DAYS)
+    expect(data.romDays).toHaveLength(SEED_DAYS)
+    expect(data.checkIns).toHaveLength(SEED_DAYS + 1)
+    expect(view.checkInDone).toBe(true)
+  })
+
+  test('has four flare-ups and the game-day insight fires first', () => {
+    expect(view.flares).toHaveLength(4)
+    expect(view.insights.length).toBeGreaterThanOrEqual(2)
+    expect(view.insights[0]?.text).toBe('3 of your last 4 flare-ups came after game days.')
+  })
+
+  test('today reads Steady because yesterday was a hard practice', () => {
+    expect(view.status).toEqual({ status: 'steady', because: 'load-spike' })
+  })
+
+  test('progress is in the 60s and full straightening has been reached', () => {
+    expect(view.progressPercent).toBeGreaterThanOrEqual(55)
+    expect(view.progressPercent).toBeLessThanOrEqual(80)
+    expect(view.milestones.map((m) => m.kind)).toContain('full-straightening')
+    expect(view.milestones.map((m) => m.kind)).toContain('bike-range')
+  })
+
+  test('is deterministic', () => {
+    expect(seedDataset(TODAY)).toEqual(seedDataset(TODAY))
+  })
+
+  test('all generated copy is clean', () => {
+    expect(containsBannedWord(view.suggestion)).toBe(false)
+    for (const i of view.insights) expect(containsBannedWord(i.text)).toBe(false)
+  })
+})
