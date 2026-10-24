@@ -43,7 +43,7 @@ export default function CheckInScreen() {
   }
 
   return (
-    <Screen modal title={copy.checkIn.title}>
+    <Screen variant="modal" title={copy.checkIn.title}>
       <Card>
         <SectionLabel>{copy.checkIn.painTitle}</SectionLabel>
         <NumberScale value={pain} onChange={setPain} lowLabel={copy.pain.scaleLow} highLabel={copy.pain.scaleHigh} />

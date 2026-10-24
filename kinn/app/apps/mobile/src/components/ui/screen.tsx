@@ -10,23 +10,24 @@ interface ScreenProps {
   readonly title?: string
   readonly subtitle?: string
   readonly children: ReactNode
-  /** Modal screens have no tab bar underneath. */
-  readonly modal?: boolean
+  /** modal: sheet, no safe-area top. fullscreen: no tab bar, needs the safe-area top. tab: inside the native tabs, which already inset the top. */
+  readonly variant?: 'tab' | 'modal' | 'fullscreen'
   readonly right?: ReactNode
 }
 
-export function Screen({ title, subtitle, children, modal = false, right }: ScreenProps) {
+export function Screen({ title, subtitle, children, variant = 'tab', right }: ScreenProps) {
   const insets = useSafeAreaInsets()
   const colors = useColors()
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: colors.bg }}
       contentContainerStyle={{
-        paddingTop: modal ? space.lg : insets.top + space.md,
-        paddingBottom: insets.bottom + (modal ? space.xl : bottomTabInset + space.xl),
+        paddingTop: variant === 'modal' ? space.lg : insets.top + space.md,
+        paddingBottom: insets.bottom + (variant === 'tab' ? bottomTabInset + space.xl : space.xl),
         paddingHorizontal: space.md,
         alignItems: 'center',
       }}
+      contentInsetAdjustmentBehavior="never"
       keyboardShouldPersistTaps="handled">
       <View style={{ width: '100%', maxWidth: maxContentWidth, gap: space.md }}>
         {title ? (

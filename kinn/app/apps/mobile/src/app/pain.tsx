@@ -30,7 +30,7 @@ export default function PainScreen() {
   }
 
   return (
-    <Screen modal title={copy.pain.title}>
+    <Screen variant="modal" title={copy.pain.title}>
       <Card>
         <NumberScale value={pain} onChange={setPain} lowLabel={copy.pain.scaleLow} highLabel={copy.pain.scaleHigh} />
       </Card>

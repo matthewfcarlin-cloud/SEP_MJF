@@ -65,7 +65,7 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <Screen title={copy.onboarding.title}>
+    <Screen variant="fullscreen" title={copy.onboarding.title}>
       <Card>
         <SectionLabel>Your name</SectionLabel>
         <TextInput value={name} onChangeText={setName} placeholder="Maya" placeholderTextColor={colors.textMuted} style={inputStyle} />

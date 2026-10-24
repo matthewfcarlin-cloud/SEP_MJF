@@ -13,7 +13,7 @@ import { space } from '@/theme/tokens'
 export default function SettingsScreen() {
   const { state, setPtReminder, resetToSample } = useStore()
   return (
-    <Screen modal title={copy.settings.title}>
+    <Screen variant="modal" title={copy.settings.title}>
       <Card>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: space.md }}>
           <View style={{ flex: 1 }}>

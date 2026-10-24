@@ -1,4 +1,5 @@
 import { Link, router } from 'expo-router'
+import { SymbolView } from 'expo-symbols'
 import { Pressable, View } from 'react-native'
 
 import { copy } from '@/copy'
@@ -22,9 +23,7 @@ function SettingsLink() {
     <Link href="/settings" asChild>
       <Pressable accessibilityRole="button" accessibilityLabel={copy.settings.title} hitSlop={12}>
         <View style={{ width: 36, height: 36, borderRadius: radius.pill, backgroundColor: colors.surfaceRaised, alignItems: 'center', justifyContent: 'center' }}>
-          <Txt kind="small" color="textSecondary">
-            ⚙
-          </Txt>
+          <SymbolView name="gearshape" size={18} tintColor={colors.textSecondary} />
         </View>
       </Pressable>
     </Link>

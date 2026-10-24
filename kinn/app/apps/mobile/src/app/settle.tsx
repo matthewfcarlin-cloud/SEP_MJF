@@ -16,7 +16,7 @@ export default function SettleScreen() {
 
   if (!pending) {
     return (
-      <Screen modal title={copy.pain.settleTitle}>
+      <Screen variant="modal" title={copy.pain.settleTitle}>
         <Txt color="textSecondary">{copy.insights.empty}</Txt>
         <Button label="Done" variant="secondary" onPress={() => router.back()} />
       </Screen>
@@ -29,7 +29,7 @@ export default function SettleScreen() {
   }
 
   return (
-    <Screen modal title={copy.pain.settleTitle}>
+    <Screen variant="modal" title={copy.pain.settleTitle}>
       <Card>
         <Txt>{copy.pain.settleBody(pending.pain)}</Txt>
       </Card>
