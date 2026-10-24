@@ -92,3 +92,8 @@ Open:
 - **Local native build from this folder.** The repo sits in the iCloud-synced Desktop, and iCloud tags freshly built framework folders with Finder attributes that break code signing (`resource fork, Finder information, or similar detritus not allowed`). Redirecting only the framework build (`EXPO_CUSTOM_BUILD_ROOT`) gets past signing but then the Pods cannot find the moved framework. The working approach is a second checkout outside iCloud: a detached git worktree at `~/kinn-native`, used only for `expo run:ios` and device installs (`cd ~/kinn-native && git checkout -- . && git checkout --detach main` to pick up changes; npm install there rewrites the lockfile, hence the reset). EAS cloud builds are not affected.
 - Palette and type: still placeholders, waiting on Figma.
 - Nine Expo packages are a patch version behind (`npx expo install --check`); harmless for the demo, run it before the TestFlight build.
+
+### Fri Oct 23, late
+- Native development client builds and installs on the simulator from the `~/kinn-native` worktree (`com.kinn.app`, full notification support). The EAS/TestFlight step is still Matthew's for Saturday.
+- Polish: Insights now shows one headline observation (conditions that restate the same flare-ups are dropped) plus a "knee load the day before" contrast card; Today shows the goal under the greeting; the progress bar fills on mount; cards fade in; chips, pain scale and saves give haptic feedback; the load chart has week labels.
+- Still placeholders for Figma: palette and type (`src/theme/tokens.ts`), app icon, swelling picture scale.
