@@ -97,3 +97,10 @@ Open:
 - Native development client builds and installs on the simulator from the `~/kinn-native` worktree (`com.kinn.app`, full notification support). The EAS/TestFlight step is still Matthew's for Saturday.
 - Polish: Insights now shows one headline observation (conditions that restate the same flare-ups are dropped) plus a "knee load the day before" contrast card; Today shows the goal under the greeting; the progress bar fills on mount; cards fade in; chips, pain scale and saves give haptic feedback; the load chart has week labels.
 - Still placeholders for Figma: palette and type (`src/theme/tokens.ts`), app icon, swelling picture scale.
+
+### Sat Oct 24, early
+- Weekly report rebuilt as a story (headline, day rows with next-morning dots, week-over-week change, share preview); week ends yesterday.
+- Daily log: live load preview, removable entries, today-versus-usual bar, last 7 days.
+- Today opens on a tick-arc recovery dial (status-coloured), decision kept on recovery progress rather than load.
+- Onboarding is three short steps with goal chips; "Start over from onboarding" in settings.
+- Dev client: hot reload is unreliable, so relaunch the app after edits; a dev-only log mirror sends console warnings to the Metro terminal; the LogBox toast is suppressed in development builds.
