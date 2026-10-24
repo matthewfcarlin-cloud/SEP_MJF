@@ -76,17 +76,15 @@ export function seedDataset(today: string): Dataset {
     intensity: p.intensity,
   }))
 
-  const checkIns: MorningCheckIn[] = [
-    ...PLAN.map((_, i) => {
-      const flare = FLARE_MORNINGS[i]
-      return flare
-        ? { date: dateAt(i), pain: flare.pain, swelling: flare.swelling }
-        : { date: dateAt(i), pain: i % 3 === 0 ? 2 : 1, swelling: 'none' as const }
-    }),
-    { date: today, pain: 2, swelling: 'none' },
-  ]
+  // No check-in for today on purpose: the demo opens on the morning check-in card.
+  const checkIns: MorningCheckIn[] = PLAN.map((_, i) => {
+    const flare = FLARE_MORNINGS[i]
+    return flare
+      ? { date: dateAt(i), pain: flare.pain, swelling: flare.swelling }
+      : { date: dateAt(i), pain: i % 3 === 0 ? 2 : 1, swelling: 'none' as const }
+  })
 
-  const painLogs: PainLog[] = PLAN.flatMap((p, i) => {
+  const gamePain: PainLog[] = PLAN.flatMap((p, i) => {
     if (p.activity !== 'game') return []
     const date = dateAt(i)
     return [
@@ -101,6 +99,12 @@ export function seedDataset(today: string): Dataset {
       },
     ]
   })
+  // Last night's unanswered log, so the demo shows the "Did it settle?" card.
+  const lastNight = dateAt(SEED_DAYS - 1)
+  const painLogs: PainLog[] = [
+    ...gamePain,
+    { id: 'seed-pain-last-night', t: startOfDay(lastNight, 20) + 30 * 60_000, date: lastNight, pain: 4, doing: 'practice' as const },
+  ]
 
   const romDays: RomDay[] = PLAN.map((_, i) => ({ date: dateAt(i), ...romFor(i), source: 'kinn-tape-sim' as const }))
 
