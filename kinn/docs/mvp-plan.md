@@ -89,6 +89,6 @@ Done and committed on `main`:
 
 Open:
 - **EAS login and the first TestFlight build** need Matthew's Expo and Apple logins; commands are in `apps/mobile/README.md`.
-- **Local native build from this folder.** The repo sits in the iCloud-synced Desktop, and iCloud tags freshly built framework folders with Finder attributes that break code signing (`resource fork, Finder information, or similar detritus not allowed`). Fix in progress: build the Expo JSI framework outside the synced folder with `EXPO_CUSTOM_BUILD_ROOT=~/Library/Caches/kinn-expo-modules-jsi`. EAS cloud builds are not affected. If the local build still fails, clone the repo to a non-iCloud path (for example `~/dev/SEP_MJF`) for device installs.
+- **Local native build from this folder.** The repo sits in the iCloud-synced Desktop, and iCloud tags freshly built framework folders with Finder attributes that break code signing (`resource fork, Finder information, or similar detritus not allowed`). Redirecting only the framework build (`EXPO_CUSTOM_BUILD_ROOT`) gets past signing but then the Pods cannot find the moved framework. The working approach is a second checkout outside iCloud: a git worktree of `main` at `~/kinn-native`, used only for `expo run:ios` and device installs (`cd ~/kinn-native && git merge main` to pick up changes). EAS cloud builds are not affected.
 - Palette and type: still placeholders, waiting on Figma.
 - Nine Expo packages are a patch version behind (`npx expo install --check`); harmless for the demo, run it before the TestFlight build.
