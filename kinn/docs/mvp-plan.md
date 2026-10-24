@@ -108,3 +108,4 @@ Open:
 - Pain sheet: graded scale with word labels and a Logged confirmation; check-in previews the status it will set.
 - Note: after `simctl launch`, the first tab tap lands before the tab bar is ready; wait ~12 s or tap twice.
 - Insights: hero card draws the pattern on a 30-day timeline (flare mornings, the day before, matched activity days), load contrast as proportional bars, flare rows show the day-before load and activity chip.
+- Today: time-of-day greeting; pending morning asks sit above the dial as one compact card with side-by-side buttons; dial centre is a flat disc; a yesterday line under the load bars; secondary buttons have a border so they read on raised cards.

@@ -104,8 +104,7 @@ export function Dial({ value, color, size = 280, marker, children }: DialProps) 
             return <Line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={colors.textSecondary} strokeWidth={3} strokeLinecap="round" />
           })()
         ) : null}
-        <Circle cx={cx} cy={cy} r={discR} fill={colors.surfaceRaised} stroke={colors.border} strokeWidth={1} />
-        <Circle cx={cx} cy={cy} r={discR - 10} fill="none" stroke={colors.border} strokeWidth={1} opacity={0.7} />
+        <Circle cx={cx} cy={cy} r={discR} fill={colors.surface} stroke={colors.border} strokeWidth={1} />
       </Svg>
       <View style={{ width: discR * 2 - 24, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill }}>{children}</View>
     </View>

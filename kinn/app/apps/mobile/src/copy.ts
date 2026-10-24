@@ -20,6 +20,15 @@ export const copy = {
 
   today: {
     greeting: (name: string) => (name && name !== 'there' ? `Hi ${name}` : 'Hi'),
+    timeGreeting: (hour: number, name: string) => {
+      const word = hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening'
+      return name && name !== 'there' ? `${word}, ${name}` : word
+    },
+    yesterdayLine: (activities: string, score: number) => (activities ? `Yesterday: ${activities} · load ${score}` : `Yesterday: nothing logged · load ${score}`),
+    morningFirst: 'Start with this',
+    settleShort: 'Did it settle?',
+    checkInShort: 'Check in',
+    bothAsks: 'Two quick questions about the knee.',
     weekLabel: (weeks: number) => `Week ${Math.floor(weeks)} of your comeback`,
     goalLabel: (goal: string) => `Goal: ${goal}`,
     progressLabel: 'Recovery progress',

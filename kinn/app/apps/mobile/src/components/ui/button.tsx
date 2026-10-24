@@ -24,8 +24,10 @@ export function Button({ label, variant = 'primary', disabled, style, ...rest }:
       style={({ pressed }) => [
         {
           backgroundColor: bg,
+          borderWidth: 1,
+          borderColor: variant === 'secondary' ? colors.border : 'transparent',
           borderRadius: radius.pill,
-          paddingVertical: 14,
+          paddingVertical: 13,
           paddingHorizontal: space.lg,
           alignItems: 'center',
           opacity: disabled ? 0.4 : pressed ? 0.75 : 1,

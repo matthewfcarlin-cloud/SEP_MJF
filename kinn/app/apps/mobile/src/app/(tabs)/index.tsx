@@ -1,6 +1,8 @@
 import { Link, router } from 'expo-router'
 import { SymbolView } from 'expo-symbols'
+import { useState } from 'react'
 import { Pressable, View } from 'react-native'
+import { addDays } from '@kinn/core'
 
 import { copy } from '@/copy'
 import { weekdayLetter } from '@/format'
@@ -30,19 +32,43 @@ function SettingsLink() {
   )
 }
 
+/** The morning asks, shown above the dial until answered so the first tap of the day is the right one. */
+function MorningAsks({ pendingSettle, checkInDone }: { readonly pendingSettle: boolean; readonly checkInDone: boolean }) {
+  if (!pendingSettle && checkInDone) return null
+  const both = pendingSettle && !checkInDone
+  return (
+    <Card raised index={0} style={{ gap: space.sm }}>
+      <SectionLabel>{copy.today.morningFirst}</SectionLabel>
+      <Txt kind="bodyStrong">{both ? copy.today.bothAsks : pendingSettle ? copy.today.settlePrompt : copy.today.checkInPrompt}</Txt>
+      <View style={{ flexDirection: 'row', gap: space.sm }}>
+        {pendingSettle ? <Button label={copy.today.settleShort} variant="secondary" onPress={() => router.push('/settle')} style={{ flex: 1 }} /> : null}
+        {!checkInDone ? <Button label={both ? copy.today.checkInShort : copy.today.checkInAction} variant="secondary" onPress={() => router.push('/checkin')} style={{ flex: 1 }} /> : null}
+      </View>
+    </Card>
+  )
+}
+
 export default function TodayScreen() {
   const { view, state } = useStore()
   const colors = useColors()
   const { profile } = state.data
+  const [hour] = useState(() => new Date().getHours())
   const last7 = view.loads.slice(-7)
+  const yesterday = addDays(view.date, -1)
+  const yesterdayActivities = state.data.activityLogs
+    .filter((l) => l.date === yesterday)
+    .map((l) => copy.log.activity[l.activity].split(' ')[0])
+    .join(', ')
 
   return (
     <Screen
-      title={copy.today.greeting(profile.name)}
+      title={copy.today.timeGreeting(hour, profile.name)}
       subtitle={`${copy.today.weekLabel(view.weeksSinceInjury)} · ${copy.today.goalLabel(profile.goal)}`}
       right={<SettingsLink />}>
-      <View style={{ alignItems: 'center', gap: space.sm, marginTop: -space.sm }}>
-        <Dial value={view.progressPercent} color={statusColor[view.status.status]}>
+      <MorningAsks pendingSettle={view.pendingSettle.length > 0} checkInDone={view.checkInDone} />
+
+      <View style={{ alignItems: 'center', gap: space.sm }}>
+        <Dial value={view.progressPercent} color={statusColor[view.status.status]} size={264}>
           <Txt kind="number" style={{ fontSize: 56, lineHeight: 60 }}>
             {view.progressPercent}%
           </Txt>
@@ -73,20 +99,6 @@ export default function TodayScreen() {
         ) : null}
       </View>
 
-      {view.pendingSettle.length > 0 ? (
-        <Card raised>
-          <Txt kind="bodyStrong">{copy.today.settlePrompt}</Txt>
-          <Button label={copy.today.settleAction} variant="secondary" onPress={() => router.push('/settle')} />
-        </Card>
-      ) : null}
-
-      {!view.checkInDone ? (
-        <Card raised>
-          <Txt kind="bodyStrong">{copy.today.checkInPrompt}</Txt>
-          <Button label={copy.today.checkInAction} variant="secondary" onPress={() => router.push('/checkin')} />
-        </Card>
-      ) : null}
-
       <Pressable
         accessibilityRole="button"
         onPress={() => router.push('/pain')}
@@ -106,7 +118,7 @@ export default function TodayScreen() {
         </Txt>
       </Pressable>
 
-      <Card>
+      <Card index={1}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <SectionLabel>{copy.today.loadLabel}</SectionLabel>
           <Txt kind="small" color="textSecondary">
@@ -122,6 +134,9 @@ export default function TodayScreen() {
           }))}
           height={56}
         />
+        <Txt kind="small" color="textMuted">
+          {copy.today.yesterdayLine(yesterdayActivities, view.yesterdayLoad.score)}
+        </Txt>
         <Button label={copy.today.logToday} variant="ghost" onPress={() => router.push('/log')} />
       </Card>
 
