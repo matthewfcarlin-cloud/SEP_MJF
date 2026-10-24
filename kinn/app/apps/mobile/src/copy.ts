@@ -7,6 +7,7 @@ import type { Status } from '@kinn/core'
 
 export const copy = {
   appName: 'Kinn',
+  done: 'Done',
   sampleData: 'Sample data',
   viaTape: 'via Kinn tape',
   tabs: { today: 'Today', log: 'Log', insights: 'Insights', progress: 'Progress', report: 'Report' },
@@ -49,6 +50,7 @@ export const copy = {
     settle: { yes: 'Yes, settled', 'a-bit': 'A bit', no: 'No' },
     notificationTitle: 'Did it settle?',
     notificationBody: 'You logged pain yesterday. How is the knee this morning?',
+    nothingPending: 'Nothing to answer right now. Log pain when something hurts and we’ll check in the next morning.',
   },
 
   doing: {

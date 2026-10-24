@@ -17,15 +17,16 @@ export default function SettleScreen() {
   if (!pending) {
     return (
       <Screen variant="modal" title={copy.pain.settleTitle}>
-        <Txt color="textSecondary">{copy.insights.empty}</Txt>
-        <Button label="Done" variant="secondary" onPress={() => router.back()} />
+        <Txt color="textSecondary">{copy.pain.nothingPending}</Txt>
+        <Button label={copy.done} variant="secondary" onPress={() => router.back()} />
       </Screen>
     )
   }
 
   const answer = (settled: Settled) => {
-    answerSettle(pending.id, settled)
+    // Close first: the dispatch below re-renders this screen with nothing pending.
     if (view.pendingSettle.length <= 1) router.back()
+    answerSettle(pending.id, settled)
   }
 
   return (
