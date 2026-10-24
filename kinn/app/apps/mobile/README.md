@@ -50,7 +50,7 @@ Internal testers (your App Store Connect team) can install as soon as processing
 This repo sits in the iCloud-synced Desktop, and iCloud's Finder attributes break code signing of frameworks built inside it. Native builds therefore run from a second checkout outside iCloud (a detached git worktree at `~/kinn-native`). Bring it up to date, plug in an iPhone, then:
 
 ```bash
-cd ~/kinn-native && git checkout --detach main && cd kinn/app && npm install && cd apps/mobile
+cd ~/kinn-native && git checkout -- . && git checkout --detach main && cd kinn/app && npm install && cd apps/mobile
 npx expo run:ios --device
 ```
 
