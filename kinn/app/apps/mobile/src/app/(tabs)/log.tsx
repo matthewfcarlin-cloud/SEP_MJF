@@ -72,7 +72,7 @@ export default function LogScreen() {
   }
 
   return (
-    <Screen title={copy.log.title} right={<SampleTag label={copy.log.autoBanner} />}>
+    <Screen title={copy.log.title} right={<SampleTag label={copy.log.autoTag} />}>
       <Card index={0}>
         <SectionLabel>{copy.log.activityTitle}</SectionLabel>
         <ChipRow>

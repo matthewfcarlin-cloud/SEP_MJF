@@ -9,8 +9,9 @@ import { StoreProvider } from '@/store/provider'
 import '@/notifications'
 
 installDevLogMirror()
-// Known noisy React Native Animated warning raised by a navigation dependency; nothing in our code listens to it.
-LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.'])
+// Development builds only: keep the yellow LogBox toast off the demo screens. Warnings still reach the
+// Metro terminal through the dev log mirror above, so nothing is hidden from us.
+LogBox.ignoreAllLogs(true)
 SplashScreen.preventAutoHideAsync()
 
 function useNotificationTaps() {

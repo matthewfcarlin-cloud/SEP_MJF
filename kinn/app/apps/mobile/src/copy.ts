@@ -69,6 +69,7 @@ export const copy = {
   log: {
     title: 'Daily log',
     autoBanner: 'Automatic with the Kinn tape',
+    autoTag: 'Kinn tape soon',
     autoBody: 'For now, tap what you did. The tape will log it for you.',
     activityTitle: 'What did you do today?',
     intensityTitle: 'How hard?',
