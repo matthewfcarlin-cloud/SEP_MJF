@@ -9,7 +9,7 @@ export type MorningMark = 'clear' | 'some' | 'flare' | 'none'
 
 export interface DayRow {
   readonly load: DayLoad
-  /** How the morning read: clear (pain < 3, no swelling), some, flare-up, or no check-in. */
+  /** How the next morning read: clear (pain < 3, no swelling), some, flare-up, or no check-in. */
   readonly morning: MorningMark
   readonly activities: readonly ManualActivity[]
 }
@@ -65,15 +65,17 @@ export function weeklySummary(data: Dataset, weekEnd: string): WeeklySummary {
   const logs = data.activityLogs.filter((l) => inWeek(l.date, weekStart, weekEnd))
   const rom = data.romDays.filter((d) => inWeek(d.date, weekStart, weekEnd))
   const days = loadsFor(dates, data.activityLogs)
-  const flares = flareUps(data.checkIns, data.painLogs).filter((f) => inWeek(f.date, weekStart, weekEnd))
-  const flareDates = new Set(flares.map((f) => f.date))
+  const allFlares = flareUps(data.checkIns, data.painLogs)
+  const flares = allFlares.filter((f) => inWeek(f.date, weekStart, weekEnd))
+  const allFlareDates = new Set(allFlares.map((f) => f.date))
   return {
     weekStart,
     weekEnd,
     days,
     rows: days.map((load) => ({
       load,
-      morning: morningMark(data, load.date, flareDates),
+      // The morning after the day's load, which is how the pain-monitoring rule reads a day.
+      morning: morningMark(data, addDays(load.date, 1), allFlareDates),
       activities: logs.filter((l) => l.date === load.date).map((l) => l.activity),
     })),
     avgScore: Math.round(mean(days.map((d) => d.score))),

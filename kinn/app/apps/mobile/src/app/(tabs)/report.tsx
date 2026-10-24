@@ -1,5 +1,5 @@
 import { Share, View } from 'react-native'
-import { shareBody, shareText, weekChange, weekHeadline, weeklySummary } from '@kinn/core'
+import { addDays, shareBody, shareText, weekChange, weekHeadline, weeklySummary } from '@kinn/core'
 import type { ManualActivity, MorningMark } from '@kinn/core'
 
 import { copy } from '@/copy'
@@ -33,8 +33,10 @@ function Delta({ label, value }: { readonly label: string; readonly value: strin
 export default function ReportScreen() {
   const { state, today } = useStore()
   const colors = useColors()
-  const summary = weeklySummary(state.data, today)
-  const change = weekChange(state.data, today)
+  // Last seven full days; today's morning check-in is the "next morning" for yesterday's row.
+  const weekEnd = addDays(today, -1)
+  const summary = weeklySummary(state.data, weekEnd)
+  const change = weekChange(state.data, weekEnd)
   const headline = weekHeadline(summary, change)
   const sessions = (Object.entries(summary.activityCounts) as [ManualActivity, number][]).filter(([a]) => a !== 'rest')
   const maxScore = Math.max(1, ...summary.rows.map((r) => r.load.score))
