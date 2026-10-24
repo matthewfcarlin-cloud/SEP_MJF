@@ -78,3 +78,17 @@ Recommendation: do Path B regardless, since it is guaranteed. Do Path A in paral
 ## 6. Parked for after Monday
 
 Spec v0.2 reconciled with the Notion brief, Figma design directions and a token mirror, SQLite storage, PDF report, TestFlight if path B was used, external usability sessions, the range alert and physio adjustment screen, and the week-by-week plan from v0.1 of this document.
+
+## 7. Status log
+
+### Fri Oct 23, evening
+Done and committed on `main`:
+- Core: manual-log module (activities, pain logs, morning check-in, status rule, suggestion, ROM progress and milestones, flare-up insights, weekly summary and share text), 21-day seed, 120 tests, 97% line coverage. Every screen string and every generated sentence is checked against the banned-words list.
+- Mobile: all eight screens built and walked through on the iOS simulator in Expo Go: onboarding, Today (progress bar, status, suggestion, pain button, load bars, check-in and "Did it settle?" cards), pain flow with the next-morning local notification, settle sheet, morning check-in with the picture scale, daily log, Insights (the game-day observation fires first on the seed), Progress (bend and straighten charts with milestones), weekly report with the share sheet, settings. Light and dark both render from the placeholder tokens.
+- Config: app renamed Kinn, bundle id `com.kinn.app`, EAS build profiles, placeholder icon, README with the TestFlight and direct-install commands.
+
+Open:
+- **EAS login and the first TestFlight build** need Matthew's Expo and Apple logins; commands are in `apps/mobile/README.md`.
+- **Local native build from this folder.** The repo sits in the iCloud-synced Desktop, and iCloud tags freshly built framework folders with Finder attributes that break code signing (`resource fork, Finder information, or similar detritus not allowed`). Fix in progress: build the Expo JSI framework outside the synced folder with `EXPO_CUSTOM_BUILD_ROOT=~/Library/Caches/kinn-expo-modules-jsi`. EAS cloud builds are not affected. If the local build still fails, clone the repo to a non-iCloud path (for example `~/dev/SEP_MJF`) for device installs.
+- Palette and type: still placeholders, waiting on Figma.
+- Nine Expo packages are a patch version behind (`npx expo install --check`); harmless for the demo, run it before the TestFlight build.
