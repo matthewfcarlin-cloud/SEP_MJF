@@ -1,6 +1,7 @@
 import { Pressable, View } from 'react-native'
 
 import { Txt } from './txt'
+import { copy } from '@/copy'
 import { tapFeedback } from '@/haptics'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
@@ -12,19 +13,27 @@ interface NumberScaleProps {
   readonly highLabel: string
 }
 
-/** 0..10 pain scale as eleven tappable cells. */
+/** Cells 0..10 rise in height and warm in colour toward the top of the scale, so the shape reads before the numbers do. */
 export function NumberScale({ value, onChange, lowLabel, highLabel }: NumberScaleProps) {
   const colors = useColors()
+  const toneFor = (n: number): string => (n <= 2 ? colors.good : n <= 5 ? colors.caution : colors.warn)
   return (
     <View style={{ gap: space.sm }}>
-      <View style={{ flexDirection: 'row', gap: 4 }}>
+      <View style={{ minHeight: 28, justifyContent: 'flex-end' }}>
+        <Txt kind="heading" color={value === undefined ? 'textMuted' : 'text'}>
+          {value === undefined ? copy.pain.pickOne : `${value} · ${copy.pain.scaleWord(value)}`}
+        </Txt>
+      </View>
+      <View style={{ flexDirection: 'row', gap: 4, alignItems: 'flex-end' }}>
         {Array.from({ length: 11 }, (_, n) => {
           const selected = value === n
+          const tone = toneFor(n)
+          const height = 36 + n * 3
           return (
             <Pressable
               key={n}
               accessibilityRole="button"
-              accessibilityLabel={`Pain ${n}`}
+              accessibilityLabel={`Pain ${n}, ${copy.pain.scaleWord(n)}`}
               accessibilityState={{ selected }}
               onPress={() => {
                 tapFeedback()
@@ -32,16 +41,16 @@ export function NumberScale({ value, onChange, lowLabel, highLabel }: NumberScal
               }}
               style={({ pressed }) => ({
                 flex: 1,
-                aspectRatio: 0.8,
+                height,
                 borderRadius: radius.sm,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: selected ? colors.accent : colors.surfaceRaised,
+                backgroundColor: selected ? tone : colors.surfaceRaised,
                 borderWidth: 1,
-                borderColor: selected ? colors.accent : colors.border,
+                borderColor: selected ? tone : `${tone}55`,
                 opacity: pressed ? 0.75 : 1,
               })}>
-              <Txt kind="small" color={selected ? 'onAccent' : 'text'}>
+              <Txt kind="small" style={{ color: selected ? colors.bg : colors.text }}>
                 {n}
               </Txt>
             </Pressable>

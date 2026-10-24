@@ -1,5 +1,6 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
+import { View } from 'react-native'
 import type { Doing } from '@kinn/core'
 
 import { copy } from '@/copy'
@@ -13,22 +14,46 @@ import { NumberScale } from '@/components/ui/number-scale'
 import { Screen } from '@/components/ui/screen'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Txt } from '@/components/ui/txt'
+import { space } from '@/theme/tokens'
 
 const DOING: readonly Doing[] = ['practice', 'game', 'gym', 'pt', 'walking', 'stairs', 'rest', 'other']
+
+const timeNow = (): string => {
+  const d = new Date()
+  const h = d.getHours() % 12 || 12
+  return `${h}:${String(d.getMinutes()).padStart(2, '0')} ${d.getHours() < 12 ? 'am' : 'pm'}`
+}
 
 export default function PainScreen() {
   const { addPain } = useStore()
   const [pain, setPain] = useState<number | undefined>(undefined)
   const [doing, setDoing] = useState<Doing | undefined>(undefined)
-  const [saved, setSaved] = useState(false)
+  const [savedAt, setSavedAt] = useState<string | undefined>(undefined)
 
   const save = () => {
     if (pain === undefined) return
     const id = addPain(pain, doing)
     successFeedback()
-    setSaved(true)
+    setSavedAt(timeNow())
     scheduleSettleReminder(id).catch(() => undefined)
-    setTimeout(() => router.back(), 900)
+  }
+
+  if (savedAt !== undefined && pain !== undefined) {
+    return (
+      <Screen variant="modal" title={copy.pain.savedTitle}>
+        <Card raised style={{ padding: space.lg, alignItems: 'center', gap: space.sm }}>
+          <Txt kind="number">{pain}</Txt>
+          <Txt kind="heading">{copy.pain.scaleWord(pain)}</Txt>
+          {doing ? (
+            <Txt color="textSecondary">{copy.doing[doing]}</Txt>
+          ) : null}
+        </Card>
+        <Txt color="textSecondary" style={{ textAlign: 'center' }}>
+          {copy.pain.savedAt(savedAt)}
+        </Txt>
+        <Button label={copy.pain.done} onPress={() => router.back()} />
+      </Screen>
+    )
   }
 
   return (
@@ -44,13 +69,9 @@ export default function PainScreen() {
           ))}
         </ChipRow>
       </Card>
-      {saved ? (
-        <Txt color="textSecondary" style={{ textAlign: 'center' }}>
-          {copy.pain.saved}
-        </Txt>
-      ) : (
+      <View style={{ gap: space.sm }}>
         <Button label={copy.pain.save} disabled={pain === undefined} onPress={save} />
-      )}
+      </View>
     </Screen>
   )
 }

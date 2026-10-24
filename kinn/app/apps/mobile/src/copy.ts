@@ -43,6 +43,12 @@ export const copy = {
     title: 'How much does it hurt?',
     scaleLow: 'None',
     scaleHigh: 'Worst',
+    scaleWord: (n: number) =>
+      n === 0 ? 'No pain' : n <= 2 ? 'Barely there' : n <= 4 ? 'Noticeable' : n <= 6 ? 'Hard to ignore' : n <= 8 ? 'Really hurts' : 'Worst it has been',
+    pickOne: 'Tap a number',
+    savedTitle: 'Logged',
+    savedAt: (time: string) => `Pain ${time}. We’ll ask tomorrow at 8 am if it settled.`,
+    done: 'Done',
     doingTitle: 'What were you doing?',
     doingOptional: 'Optional',
     save: 'Save',
@@ -94,6 +100,9 @@ export const copy = {
     swelling: { none: 'None', some: 'Some', 'a-lot': 'A lot' },
     swellingHint: { none: 'Looks like the other knee', some: 'Puffy around the kneecap', 'a-lot': 'Visibly swollen, tight to bend' },
     save: 'Set today’s status',
+    previewLabel: 'Today would read',
+    previewHint: 'Answer both to see today’s status.',
+    alreadyDone: 'Already checked in today. Saving again replaces it.',
   },
 
   insights: {

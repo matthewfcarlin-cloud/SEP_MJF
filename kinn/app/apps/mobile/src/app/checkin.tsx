@@ -2,16 +2,18 @@ import { router } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import Svg, { Ellipse } from 'react-native-svg'
+import { statusFor, suggestionFor } from '@kinn/core'
 import type { Swelling } from '@kinn/core'
 
 import { copy } from '@/copy'
-import { successFeedback } from '@/haptics'
+import { successFeedback, tapFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { NumberScale } from '@/components/ui/number-scale'
 import { Screen } from '@/components/ui/screen'
 import { SectionLabel } from '@/components/ui/section-label'
+import { StatusPill } from '@/components/ui/status-pill'
 import { Txt } from '@/components/ui/txt'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
@@ -32,10 +34,20 @@ function KneePicture({ level, selected }: { readonly level: Swelling; readonly s
 }
 
 export default function CheckInScreen() {
-  const { setCheckIn } = useStore()
+  const { setCheckIn, view, today } = useStore()
   const colors = useColors()
   const [pain, setPain] = useState<number | undefined>(undefined)
   const [swelling, setSwelling] = useState<Swelling | undefined>(undefined)
+
+  const complete = pain !== undefined && swelling !== undefined
+  const preview = complete
+    ? statusFor({
+        checkIn: { date: today, pain, swelling },
+        yesterdayScore: view.yesterdayLoad.score,
+        baselineScore: view.baselineScore,
+        unsettledPain: view.pendingSettle.length === 0 && view.status.because === 'did-not-settle',
+      })
+    : undefined
 
   const save = () => {
     if (pain === undefined || !swelling) return
@@ -46,6 +58,11 @@ export default function CheckInScreen() {
 
   return (
     <Screen variant="modal" title={copy.checkIn.title}>
+      {view.checkInDone ? (
+        <Txt kind="small" color="textMuted">
+          {copy.checkIn.alreadyDone}
+        </Txt>
+      ) : null}
       <Card>
         <SectionLabel>{copy.checkIn.painTitle}</SectionLabel>
         <NumberScale value={pain} onChange={setPain} lowLabel={copy.pain.scaleLow} highLabel={copy.pain.scaleHigh} />
@@ -60,7 +77,10 @@ export default function CheckInScreen() {
                 key={level}
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
-                onPress={() => setSwelling(level)}
+                onPress={() => {
+                  tapFeedback()
+                  setSwelling(level)
+                }}
                 style={({ pressed }) => ({
                   flex: 1,
                   alignItems: 'center',
@@ -69,6 +89,7 @@ export default function CheckInScreen() {
                   borderRadius: radius.md,
                   borderWidth: 1,
                   borderColor: selected ? colors.accent : colors.border,
+                  backgroundColor: selected ? colors.surfaceRaised : 'transparent',
                   opacity: pressed ? 0.75 : 1,
                 })}>
                 <KneePicture level={level} selected={selected} />
@@ -81,7 +102,20 @@ export default function CheckInScreen() {
           })}
         </View>
       </Card>
-      <Button label={copy.checkIn.save} disabled={pain === undefined || !swelling} onPress={save} />
+      <Card raised style={{ alignItems: 'center', gap: space.sm, minHeight: 120, justifyContent: 'center' }}>
+        <SectionLabel>{copy.checkIn.previewLabel}</SectionLabel>
+        {preview ? (
+          <>
+            <StatusPill status={preview.status} large align="center" />
+            <Txt kind="small" color="textSecondary" style={{ textAlign: 'center' }}>
+              {suggestionFor(preview)}
+            </Txt>
+          </>
+        ) : (
+          <Txt color="textMuted">{copy.checkIn.previewHint}</Txt>
+        )}
+      </Card>
+      <Button label={copy.checkIn.save} disabled={!complete} onPress={save} />
     </Screen>
   )
 }
