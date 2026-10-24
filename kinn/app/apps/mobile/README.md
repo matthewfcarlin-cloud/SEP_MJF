@@ -1,56 +1,56 @@
-# Welcome to your Expo app 👋
+# Kinn mobile (rough MVP)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo SDK 58 app for the Kinn manual-log demo. Domain logic lives in `../../packages/core` (`@kinn/core`); this app is screens, a small store and placeholder design tokens.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+npm install            # from kinn/app
+npm test               # core tests, includes the copy banned-words check
+cd apps/mobile
+npx expo start --ios   # Expo Go on the booted simulator (local notifications are limited in Expo Go)
+npx expo run:ios       # development build on the simulator (full notifications); needs Xcode + CocoaPods
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+First launch shows onboarding. "Use the sample athlete instead" loads the 21-day seed (Maya, ACL week 8). Settings (gear on Today) has "Reset to sample data".
 
-### Other setup steps
+## Where things are
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| What | Where |
+|---|---|
+| Colours, type, spacing (placeholders until the Figma palette lands) | `src/theme/tokens.ts` |
+| Every screen string | `src/copy.ts` (checked by `packages/core/test/copy/mobile-copy.test.ts`) |
+| Store (AsyncStorage, reducer, derived view) | `src/store/` |
+| Screens | `src/app/(tabs)/*.tsx` tabs, `src/app/{pain,settle,checkin,onboarding,settings}.tsx` modals |
+| UI primitives | `src/components/ui/` |
+| "Did it settle?" notification | `src/notifications.ts` |
+| Seed data, status rules, insights, report text | `../../packages/core/src/{sim,manual,report}` |
 
-## Learn more
+## TestFlight (EAS)
 
-To learn more about developing your project with Expo, look at the following resources:
+One-time, by whoever owns the Apple Developer account (these prompts need your Expo and Apple logins, so run them yourself):
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+cd kinn/app/apps/mobile
+npx eas-cli@latest login
+npx eas-cli@latest init            # creates the EAS project and writes extra.eas.projectId into app.json
+```
 
-## Join the community
+Then each build:
 
-Join our community of developers creating universal apps.
+```bash
+npx eas-cli@latest build --platform ios --profile production   # cloud build, signs with your Apple account (prompts the first time)
+npx eas-cli@latest submit --platform ios --latest              # uploads to TestFlight
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Internal testers (your App Store Connect team) can install as soon as processing finishes, no Apple review. External testers need one beta review.
+
+### Direct install without TestFlight
+
+Plug in an iPhone, then:
+
+```bash
+npx expo run:ios --device
+```
+
+Pick the phone from the list. Xcode signs with your Apple ID (free personal team works for 7 days; the paid team has no expiry). If signing fails, open `ios/Kinn.xcworkspace` in Xcode, select the Kinn target, Signing & Capabilities, choose your team, and run once from Xcode.
