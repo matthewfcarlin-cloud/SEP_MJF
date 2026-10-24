@@ -24,12 +24,13 @@ export function Screen({ title, subtitle, children, variant = 'tab', right }: Sc
   const insets = useSafeAreaInsets()
   const colors = useColors()
   return (
-    <SafeAreaView edges={variant === 'modal' ? [] : ['top']} style={{ flex: 1, backgroundColor: colors.bg }}>
+    <SafeAreaView edges={variant === 'tab' ? ['top'] : []} style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{
-          paddingTop: variant === 'modal' ? space.lg : space.md,
+          // Full-screen modals get the device inset directly; SafeAreaView can measure 0 while the modal is still presenting.
+          paddingTop: variant === 'modal' ? space.lg : variant === 'fullscreen' ? insets.top + space.md : space.md,
           paddingBottom: insets.bottom + (variant === 'tab' ? bottomTabInset + space.xl : space.xl),
           paddingHorizontal: space.md,
           alignItems: 'center',
