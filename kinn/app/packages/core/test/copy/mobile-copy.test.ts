@@ -19,9 +19,17 @@ function* strings(node: unknown, path: string): Generator<[string, string]> {
   }
   if (typeof node === 'function') {
     const fn = node as (...args: unknown[]) => unknown
-    const numeric = [1, 2, 5, 61]
-    const outputs = fn.length === 1 ? [...numeric.map((n) => fn(n)), fn('Maya')] : [fn(...(SAMPLE_ARGS[fn.length] ?? []))]
-    for (const out of outputs) if (typeof out === 'string') yield [`${path}()`, out]
+    const attempts: unknown[][] = fn.length === 1 ? [[1], [2], [5], [61], ['Maya'], ['Soccer']] : [SAMPLE_ARGS[fn.length] ?? []]
+    for (const args of attempts) {
+      let out: unknown
+      try {
+        out = fn(...args)
+      } catch {
+        continue // a string function given a number, or vice versa; another attempt will fit
+      }
+      if (typeof out === 'string') yield [`${path}(${args.join(',')})`, out]
+      else if (Array.isArray(out)) yield* strings(out, `${path}(${args.join(',')})`)
+    }
     return
   }
   if (node && typeof node === 'object') {

@@ -11,7 +11,7 @@ import { Txt } from '@/components/ui/txt'
 import { space } from '@/theme/tokens'
 
 export default function SettingsScreen() {
-  const { state, setPtReminder, resetToSample } = useStore()
+  const { state, setPtReminder, resetToSample, restartOnboarding } = useStore()
   return (
     <Screen variant="modal" title={copy.settings.title}>
       <Card>
@@ -31,6 +31,14 @@ export default function SettingsScreen() {
         onPress={() => {
           resetToSample()
           router.back()
+        }}
+      />
+      <Button
+        label={copy.settings.startOver}
+        variant="ghost"
+        onPress={() => {
+          restartOnboarding()
+          router.replace('/onboarding')
         }}
       />
       <Txt kind="small" color="textMuted">

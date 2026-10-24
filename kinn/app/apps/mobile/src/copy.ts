@@ -148,6 +148,14 @@ export const copy = {
 
   onboarding: {
     title: 'Let’s set up your comeback',
+    stepTitles: ['What happened?', 'About you', 'Your goal'],
+    stepOf: (n: number, total: number) => `Step ${n} of ${total}`,
+    next: 'Next',
+    back: 'Back',
+    name: 'Your name',
+    namePlaceholder: 'First name',
+    goalChips: (sport: string) => [`Back to ${sport.toLowerCase()}`, 'Run again', 'Full range of motion', 'Walk without thinking about it'],
+    goalOther: 'Something else',
     injury: 'What happened?',
     injuries: { acl: 'ACL', meniscus: 'Meniscus', other: 'Other knee injury' },
     date: 'When? (injury or surgery date)',
@@ -167,6 +175,7 @@ export const copy = {
     ptReminder: 'Remind me of my PT’s plan',
     ptReminderBody: 'A daily nudge to do the exercises your PT gave you. Kinn doesn’t prescribe exercises.',
     resetSample: 'Reset to sample data',
+    startOver: 'Start over from onboarding',
   },
 
   disclaimerShort: 'Not a medical device.',

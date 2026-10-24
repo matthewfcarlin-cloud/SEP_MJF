@@ -13,6 +13,7 @@ export type Action =
   | { type: 'reseed'; today: string }
   | { type: 'setProfile'; profile: Profile }
   | { type: 'useSample' }
+  | { type: 'restartOnboarding' }
   | { type: 'addActivity'; date: string; activity: ManualActivity; intensity: Intensity; id: string }
   | { type: 'removeActivity'; id: string }
   | { type: 'addPain'; date: string; t: number; pain: number; doing: Doing | undefined; id: string }
@@ -50,6 +51,8 @@ export function reducer(state: AppState, action: Action): AppState {
       return { ...withData(state, { profile: action.profile }), onboarded: true }
     case 'useSample':
       return { ...state, onboarded: true }
+    case 'restartOnboarding':
+      return { ...state, onboarded: false }
     case 'addActivity': {
       const log: ActivityLog = { id: action.id, date: action.date, activity: action.activity, intensity: action.intensity }
       return withData(state, { activityLogs: [...state.data.activityLogs, log] })

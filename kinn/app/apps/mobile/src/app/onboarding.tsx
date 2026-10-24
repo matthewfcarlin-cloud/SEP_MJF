@@ -1,10 +1,11 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { TextInput } from 'react-native'
+import { TextInput, View } from 'react-native'
 import { addDays, dayKey } from '@kinn/core'
 import type { Injury } from '@kinn/core'
 
 import { copy } from '@/copy'
+import { tapFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -23,27 +24,44 @@ const WHEN = [
   { label: '2 months ago', days: 60 },
   { label: '3+ months ago', days: 100 },
 ] as const
+const STEPS = 3
+
+function StepDots({ step }: { readonly step: number }) {
+  const colors = useColors()
+  return (
+    <View style={{ flexDirection: 'row', gap: 6 }}>
+      {Array.from({ length: STEPS }, (_, i) => (
+        <View key={i} style={{ width: i === step ? 22 : 8, height: 8, borderRadius: radius.pill, backgroundColor: i <= step ? colors.accent : colors.track }} />
+      ))}
+    </View>
+  )
+}
 
 export default function OnboardingScreen() {
   const { setProfile, startWithSample } = useStore()
   const colors = useColors()
+  const [step, setStep] = useState(0)
   const [injury, setInjury] = useState<Injury>('acl')
   const [when, setWhen] = useState<number>(60)
   const [hadSurgery, setHadSurgery] = useState(true)
+  const [name, setName] = useState('')
   const [sport, setSport] = useState<string>('Basketball')
   const [hasPt, setHasPt] = useState(true)
-  const [goal, setGoal] = useState('')
-  const [name, setName] = useState('')
+  const [goalChoice, setGoalChoice] = useState<string | undefined>(undefined)
+  const [goalText, setGoalText] = useState('')
+
+  const goalChips = copy.onboarding.goalChips(sport)
+  const goal = goalChoice === copy.onboarding.goalOther ? goalText.trim() : (goalChoice ?? goalChips[0] ?? '')
 
   const start = () => {
     setProfile({
-      name: name.trim() || 'there',
+      name: name.trim(),
       injury,
       injuryDate: addDays(dayKey(Date.now()), -when),
       hadSurgery,
       sport,
       hasPt,
-      goal: goal.trim() || copy.onboarding.goalPlaceholder,
+      goal: goal || copy.onboarding.goalPlaceholder,
     })
     router.replace('/')
   }
@@ -51,6 +69,11 @@ export default function OnboardingScreen() {
   const sample = () => {
     startWithSample()
     router.replace('/')
+  }
+
+  const go = (next: number) => {
+    tapFeedback()
+    setStep(next)
   }
 
   const inputStyle = {
@@ -65,50 +88,73 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <Screen variant="fullscreen" title={copy.onboarding.title}>
-      <Card>
-        <SectionLabel>Your name</SectionLabel>
-        <TextInput value={name} onChangeText={setName} placeholder="Maya" placeholderTextColor={colors.textMuted} style={inputStyle} />
-      </Card>
-      <Card>
-        <SectionLabel>{copy.onboarding.injury}</SectionLabel>
-        <ChipRow>
-          {INJURIES.map((i) => (
-            <Chip key={i} label={copy.onboarding.injuries[i]} selected={injury === i} onPress={() => setInjury(i)} />
-          ))}
-        </ChipRow>
-        <SectionLabel>{copy.onboarding.date}</SectionLabel>
-        <ChipRow>
-          {WHEN.map((w) => (
-            <Chip key={w.days} label={w.label} selected={when === w.days} onPress={() => setWhen(w.days)} />
-          ))}
-        </ChipRow>
-        <SectionLabel>{copy.onboarding.surgery}</SectionLabel>
-        <ChipRow>
-          <Chip label={copy.onboarding.yes} selected={hadSurgery} onPress={() => setHadSurgery(true)} />
-          <Chip label={copy.onboarding.no} selected={!hadSurgery} onPress={() => setHadSurgery(false)} />
-        </ChipRow>
-      </Card>
-      <Card>
-        <SectionLabel>{copy.onboarding.sport}</SectionLabel>
-        <ChipRow>
-          {SPORTS.map((s) => (
-            <Chip key={s} label={s} selected={sport === s} onPress={() => setSport(s)} />
-          ))}
-        </ChipRow>
-        <SectionLabel>{copy.onboarding.hasPt}</SectionLabel>
-        <ChipRow>
-          <Chip label={copy.onboarding.yes} selected={hasPt} onPress={() => setHasPt(true)} />
-          <Chip label={copy.onboarding.no} selected={!hasPt} onPress={() => setHasPt(false)} />
-        </ChipRow>
-        <SectionLabel>{copy.onboarding.goal}</SectionLabel>
-        <TextInput value={goal} onChangeText={setGoal} placeholder={copy.onboarding.goalPlaceholder} placeholderTextColor={colors.textMuted} style={inputStyle} />
-      </Card>
-      <Button label={copy.onboarding.start} onPress={start} />
-      <Button label={copy.onboarding.useSample} variant="ghost" onPress={sample} />
-      <Txt kind="small" color="textMuted" style={{ textAlign: 'center' }}>
-        {copy.disclaimerShort}
-      </Txt>
+    <Screen variant="fullscreen" title={copy.onboarding.stepTitles[step] ?? copy.onboarding.title} subtitle={copy.onboarding.stepOf(step + 1, STEPS)} right={<StepDots step={step} />}>
+      {step === 0 ? (
+        <Card key="step-0">
+          <SectionLabel>{copy.onboarding.injury}</SectionLabel>
+          <ChipRow>
+            {INJURIES.map((i) => (
+              <Chip key={i} label={copy.onboarding.injuries[i]} selected={injury === i} onPress={() => setInjury(i)} />
+            ))}
+          </ChipRow>
+          <SectionLabel>{copy.onboarding.date}</SectionLabel>
+          <ChipRow>
+            {WHEN.map((w) => (
+              <Chip key={w.days} label={w.label} selected={when === w.days} onPress={() => setWhen(w.days)} />
+            ))}
+          </ChipRow>
+          <SectionLabel>{copy.onboarding.surgery}</SectionLabel>
+          <ChipRow>
+            <Chip label={copy.onboarding.yes} selected={hadSurgery} onPress={() => setHadSurgery(true)} />
+            <Chip label={copy.onboarding.no} selected={!hadSurgery} onPress={() => setHadSurgery(false)} />
+          </ChipRow>
+        </Card>
+      ) : null}
+
+      {step === 1 ? (
+        <Card key="step-1">
+          <SectionLabel>{copy.onboarding.name}</SectionLabel>
+          <TextInput value={name} onChangeText={setName} placeholder={copy.onboarding.namePlaceholder} placeholderTextColor={colors.textMuted} style={inputStyle} autoCapitalize="words" />
+          <SectionLabel>{copy.onboarding.sport}</SectionLabel>
+          <ChipRow>
+            {SPORTS.map((s) => (
+              <Chip key={s} label={s} selected={sport === s} onPress={() => setSport(s)} />
+            ))}
+          </ChipRow>
+          <SectionLabel>{copy.onboarding.hasPt}</SectionLabel>
+          <ChipRow>
+            <Chip label={copy.onboarding.yes} selected={hasPt} onPress={() => setHasPt(true)} />
+            <Chip label={copy.onboarding.no} selected={!hasPt} onPress={() => setHasPt(false)} />
+          </ChipRow>
+        </Card>
+      ) : null}
+
+      {step === 2 ? (
+        <Card key="step-2">
+          <SectionLabel>{copy.onboarding.goal}</SectionLabel>
+          <ChipRow>
+            {[...goalChips, copy.onboarding.goalOther].map((g) => (
+              <Chip key={g} label={g} selected={(goalChoice ?? goalChips[0]) === g} onPress={() => setGoalChoice(g)} />
+            ))}
+          </ChipRow>
+          {goalChoice === copy.onboarding.goalOther ? (
+            <TextInput value={goalText} onChangeText={setGoalText} placeholder={copy.onboarding.goalPlaceholder} placeholderTextColor={colors.textMuted} style={inputStyle} autoFocus />
+          ) : null}
+          <Txt kind="small" color="textMuted">
+            {copy.disclaimerShort}
+          </Txt>
+        </Card>
+      ) : null}
+
+      <View style={{ flexDirection: 'row', gap: space.sm }}>
+        {step > 0 ? <Button label={copy.onboarding.back} variant="secondary" onPress={() => go(step - 1)} style={{ flex: 1 }} /> : null}
+        {step < STEPS - 1 ? (
+          <Button label={copy.onboarding.next} onPress={() => go(step + 1)} style={{ flex: 2 }} />
+        ) : (
+          <Button label={copy.onboarding.start} onPress={start} style={{ flex: 2 }} />
+        )}
+      </View>
+      {step === 0 ? <Button label={copy.onboarding.useSample} variant="ghost" onPress={sample} /> : null}
     </Screen>
   )
 }

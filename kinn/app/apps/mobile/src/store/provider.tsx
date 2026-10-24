@@ -18,6 +18,7 @@ export interface Store {
   readonly ready: boolean
   readonly setProfile: (profile: Profile) => void
   readonly startWithSample: () => void
+  readonly restartOnboarding: () => void
   readonly addActivity: (activity: ManualActivity, intensity: Intensity) => void
   readonly removeActivity: (id: string) => void
   readonly addPain: (pain: number, doing: Doing | undefined) => string
@@ -87,6 +88,7 @@ export function StoreProvider({ children }: { readonly children: ReactNode }) {
       ready,
       setProfile: (profile) => dispatch({ type: 'setProfile', profile }),
       startWithSample: () => dispatch({ type: 'useSample' }),
+      restartOnboarding: () => dispatch({ type: 'restartOnboarding' }),
       addActivity: (activity, intensity) => dispatch({ type: 'addActivity', id: newId('act'), date: today, activity, intensity }),
       removeActivity: (id) => dispatch({ type: 'removeActivity', id }),
       addPain,
