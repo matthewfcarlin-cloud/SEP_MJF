@@ -66,13 +66,12 @@ export default function ProgressScreen() {
       <Card>
         <SectionLabel>{copy.progress.loadTitle}</SectionLabel>
         <Bars bars={last21.map((l) => ({ key: l.date, value: l.score, color: 'textMuted' as const }))} height={64} />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Txt kind="small" color="textMuted">
-            {shortDate(last21[0]?.date ?? view.date)}
-          </Txt>
-          <Txt kind="small" color="textMuted">
-            {copy.today.todayLabel}
-          </Txt>
+        <View style={{ flexDirection: 'row' }}>
+          {[2, 1, 0].map((n) => (
+            <Txt key={n} kind="small" color="textMuted" style={{ flex: 1, textAlign: 'center' }}>
+              {copy.progress.weekAgo(n)}
+            </Txt>
+          ))}
         </View>
       </Card>
     </Screen>

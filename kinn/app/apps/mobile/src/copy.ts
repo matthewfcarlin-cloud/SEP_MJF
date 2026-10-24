@@ -94,6 +94,7 @@ export const copy = {
     flareCount: (n: number) => (n === 1 ? '1 flare-up in the last 30 days' : `${n} flare-ups in the last 30 days`),
     empty: 'Not enough flare-ups yet to see a pattern. That’s a good thing.',
     observationNote: 'These are things that happened before, not causes.',
+    prevalenceNote: (pct: number) => `Happened before only ${pct}% of mornings.`,
     loadContrastTitle: 'Knee load the day before',
     beforeFlare: 'before a flare-up',
     beforeOthers: 'before other mornings',
@@ -109,6 +110,7 @@ export const copy = {
     flexionValue: (deg: number) => `${deg}°`,
     milestones: 'Milestones',
     loadTitle: 'Knee load, last 3 weeks',
+    weekAgo: (n: number) => (n === 0 ? 'This week' : n === 1 ? 'Last week' : `${n} weeks ago`),
   },
 
   report: {

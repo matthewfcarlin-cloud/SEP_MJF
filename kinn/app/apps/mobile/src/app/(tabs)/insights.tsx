@@ -34,7 +34,7 @@ export default function InsightsScreen() {
           <Card key={i.id} raised={idx === 0} style={idx === 0 ? { padding: space.lg } : undefined}>
             <Txt kind={idx === 0 ? 'title' : 'heading'}>{i.text}</Txt>
             <Txt kind="small" color="textMuted">
-              {i.matching} of {i.total} · seen before {Math.round(i.prevalence * 100)}% of days
+              {copy.insights.prevalenceNote(Math.round(i.prevalence * 100))}
             </Txt>
           </Card>
         ))
