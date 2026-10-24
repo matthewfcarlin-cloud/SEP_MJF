@@ -35,10 +35,10 @@ export default function SettingsScreen() {
           <SectionLabel>{copy.settings.profileTitle}</SectionLabel>
           <Button label={copy.settings.profileEdit} variant="ghost" onPress={startOver} style={{ paddingVertical: 4, paddingHorizontal: space.sm }} />
         </View>
-        <Txt kind="heading">{profile.name && profile.name !== 'there' ? profile.name : copy.today.weekLabel(view.weeksSinceInjury)}</Txt>
+        <Txt kind="heading">{profile.name && profile.name !== 'there' ? `${profile.name} · ${profile.goal}` : profile.goal}</Txt>
         <Txt color="textSecondary">{facts}</Txt>
         <Txt kind="small" color="textMuted">
-          {copy.today.weekLabel(view.weeksSinceInjury)} · since {shortDate(profile.injuryDate)} · {copy.today.goalLabel(profile.goal)}
+          {copy.today.weekLabel(view.weeksSinceInjury)} · since {shortDate(profile.injuryDate)}
         </Txt>
       </Card>
 
