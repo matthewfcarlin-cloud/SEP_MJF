@@ -19,7 +19,8 @@ describe('seedDataset', () => {
 
   test('has four flare-ups and the game-day insight fires first', () => {
     expect(view.flares).toHaveLength(4)
-    expect(view.insights.length).toBeGreaterThanOrEqual(2)
+    expect(view.insights.length).toBeGreaterThanOrEqual(1)
+    expect(view.loadContrast).toBeDefined()
     expect(view.insights[0]?.text).toBe('3 of your last 4 flare-ups came after game days.')
   })
 

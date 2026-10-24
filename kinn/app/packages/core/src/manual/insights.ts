@@ -30,6 +30,8 @@ export interface InsightCandidate {
   readonly prevalence: number
   readonly matching: number
   readonly total: number
+  /** Flare-up dates this condition held before. Two conditions with the same set say the same thing. */
+  readonly matchedDates: readonly string[]
 }
 
 interface Condition {
@@ -98,13 +100,57 @@ export function insightsFor(input: InsightsInput): readonly InsightCandidate[] {
   if (input.flares.length < MANUAL_INSIGHTS.minFlareUps) return []
   const total = input.flares.length
   const candidates = buildConditions(input.logs, input.loads, input.baselineScore).map((c) => {
-    const matching = input.flares.filter((f) => c.holdsOn(f.date)).length
+    const matchedDates = input.flares.filter((f) => c.holdsOn(f.date)).map((f) => f.date)
+    const matching = matchedDates.length
     const daysHeld = input.dates.filter(c.holdsOn).length
     const prevalence = input.dates.length === 0 ? 1 : daysHeld / input.dates.length
-    return { id: c.id, text: phrase(matching, total, c.phrase), support: matching / total, prevalence, matching, total }
+    return { id: c.id, text: phrase(matching, total, c.phrase), support: matching / total, prevalence, matching, total, matchedDates }
   })
-  return candidates
+  const ranked = candidates
     .filter((c) => c.support >= MANUAL_INSIGHTS.minSupport && c.prevalence <= MANUAL_INSIGHTS.maxConditionPrevalence)
     .sort((a, b) => b.support - a.support || a.prevalence - b.prevalence)
-    .slice(0, MANUAL_INSIGHTS.maxShown)
+  return dedupeBySameFlares(ranked).slice(0, MANUAL_INSIGHTS.maxShown)
+}
+
+/** Keep the first (rarest) condition for each distinct set of flare-ups; the rest restate it. */
+function dedupeBySameFlares(ranked: readonly InsightCandidate[]): readonly InsightCandidate[] {
+  const seen = new Set<string>()
+  return ranked.filter((c) => {
+    const key = c.matchedDates.join('|')
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+export interface LoadContrast {
+  readonly beforeFlareAvg: number
+  readonly otherDaysAvg: number
+  readonly text: string
+}
+
+const mean = (xs: readonly number[]): number =>
+  xs.length === 0 ? 0 : xs.reduce((s, x) => s + x, 0) / xs.length
+
+/**
+ * Average load on the day before a flare-up versus the day before every other
+ * morning. Shown only when both sides have data and the gap is worth a sentence.
+ */
+export function loadContrast(input: InsightsInput): LoadContrast | undefined {
+  if (input.flares.length < MANUAL_INSIGHTS.minFlareUps) return undefined
+  const scoreOn = (date: string): number | undefined => input.loads.find((l) => l.date === date)?.score
+  const flareDates = new Set(input.flares.map((f) => f.date))
+  const before = (dates: readonly string[]): number[] =>
+    dates.map((d) => scoreOn(addDays(d, -1))).filter((s): s is number => s !== undefined)
+  const beforeFlare = before([...flareDates])
+  const beforeOthers = before(input.dates.filter((d) => !flareDates.has(d)))
+  if (beforeFlare.length === 0 || beforeOthers.length === 0) return undefined
+  const beforeFlareAvg = Math.round(mean(beforeFlare))
+  const otherDaysAvg = Math.round(mean(beforeOthers))
+  if (Math.abs(beforeFlareAvg - otherDaysAvg) < MANUAL_INSIGHTS.minContrast) return undefined
+  return {
+    beforeFlareAvg,
+    otherDaysAvg,
+    text: `The day before a flare-up, your knee load averaged ${beforeFlareAvg}. Before other mornings it averaged ${otherDaysAvg}.`,
+  }
 }

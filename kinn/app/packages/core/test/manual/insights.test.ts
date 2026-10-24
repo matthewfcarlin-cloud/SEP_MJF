@@ -1,4 +1,4 @@
-import { flareUps, insightsFor } from '../../src/manual/insights'
+import { flareUps, insightsFor, loadContrast } from '../../src/manual/insights'
 import { containsBannedWord } from '../../src/copy/banned'
 import type { ActivityLog, DayLoad, MorningCheckIn, PainLog } from '../../src/manual/types'
 
@@ -42,6 +42,21 @@ describe('insightsFor', () => {
   test('uses "All" when every flare-up matches', () => {
     const out = insightsFor({ flares: flares.filter((f) => f.date !== '2026-10-06'), logs, loads, dates, baselineScore: 30 })
     expect(out[0]?.text).toBe('All 3 of your flare-ups came after game days.')
+  })
+
+  test('drops conditions that restate the same flare-ups as a rarer one', () => {
+    const out = insightsFor({ flares, logs, loads, dates, baselineScore: 30 })
+    const sets = out.map((o) => o.matchedDates.join('|'))
+    expect(new Set(sets).size).toBe(sets.length)
+    expect(out).toHaveLength(1)
+  })
+
+  test('load contrast compares the day before flare-ups with the day before other mornings', () => {
+    const c = loadContrast({ flares, logs, loads, dates, baselineScore: 30 })
+    expect(c?.beforeFlareAvg).toBeGreaterThan(c?.otherDaysAvg ?? 0)
+    expect(c?.text).toContain('averaged')
+    expect(containsBannedWord(c?.text ?? '')).toBe(false)
+    expect(loadContrast({ flares: flares.slice(0, 1), logs, loads, dates, baselineScore: 30 })).toBeUndefined()
   })
 
   test('drops a condition that held on more than half of all days', () => {

@@ -19,8 +19,9 @@ export const copy = {
   } satisfies Record<Status, string>,
 
   today: {
-    greeting: (name: string) => `Hi ${name}`,
+    greeting: (name: string) => (name && name !== 'there' ? `Hi ${name}` : 'Hi'),
     weekLabel: (weeks: number) => `Week ${Math.floor(weeks)} of your comeback`,
+    goalLabel: (goal: string) => `Goal: ${goal}`,
     progressLabel: 'Recovery progress',
     todayLabel: 'Today',
     suggestionLabel: 'One thing for today',
@@ -93,6 +94,9 @@ export const copy = {
     flareCount: (n: number) => (n === 1 ? '1 flare-up in the last 30 days' : `${n} flare-ups in the last 30 days`),
     empty: 'Not enough flare-ups yet to see a pattern. That’s a good thing.',
     observationNote: 'These are things that happened before, not causes.',
+    loadContrastTitle: 'Knee load the day before',
+    beforeFlare: 'before a flare-up',
+    beforeOthers: 'before other mornings',
     flareListTitle: 'Flare-up mornings',
   },
 

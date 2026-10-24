@@ -5,6 +5,7 @@ import Svg, { Ellipse } from 'react-native-svg'
 import type { Swelling } from '@kinn/core'
 
 import { copy } from '@/copy'
+import { successFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -39,6 +40,7 @@ export default function CheckInScreen() {
   const save = () => {
     if (pain === undefined || !swelling) return
     setCheckIn(pain, swelling)
+    successFeedback()
     router.back()
   }
 

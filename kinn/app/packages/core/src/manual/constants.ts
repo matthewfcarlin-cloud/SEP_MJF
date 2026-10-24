@@ -41,4 +41,6 @@ export const MANUAL_INSIGHTS = {
   maxShown: 3,
   highLoadScore: 75,
   windowDays: 30,
+  /** Minimum gap between the two averages before the load-contrast sentence is shown. */
+  minContrast: 15,
 } as const

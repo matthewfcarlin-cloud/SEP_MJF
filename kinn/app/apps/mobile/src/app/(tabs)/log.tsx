@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import type { Intensity, ManualActivity } from '@kinn/core'
 
 import { copy } from '@/copy'
+import { successFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -25,6 +26,7 @@ export default function LogScreen() {
   const save = () => {
     if (!activity) return
     addActivity(activity, intensity)
+    successFeedback()
     setActivity(undefined)
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 1200)

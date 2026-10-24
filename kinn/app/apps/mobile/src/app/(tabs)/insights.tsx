@@ -40,6 +40,31 @@ export default function InsightsScreen() {
         ))
       )}
 
+      {view.loadContrast ? (
+        <Card>
+          <SectionLabel>{copy.insights.loadContrastTitle}</SectionLabel>
+          <Txt kind="heading">{view.loadContrast.text}</Txt>
+          <View style={{ flexDirection: 'row', gap: space.lg, marginTop: space.xs }}>
+            <View>
+              <Txt kind="number" style={{ fontSize: 40, lineHeight: 44 }}>
+                {view.loadContrast.beforeFlareAvg}
+              </Txt>
+              <Txt kind="small" color="textMuted">
+                {copy.insights.beforeFlare}
+              </Txt>
+            </View>
+            <View>
+              <Txt kind="number" color="textSecondary" style={{ fontSize: 40, lineHeight: 44 }}>
+                {view.loadContrast.otherDaysAvg}
+              </Txt>
+              <Txt kind="small" color="textMuted">
+                {copy.insights.beforeOthers}
+              </Txt>
+            </View>
+          </View>
+        </Card>
+      ) : null}
+
       <Txt kind="small" color="textMuted">
         {copy.insights.observationNote}
       </Txt>

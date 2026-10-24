@@ -2,6 +2,7 @@ import { Pressable, View } from 'react-native'
 import type { ReactNode } from 'react'
 
 import { Txt } from './txt'
+import { tapFeedback } from '@/haptics'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
@@ -17,7 +18,10 @@ export function Chip({ label, selected, onPress }: ChipProps) {
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      onPress={onPress}
+      onPress={() => {
+        tapFeedback()
+        onPress()
+      }}
       style={({ pressed }) => ({
         paddingVertical: 10,
         paddingHorizontal: space.md,

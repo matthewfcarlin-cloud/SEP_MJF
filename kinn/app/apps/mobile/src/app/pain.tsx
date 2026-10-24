@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { Doing } from '@kinn/core'
 
 import { copy } from '@/copy'
+import { successFeedback } from '@/haptics'
 import { scheduleSettleReminder } from '@/notifications'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
@@ -24,6 +25,7 @@ export default function PainScreen() {
   const save = () => {
     if (pain === undefined) return
     const id = addPain(pain, doing)
+    successFeedback()
     setSaved(true)
     scheduleSettleReminder(id).catch(() => undefined)
     setTimeout(() => router.back(), 900)

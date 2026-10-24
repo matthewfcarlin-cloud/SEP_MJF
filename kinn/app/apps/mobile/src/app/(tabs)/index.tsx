@@ -37,7 +37,10 @@ export default function TodayScreen() {
   const last7 = view.loads.slice(-7)
 
   return (
-    <Screen title={copy.today.greeting(profile.name)} subtitle={copy.today.weekLabel(view.weeksSinceInjury)} right={<SettingsLink />}>
+    <Screen
+      title={copy.today.greeting(profile.name)}
+      subtitle={`${copy.today.weekLabel(view.weeksSinceInjury)} · ${copy.today.goalLabel(profile.goal)}`}
+      right={<SettingsLink />}>
       {view.pendingSettle.length > 0 ? (
         <Card raised>
           <Txt kind="bodyStrong">{copy.today.settlePrompt}</Txt>

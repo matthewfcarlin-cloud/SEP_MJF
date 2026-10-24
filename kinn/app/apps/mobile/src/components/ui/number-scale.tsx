@@ -1,6 +1,7 @@
 import { Pressable, View } from 'react-native'
 
 import { Txt } from './txt'
+import { tapFeedback } from '@/haptics'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
@@ -25,7 +26,10 @@ export function NumberScale({ value, onChange, lowLabel, highLabel }: NumberScal
               accessibilityRole="button"
               accessibilityLabel={`Pain ${n}`}
               accessibilityState={{ selected }}
-              onPress={() => onChange(n)}
+              onPress={() => {
+                tapFeedback()
+                onChange(n)
+              }}
               style={({ pressed }) => ({
                 flex: 1,
                 aspectRatio: 0.8,

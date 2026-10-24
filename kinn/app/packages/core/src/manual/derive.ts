@@ -1,7 +1,7 @@
 import { addDays, startOfDay } from '../time/day'
 import { MANUAL_INSIGHTS, STATUS_RULES } from './constants'
-import { flareUps, insightsFor } from './insights'
-import type { InsightCandidate } from './insights'
+import { flareUps, insightsFor, loadContrast } from './insights'
+import type { InsightCandidate, LoadContrast } from './insights'
 import { baselineScore, loadsFor } from './load'
 import { statusFor } from './status'
 import type { StatusResult } from './status'
@@ -27,6 +27,7 @@ export interface TodayView {
   readonly flares: readonly FlareDay[]
   readonly weeksSinceInjury: number
   readonly insights: readonly InsightCandidate[]
+  readonly loadContrast: LoadContrast | undefined
   readonly milestones: readonly Milestone[]
 }
 
@@ -57,6 +58,7 @@ export function deriveToday(data: Dataset, today: string): TodayView {
   })
   const flares = flareUps(data.checkIns, data.painLogs).filter((f) => f.date >= window[0]! && f.date <= today)
   const latestRom = latestRomDay(data.romDays)
+  const insightInput = { flares, logs: data.activityLogs, loads, dates: window, baselineScore: baseline }
   const weeks = Math.max(0, weeksSince(data.profile.injuryDate, startOfDay(today, 12)))
   return {
     date: today,
@@ -72,7 +74,8 @@ export function deriveToday(data: Dataset, today: string): TodayView {
     pendingSettle: yesterdaysPain.filter((p) => p.settled === undefined),
     loads,
     flares,
-    insights: insightsFor({ flares, logs: data.activityLogs, loads, dates: window, baselineScore: baseline }),
+    insights: insightsFor(insightInput),
+    loadContrast: loadContrast(insightInput),
     milestones: milestones(data.romDays),
   }
 }
