@@ -36,18 +36,22 @@ if (process.env.DATABASE_URL) {
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`);
       await pool.query('ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS alert TEXT');
+      await pool.query('ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS sport TEXT');
+      await pool.query('ALTER TABLE waitlist ADD COLUMN IF NOT EXISTS channel TEXT');
     },
     async add(row) {
       const r = await pool.query(
-        `INSERT INTO waitlist (email, role, injury, alert, note, source, referrer, user_agent)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        `INSERT INTO waitlist (email, role, injury, sport, alert, channel, note, source, referrer, user_agent)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
          ON CONFLICT (email) DO UPDATE SET
            role = COALESCE(NULLIF(EXCLUDED.role,''), waitlist.role),
            injury = COALESCE(NULLIF(EXCLUDED.injury,''), waitlist.injury),
+           sport = COALESCE(NULLIF(EXCLUDED.sport,''), waitlist.sport),
            alert = COALESCE(NULLIF(EXCLUDED.alert,''), waitlist.alert),
+           channel = COALESCE(NULLIF(EXCLUDED.channel,''), waitlist.channel),
            note = COALESCE(NULLIF(EXCLUDED.note,''), waitlist.note)
          RETURNING id, (xmax = 0) AS inserted`,
-        [row.email, row.role, row.injury, row.alert, row.note, row.source, row.referrer, row.user_agent]);
+        [row.email, row.role, row.injury, row.sport, row.alert, row.channel, row.note, row.source, row.referrer, row.user_agent]);
       const pos = await pool.query('SELECT COUNT(*)::int AS n FROM waitlist WHERE id <= $1', [r.rows[0].id]);
       return { isNew: r.rows[0].inserted, position: pos.rows[0].n };
     },
@@ -63,7 +67,7 @@ if (process.env.DATABASE_URL) {
     async init() {},
     async add(row) {
       const rows = read(); const i = rows.findIndex(r => r.email === row.email);
-      if (i >= 0) { for (const k of ['role', 'injury', 'alert', 'note']) if (row[k]) rows[i][k] = row[k]; write(rows); return { isNew: false, position: i + 1 }; }
+      if (i >= 0) { for (const k of UPDATABLE) if (row[k]) rows[i][k] = row[k]; write(rows); return { isNew: false, position: i + 1 }; }
       rows.push({ id: rows.length + 1, ...row, created_at: new Date().toISOString() }); write(rows);
       return { isNew: true, position: rows.length };
     },
@@ -78,6 +82,10 @@ const clean = (v, n = 200) => (typeof v === 'string' ? v.trim().slice(0, n) : ''
 const ROLES = ['recovering', 'supporting', 'clinician', 'movement', 'patient', 'pt', 'athlete', 'surgeon', 'other', ''];
 const INJURIES = ['acl', 'meniscus', 'knee-replacement', 'patella', 'other-knee', 'shoulder', 'ankle', 'other-joint', 'not-injured', ''];
 const ALERTS = ['yes', 'maybe', 'no', ''];
+const SPORTS = ['basketball', 'soccer', 'volleyball', 'skiing', 'running', 'tennis', 'football', 'gym', 'other', 'everyday', ''];
+const CHANNELS = ['clinic', 'teammate', 'online', 'social', 'event', 'other', ''];
+const UPDATABLE = ['role', 'injury', 'sport', 'alert', 'channel', 'note'];
+const pickFrom = (list, v) => (list.includes(clean(v)) ? clean(v) : '');
 
 const hits = new Map();
 function rateLimited(ip) {
@@ -102,7 +110,7 @@ async function welcomeEmail(to) {
       body: JSON.stringify({
         from: process.env.FROM_EMAIL, to,
         subject: "You're on the Kinn waitlist",
-        text: "Thanks for joining the Kinn waitlist.\n\nWe're exploring new ways to help people understand their recovery and rebuild strength with more confidence. You'll get early access and updates as we build.\n\n— The Kinn team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
+        text: "Thanks for joining the Kinn waitlist.\n\nWe're building a thin knee tape with a reusable coin that tracks how your knee bends and straightens through a comeback from an ACL or meniscus injury, so you know when to push and when to ease off. You'll get early access and updates as we build.\n\n— The Kinn team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
       }),
     });
   } catch (e) { console.error('welcome email failed', e.message); }
@@ -118,10 +126,18 @@ app.post('/api/waitlist', async (req, res) => {
     if (clean(b.company)) return res.json({ ok: true, position: null }); // honeypot field: bots fill it, people never see it
     const email = clean(b.email, 254).toLowerCase();
     if (!EMAIL_RE.test(email)) return res.status(400).json({ ok: false, error: 'Enter a full email address, like name@example.com.' });
-    const role = ROLES.includes(clean(b.role)) ? clean(b.role) : '';
-    const injury = INJURIES.includes(clean(b.injury)) ? clean(b.injury) : '';
-    const alert = ALERTS.includes(clean(b.alert)) ? clean(b.alert) : '';
-    const row = { email, role, injury, alert, note: clean(b.note, 500), source: clean(b.source, 40), referrer: clean(req.get('referer') || '', 300), user_agent: clean(req.get('user-agent') || '', 300) };
+    const row = {
+      email,
+      role: pickFrom(ROLES, b.role),
+      injury: pickFrom(INJURIES, b.injury),
+      sport: pickFrom(SPORTS, b.sport),
+      alert: pickFrom(ALERTS, b.alert),
+      channel: pickFrom(CHANNELS, b.channel),
+      note: clean(b.note, 500),
+      source: clean(b.source, 40).replace(/[^a-z0-9_-]/gi, '') || 'site',
+      referrer: clean(req.get('referer') || '', 300),
+      user_agent: clean(req.get('user-agent') || '', 300),
+    };
     const out = await store.add(row);
     if (out.isNew) welcomeEmail(email);
     res.json({ ok: true, position: out.position, isNew: out.isNew });
@@ -138,7 +154,7 @@ app.get('/api/waitlist/count', async (req, res) => {
 app.get('/admin/waitlist.csv', async (req, res) => {
   if (!tokenOk(req)) return res.status(401).send('Unauthorized. Add ?token=YOUR_ADMIN_TOKEN');
   const rows = await store.all();
-  const cols = ['id', 'created_at', 'email', 'role', 'injury', 'alert', 'note', 'source', 'referrer'];
+  const cols = ['id', 'created_at', 'email', 'role', 'injury', 'sport', 'alert', 'channel', 'note', 'source', 'referrer'];
   const esc = v => { const s = v == null ? '' : (v instanceof Date ? v.toISOString() : String(v)); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', 'attachment; filename="kinn-waitlist.csv"');
@@ -148,7 +164,7 @@ app.get('/admin/waitlist.csv', async (req, res) => {
 app.get('/admin/stats', async (req, res) => {
   if (!tokenOk(req)) return res.status(401).json({ error: 'unauthorized' });
   const rows = await store.all(), tally = k => rows.reduce((m, r) => (m[r[k] || 'blank'] = (m[r[k] || 'blank'] || 0) + 1, m), {});
-  res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), wantsAlert: tally('alert'), bySource: tally('source') });
+  res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), bySport: tally('sport'), wantsAlert: tally('alert'), byChannel: tally('channel'), bySource: tally('source') });
 });
 
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', setHeaders: (res, p) => { if (p.endsWith('.html')) res.set('Cache-Control', 'no-cache'); } }));

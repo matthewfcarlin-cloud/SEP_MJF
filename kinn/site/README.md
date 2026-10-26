@@ -19,7 +19,7 @@ A one-page teaser (scroll film hero, the problem, a first look at the renders, w
 - Quick counts: `https://YOUR-DOMAIN/admin/stats?token=YOUR_ADMIN_TOKEN`
 - Or open the Postgres service in Railway → **Data** tab → `waitlist` table.
 
-Each signup stores: email, role (patient / pt / athlete / other), injury (acl, meniscus, knee-replacement, patella, other-knee, not-injured), optional note, source (hero or form), referrer and time. A repeat signup with the same email updates the details and doesn't create a duplicate.
+Each signup stores: email, role (patient / pt / supporting / other), injury (acl, meniscus, patella, other-knee, other-joint), sport (basketball, soccer, volleyball, skiing, running, tennis, football, gym, other, everyday), alert (yes / maybe / no), channel (clinic, teammate, online, social, event, other), optional note, source, referrer and time. `source` is `site` unless the page was opened with `?src=…` (for example `?src=flyer-usc` on a QR code), so each clinic, flyer or post can get its own link. A repeat signup with the same email updates the details and doesn't create a duplicate. Older rows may still hold the pre-Oct-26 values (athlete, knee-replacement, shoulder, ankle, not-injured).
 
 ## Optional: welcome email
 

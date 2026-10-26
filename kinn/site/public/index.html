@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Kinn</title>
-<meta name="description" content="Kinn is a thin strip you wear all day that checks your movement, tracks flare-ups and learns how your body responds, so you know when to push and when to rest. Join the waitlist.">
+<meta name="description" content="Kinn is a thin knee tape with a reusable coin. It tracks how far your knee bends and straightens every day of your comeback from an ACL or meniscus injury, so you know when to push and when to ease off. Join the waitlist.">
 <meta property="og:title" content="Kinn">
 <meta property="og:description" content="Get stronger. Push forward. Trust your comeback. Join the waitlist.">
 <meta property="og:image" content="/img/hero.webp">
@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap">
 <style>
-/* Layout: black stage, one chrome object, very few words. Hero coin snap → film (fiber to knee) → statement (know your limit) → rendered flex with scroll-filled steps → join. Monochrome only; colour lives in the object's reflections. */
+/* Layout: black stage, one chrome object, very few words. Hero coin snap → film (fiber to knee) → statement (trust your comeback) → rendered flex with scroll-filled steps → join. Monochrome only; colour lives in the object's reflections. */
 :root{
   --bg:#000;
   --fg:#ededed;
@@ -238,9 +238,9 @@ footer .small{color:#5a5a5a;font-size:11px}
     <div class="tick" aria-hidden="true"><span class="on" data-k="0">01 Coin</span><span data-k="1">02 Snap</span><span data-k="2">03 Strip</span></div>
     <div class="under gut">
       <div class="lines small">
-        <p class="on" data-in="0" data-out=".3">Healthy enough to try. Not sure how hard to push.<br><b>Kinn takes the guessing out of recovery.</b></p>
-        <p data-in=".3" data-out=".6">A small coin holds the electronics.<br><b>It goes wherever your recovery does.</b></p>
-        <p data-in=".6" data-out="1.1">It snaps into a thin strip you can wear all day.<br><b>Get stronger. Push forward. Trust your comeback.</b></p>
+        <p class="on" data-in="0" data-out=".3">Healthy enough to train. Not sure how hard to push the knee.<br><b>Kinn takes the guessing out of your comeback.</b></p>
+        <p data-in=".3" data-out=".6">A small coin holds the electronics.<br><b>One coin for the whole comeback.</b></p>
+        <p data-in=".6" data-out="1.1">It snaps into a thin knee strip you wear all day.<br><b>Get stronger. Push forward. Trust your comeback.</b></p>
       </div>
       <span class="small cue" id="heroCue"><i></i>Scroll</span>
     </div>
@@ -259,7 +259,7 @@ footer .small{color:#5a5a5a;font-size:11px}
 <section class="statement gut" id="mission">
   <div class="stick">  <span class="caps small fade" data-o=".0,.08">Mission</span>
   <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
-  <p class="fade" data-o=".74,.86">Coming back from an injury means pushing a body you don't fully trust yet. Hold back and recovery drags on. Push too hard and you're back at the start. <b>Nearly 1 in 3 young athletes who return to sport after ACL reconstruction tear an ACL again within two years.</b> Kinn is a thin strip you wear all day. It checks your movement, keeps track of flare-ups, and learns how your body responds, so you know when to push and when to rest.</p>
+  <p class="fade" data-o=".74,.86">Coming back from a knee injury means pushing a knee you don't fully trust yet. Hold back and the comeback drags on. Push too hard and you're back at the start. <b>Nearly 1 in 3 young athletes who return to sport after ACL reconstruction tear an ACL again within two years.</b> After the first few weeks a physio sees you once or twice a week at most. The rest of the comeback happens on your own. Kinn is a thin knee tape you wear all day. It tracks how far your knee bends and straightens, lines that up with how it feels the next morning, and gives you a daily read on whether to push or ease off.</p>
   <p class="src fade" data-o=".8,.92">Paterno et al., Cincinnati Children's: 29.5% second ACL injury within 24 months of return to sport (n = 78).</p>
   </div>
 </section>
@@ -267,40 +267,40 @@ footer .small{color:#5a5a5a;font-size:11px}
 <section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
   <div class="pin">
     <img class="poster" src="flex/k_001.webp" alt="" width="1440" height="810">
-    <canvas id="flexCv" role="img" aria-label="Close-up of the woven tape and printed silver traces as the knee strip slowly bends. Signals run along the traces to the coin, and an alert appears when the bend passes the set limit."></canvas>
+    <canvas id="flexCv" role="img" aria-label="Close-up of the woven tape and printed silver traces as the knee strip slowly bends. Signals run along the traces to the coin. When the bend goes past your usual, a next-morning note from the app appears: Ease off today."></canvas>
     <div class="hud gut"><div class="box">
       <div class="read r-top">
         <span class="caps small">Knee flexion</span>
         <strong id="fDeg">0°</strong>
         <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
-        <span class="small">Your line · <b>120°</b> · learned from your flare-ups</span>
+        <span class="small">Your usual · <b>120°</b> · deepest bend, last 7 days</span>
       </div>
-      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">Kinn · now</span><b>Right knee hit <span id="fPeak">121°</span>.</b><span>Your last flare-up started past 120°. Ease off and keep going.</span></div>
+      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">Kinn · next morning</span><b>Ease off today.</b><span>Yesterday went well above your usual, with a deepest bend of <span id="fPeak">121°</span>. Keep today light: walking, the bike and your PT mobility work.</span></div>
       <div class="steps" id="steps">
-        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Thin as athletic tape. Under clothes, at work, on the court.</p></div>
-        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>Check every rep</b><p>It sees whether your exercises hit full range and move the way they should.</p></div>
-        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Log how it feels</b><p>Tap in pain or a flare-up. Kinn lines it up with how you moved that day.</p></div>
-        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b><p>It learns your normal and tells you when to push, ease off, or rest.</p></div>
+        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Thin as athletic tape. Under clothes, in class, at practice.</p></div>
+        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>See it get back to zero</b><p>Best straightening and deepest bend, every day, next to your other knee.</p></div>
+        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Tap when it hurts</b><p>Press the coin. Next morning, Kinn asks whether it settled.</p></div>
+        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b><p>A daily read against your own normal, with the reason. Keep going, steady, or ease off.</p></div>
       </div>
     </div></div>
   </div>
 </section>
 
 <section class="learns gut" id="learns">
-  <h2 class="big rv">It learns<br>your recovery.</h2>
+  <h2 class="big rv">Built for the days<br>your physio doesn't see.</h2>
   <div class="cols">
-    <div class="rv"><span class="caps small">01</span><b>Checks your movement</b><p>Sees whether each rep hits full range and moves the way it should, so your exercises actually count.</p></div>
-    <div class="rv"><span class="caps small">02</span><b>Tracks flare-ups</b><p>Log pain in one tap. Kinn lines it up with how far and how much you moved, and spots what sets it off.</p></div>
-    <div class="rv"><span class="caps small">03</span><b>Knows your normal</b><p>It builds your personal baseline and gets sharper every day you wear it, so it can tell you when to push, ease off, or rest.</p></div>
+    <div class="rv"><span class="caps small">01</span><b>Back to zero</b><p>Your best straightening and deepest bend, measured all day and shown against your other knee and your own trend. Progress you can see, not guess.</p></div>
+    <div class="rv"><span class="caps small">02</span><b>One tap when it hurts</b><p>Press the coin or the app. Next morning Kinn asks whether it settled, the same rule physios use to decide if yesterday was too much.</p></div>
+    <div class="rv"><span class="caps small">03</span><b>What came before</b><p>See what your knee did on the days before a flare-up. Not causes, just what happened first. Share a short summary with your physio when you choose.</p></div>
   </div>
-  <p class="note rv">The goal: fewer setbacks and a faster comeback. Kinn is in development and is not a medical device.</p>
+  <p class="note rv">The goal: a comeback you can see, with fewer setbacks. Kinn tracks and shows; your physio makes the calls. Kinn is in development and is not a medical device.</p>
 </section>
 
 <section class="join gut" id="join">
   <a class="cta rv" href="#join" data-join><span class="big">Join the<br>waitlist</span><span class="arrow" aria-hidden="true">→</span></a>
   <div class="row">
     <p class="small rv">Free. A few quick questions. We only write when there's something to try.</p>
-    <aside class="rv"><b>Early testers wanted.</b> Anyone coming back from an injury who wants to get stronger without guessing: weekend runners, lifters, and athletes on their way back to the slope or the court. <span id="count"></span></aside>
+    <aside class="rv"><b>Early testers wanted.</b> Club, college and rec-league athletes coming back from an ACL or meniscus injury, and the physios and athletic trainers who work with them. <span id="count"></span></aside>
   </div>
 </section>
 
@@ -314,37 +314,55 @@ footer .small{color:#5a5a5a;font-size:11px}
         <div class="field"><input id="email" name="email" type="email" placeholder="you@email.com" autocomplete="email" required></div></div>
       <fieldset class="q"><span class="n">02</span><legend>I'm…</legend>
         <div class="chips">
-          <label for="r1"><input type="radio" id="r1" name="role" value="patient" checked><span>Recovering from an injury</span></label>
-          <label for="r2"><input type="radio" id="r2" name="role" value="pt"><span>A physical therapist</span></label>
-          <label for="r3"><input type="radio" id="r3" name="role" value="athlete"><span>An athlete</span></label>
+          <label for="r1"><input type="radio" id="r1" name="role" value="patient" checked><span>Recovering from a knee injury</span></label>
+          <label for="r2"><input type="radio" id="r2" name="role" value="pt"><span>A physio or athletic trainer</span></label>
+          <label for="r3"><input type="radio" id="r3" name="role" value="supporting"><span>A coach or parent</span></label>
           <label for="r4"><input type="radio" id="r4" name="role" value="other"><span>Just curious</span></label>
         </div></fieldset>
-      <div class="q" id="injuryRow"><span class="n">03</span><label for="injury">What are you recovering from?</label>
+      <div class="q" data-patient><span class="n">03</span><label for="injury">What are you coming back from?</label>
         <select id="injury" name="injury">
           <option value="acl">ACL tear or reconstruction</option>
-          <option value="meniscus">Meniscus</option>
-          <option value="knee-replacement">Knee replacement</option>
-          <option value="patella">Kneecap / patellar tendon</option>
-          <option value="other-knee">Other knee issue</option>
-          <option value="shoulder">Shoulder</option>
-          <option value="ankle">Ankle</option>
-          <option value="other-joint">Another joint</option>
-          <option value="not-injured">Not injured</option>
+          <option value="meniscus">Meniscus tear or repair</option>
+          <option value="patella">Kneecap or patellar tendon</option>
+          <option value="other-knee">Another knee injury</option>
+          <option value="other-joint">Not a knee injury</option>
         </select></div>
-      <fieldset class="q"><span class="n" id="alertN">04</span><legend>Would an app that tells you when to push and when to rest help your recovery?</legend>
+      <div class="q" data-patient><span class="n">04</span><label for="sport">What are you getting back to?</label>
+        <select id="sport" name="sport">
+          <option value="basketball">Basketball</option>
+          <option value="soccer">Soccer</option>
+          <option value="volleyball">Volleyball</option>
+          <option value="skiing">Skiing or snowboarding</option>
+          <option value="running">Running</option>
+          <option value="tennis">Tennis or pickleball</option>
+          <option value="football">Football or rugby</option>
+          <option value="gym">Lifting or CrossFit</option>
+          <option value="other">Another sport</option>
+          <option value="everyday">Everyday life, not a sport</option>
+        </select></div>
+      <fieldset class="q"><span class="n">05</span><legend>Would a daily read on whether to push or ease off help your comeback?</legend>
         <div class="chips">
           <label for="a1"><input type="radio" id="a1" name="alert" value="yes"><span>Yes</span></label>
           <label for="a2"><input type="radio" id="a2" name="alert" value="maybe"><span>Maybe</span></label>
           <label for="a3"><input type="radio" id="a3" name="alert" value="no"><span>Not really</span></label>
         </div></fieldset>
-      <div class="q"><span class="n" id="noteN">05</span><label for="note">Anything we should know? <span class="small">(optional)</span></label>
-        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, nervous to start running again"></div></div>
+      <fieldset class="q"><span class="n">06</span><legend>How did you find Kinn?</legend>
+        <div class="chips">
+          <label for="c1"><input type="radio" id="c1" name="channel" value="clinic"><span>My physio or trainer</span></label>
+          <label for="c2"><input type="radio" id="c2" name="channel" value="teammate"><span>A teammate or friend</span></label>
+          <label for="c3"><input type="radio" id="c3" name="channel" value="online"><span>Reddit or a forum</span></label>
+          <label for="c4"><input type="radio" id="c4" name="channel" value="social"><span>Instagram, TikTok or X</span></label>
+          <label for="c5"><input type="radio" id="c5" name="channel" value="event"><span>A flyer, talk or event</span></label>
+          <label for="c6"><input type="radio" id="c6" name="channel" value="other"><span>Somewhere else</span></label>
+        </div></fieldset>
+      <div class="q"><span class="n">07</span><label for="note">Anything we should know? <span class="small">(optional)</span></label>
+        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, club soccer, physio once a week"></div></div>
       <div class="send"><button type="submit" class="go">Join the waitlist <span aria-hidden="true">→</span></button><p class="msg" id="msg" aria-live="polite"></p></div>
     </form>
     <div class="done" id="done" hidden aria-live="polite">
       <span class="caps small">You're in</span>
       <h2 class="big" id="pos">Thank you.</h2>
-      <p class="small" style="max-width:420px">We'll keep in touch. Know someone coming back from an injury? Send them this page.</p>
+      <p class="small" style="max-width:420px">We'll keep in touch. Know a teammate coming back from a knee injury? Send them this page.</p>
       <button type="button" class="go" data-close>Back to the site <span aria-hidden="true">→</span></button>
     </div>
   </div>
@@ -630,7 +648,7 @@ vec3 kBump(vec3 p, vec3 n, float h){ vec3 sx = dFdx(p), sy = dFdy(p); vec3 r1 = 
     if (snap !== snapped) { snapped = snap; sec.classList.toggle('snap', snap); }
     w2.style.setProperty('--ls', snap ? '-.04em' : (-.04 + st * (innerWidth < 700 ? .06 : .2)).toFixed(3) + 'em');
     lim.style.setProperty('--lw', (cl((p - .42) / .12) * 100).toFixed(1) + '%');
-    deg.textContent = (snap ? 120 : Math.round(st * 119)) + '°' + (snap ? ' · your line' : '');
+    deg.textContent = (snap ? 120 : Math.round(st * 119)) + '°' + (snap ? ' · your usual' : '');
     fades.forEach(([el, a, b]) => el.style.setProperty('--o', cl((p - a) / (b - a)).toFixed(3)));
   };
   addEventListener('scroll', upd, {passive: true}); addEventListener('resize', upd); upd();
@@ -661,7 +679,7 @@ vec3 kBump(vec3 p, vec3 n, float h){ vec3 sx = dFdx(p), sy = dFdy(p); vec3 r1 = 
     if (f !== shown && started) { let k = f; while (k > 0 && !ready(frames[k])) k--; if (draw(k)) shown = k === f ? f : -1; }
     const d = ease(f / (N - 1)) * MAXD, over = d >= LIMIT;   // same easing the render used
     deg.textContent = Math.round(d) + '°'; bar.style.width = (d / MAXD * 100) + '%';
-    if (over && !wasOver) peak.textContent = Math.max(121, Math.round(d)) + '°';
+    if (over) peak.textContent = Math.max(121, Math.round(d)) + '°';
     if (over !== wasOver) { sec.classList.toggle('over', over); wasOver = over; }
     let cur = 0;
     steps.forEach((s, i) => { const a = +s.dataset.a, b = +s.dataset.b, v = Math.min(1, Math.max(0, (prog - a) / (b - a)));
@@ -677,7 +695,10 @@ if ('IntersectionObserver' in window && !reduce) {
 }
 
 /* ---------- waitlist intake (opens on "Join") ---------- */
-const dlg = document.getElementById('intake'), form = document.getElementById('form'), msg = document.getElementById('msg'), injuryRow = document.getElementById('injuryRow');
+const dlg = document.getElementById('intake'), form = document.getElementById('form'), msg = document.getElementById('msg'), patientRows = [...form.querySelectorAll('[data-patient]')];
+const SOURCE = (new URLSearchParams(location.search).get('src') || 'site').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || 'site';
+/* questions renumber themselves when the injury and sport rows are hidden for non-patients */
+function renumber() { let n = 0; form.querySelectorAll('.q').forEach(q => { if (q.hidden) return; n += 1; const t = q.querySelector(':scope > .n'); if (t) t.textContent = String(n).padStart(2, '0'); }); }
 let lastFocus = null;
 function openJoin(e) { if (e) e.preventDefault(); lastFocus = document.activeElement; if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); document.body.style.overflow = 'hidden'; setTimeout(() => (form.hidden ? dlg.querySelector('.done .go') : form.email).focus(), 60); }
 function closeJoin() { if (dlg.open) dlg.close(); }
@@ -685,13 +706,14 @@ dlg.addEventListener('close', () => { document.body.style.overflow = ''; if (las
 document.querySelectorAll('[data-join]').forEach(a => a.addEventListener('click', openJoin));
 dlg.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeJoin));
 if (location.hash === '#join') openJoin();
-form.addEventListener('change', () => { const pat = form.role.value === 'patient'; injuryRow.hidden = !pat; document.getElementById('alertN').textContent = pat ? '04' : '03'; document.getElementById('noteN').textContent = pat ? '05' : '04'; });
+form.addEventListener('change', () => { const pat = form.role.value === 'patient'; patientRows.forEach(r => { r.hidden = !pat; }); renumber(); });
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const email = form.email.value.trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.className = 'msg err'; msg.textContent = 'Enter a full email address, like name@example.com.'; form.email.focus(); return; }
   msg.className = 'msg'; msg.textContent = 'Adding you…';
-  const role = form.role.value, data = {email, role, injury: role === 'patient' ? form.injury.value : '', alert: (form.querySelector('input[name=alert]:checked') || {}).value || '', note: form.note.value.trim(), company: form.company.value, source: 'site'};
+  const role = form.role.value, pick = name => (form.querySelector(`input[name=${name}]:checked`) || {}).value || '';
+  const data = {email, role, injury: role === 'patient' ? form.injury.value : '', sport: role === 'patient' ? form.sport.value : '', alert: pick('alert'), channel: pick('channel'), note: form.note.value.trim(), company: form.company.value, source: SOURCE};
   try {
     const res = await fetch('/api/waitlist', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
     const j = await res.json().catch(() => ({}));

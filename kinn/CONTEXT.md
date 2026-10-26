@@ -201,3 +201,15 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 - **Core feature:** a daily 0 to 100 knee **Load score** against a stage-based target band, with a plain-language call (Room to push / On target / Ease off) and a reason sentence. Range alert, Moments (coin button), flare-up insights and an athlete-controlled physio report support it. Never adherence or compliance language.
 - **Documents:** [`docs/feature-spec.md`](docs/feature-spec.md) (features, load model, physio questions, FDA wording), [`docs/architecture.md`](docs/architecture.md) (Expo + TypeScript core, data model, sensor abstraction), [`docs/decisions.md`](docs/decisions.md) (running decision log).
 - **Interview evidence so far:** five Granola-recorded calls, Oct 15 to 19 (sarena, Akshay, Lowie/Ava/Sammie, paxton, Riya). All athletes or friends; no physio yet.
+
+## 13. Site v3.2 (Oct 26, 2026): copy matched to the Oct 23 ICP and the app
+
+Visual style unchanged (black, monochrome, 3D coin hero, rendered flex). Only the words and the intake changed, so the site says what the Notion Product Brief and the app's Today screen say.
+
+- **Who:** copy now names the knee, the athlete and the gap after physio visits thin out. The waitlist aside asks for club, college and rec-league athletes coming back from an ACL or meniscus injury, plus physios and athletic trainers.
+- **Hero metric:** "See it get back to zero" (best straightening and deepest bend against the other knee) replaced the rep-checking story. Guided training and rep validation are gone from the site, matching the feature spec.
+- **The demo card:** the phone card in the flex section is now a next-morning "Ease off today" note relative to your own usual, with a reason sentence in the app's voice, instead of a live threshold alarm at 120°. The FDA wellness notes (RES-20) flag threshold alerts as the line that makes Kinn a device; the safe-range alert stays a later, PT-configured feature.
+- **Steps:** Wear it all day / See it get back to zero / Tap when it hurts / Know when to push (Keep going, Steady, Ease off, the app's three statuses).
+- **"Built for the days your physio doesn't see":** Back to zero / One tap when it hurts / What came before (things that happened before, not causes, same wording as the app's Insights screen). Footnote: "Kinn tracks and shows; your physio makes the calls."
+- **Intake:** roles are patient / physio or athletic trainer / coach or parent / curious. Patients pick a knee injury (ACL, meniscus, patella, other knee, not a knee) and the sport they are getting back to. Everyone answers the push-or-ease-off question and "How did you find Kinn?" (clinic, teammate, online, social, event, other), which the GTM proposal wants tagged from day one. `?src=…` on the URL sets the `source` column so flyers and clinic links can be told apart. New Postgres columns `sport` and `channel` are added automatically on boot.
+- **Not stated on the site, on purpose:** the launch recovery window (months 3 to 9 vs the first 12 weeks) and pricing. Both are still open in Notion.
