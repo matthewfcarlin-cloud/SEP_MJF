@@ -10,6 +10,9 @@ import { milestones, progressPercent } from './trend'
 import type { Milestone } from './trend'
 import type { Dataset, DayLoad, FlareDay, ManualActivity, PainLog, RomDay } from './types'
 import { weeksSince } from '../time/day'
+import { tapeDays } from '../tape/days'
+import type { TapeDay } from '../tape/days'
+import type { StoredRecord } from '../tape/types'
 
 export type TimelineMark = 'flare' | 'before-flare' | 'matched' | 'none'
 
@@ -41,6 +44,9 @@ export interface TodayView {
   readonly loadContrast: LoadContrast | undefined
   readonly timeline: readonly TimelineDay[]
   readonly milestones: readonly Milestone[]
+  /** Synced tape minutes rolled up per day over the same window (real tape only, never the seed). */
+  readonly tapeDays: readonly TapeDay[]
+  readonly todayTape: TapeDay | undefined
 }
 
 /** Date keys from `days` before today through today, oldest first. */
@@ -52,7 +58,7 @@ const latestRomDay = (days: readonly RomDay[]): RomDay | undefined =>
   [...days].sort((a, b) => a.date.localeCompare(b.date)).at(-1)
 
 /** Everything the Today, Insights and Progress screens need, derived in one pure call. */
-export function deriveToday(data: Dataset, today: string): TodayView {
+export function deriveToday(data: Dataset, today: string, tape: readonly StoredRecord[] = []): TodayView {
   const yesterday = addDays(today, -1)
   const window = dateRange(today, MANUAL_INSIGHTS.windowDays)
   const loads = loadsFor(window, data.activityLogs)
@@ -73,6 +79,7 @@ export function deriveToday(data: Dataset, today: string): TodayView {
   const insightInput = { flares, logs: data.activityLogs, loads, dates: window, baselineScore: baseline }
   const insights = insightsFor(insightInput)
   const timeline = buildTimeline(window, loads, flares, data, insights[0]?.id)
+  const days = tapeDays(tape).filter((d) => d.date >= window[0]! && d.date <= today)
   const weeks = Math.max(0, weeksSince(data.profile.injuryDate, startOfDay(today, 12)))
   return {
     date: today,
@@ -92,6 +99,8 @@ export function deriveToday(data: Dataset, today: string): TodayView {
     loadContrast: loadContrast(insightInput),
     timeline,
     milestones: milestones(data.romDays),
+    tapeDays: days,
+    todayTape: days.find((d) => d.date === today),
   }
 }
 

@@ -1,7 +1,9 @@
 /**
  * One tape session for the whole app: connect a real tape (Web Bluetooth in the browser)
  * or run the simulated tape, then expose phase, status, the live stream (last 10 s) and
- * reps to any screen. Nothing is persisted (MemorySyncStore) so the demo stays clean.
+ * reps to any screen. Minutes synced from a real tape go into the saved tape log (tape-log.ts)
+ * and are re-synced every few minutes while connected; the demo tape uses a throwaway
+ * MemorySyncStore so it never mixes into an athlete's data.
  * On the web, opening the app with ?tape=demo starts the simulated tape straight away.
  */
 import { createContext, createElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
@@ -21,6 +23,7 @@ import {
 
 import { bluetoothSupport, requestBleTransport } from './ble'
 import type { BluetoothSupport } from './ble'
+import { tapeLog, tapeLogReady } from './tape-log'
 
 export interface LiveSample {
   readonly t: number
@@ -43,6 +46,8 @@ export interface TapeSession {
   readonly holdMs: number | null
   readonly busy: 'rest' | 'max' | 'identify' | null
   readonly lastCalibration: CalibrationOutcome | null
+  /** When the last history sync finished this session (epoch ms). */
+  readonly lastSyncAt: number | null
   readonly error: string | null
   readonly connectTape: () => Promise<void>
   readonly startDemo: () => Promise<void>
@@ -57,6 +62,8 @@ const WINDOW_MS = 10_000
 const FRAME_MS = 80
 const DEMO_NAME = 'RECO tape (demo)'
 const DEMO_QUERY = 'tape=demo'
+/** How often to pull new minute records from a connected real tape. */
+const RESYNC_MS = 5 * 60_000
 
 export const isConnected = (p: ClientPhase): boolean => p === 'ready' || p === 'syncing' || p === 'session'
 
@@ -82,6 +89,7 @@ function useTapeSession(): TapeSession {
   const [lastCalibration, setLastCalibration] = useState<CalibrationOutcome | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [buffer, setBuffer] = useState<readonly LiveSample[]>([])
+  const [lastSyncAt, setLastSyncAt] = useState<number | null>(null)
 
   // Publish the ring buffer as a fresh array at ~12 fps rather than once per 20 Hz packet. A new
   // array each time matters: the React Compiler memoises on identity, so an array mutated in
@@ -106,6 +114,17 @@ function useTapeSession(): TapeSession {
 
   useEffect(() => () => void teardown(), [teardown])
 
+  // While a real tape is connected, pull the minutes it has logged since the last sync so the
+  // Today line and the export stay current without reconnecting.
+  useEffect(() => {
+    if (source !== 'ble') return
+    const id = setInterval(() => {
+      const c = clientRef.current
+      if (c && c.phase === 'ready') c.sync().catch(() => undefined)
+    }, RESYNC_MS)
+    return () => clearInterval(id)
+  }, [source])
+
   const attach = useCallback(
     async (client: DeviceClient, src: TapeSource) => {
       await teardown()
@@ -121,6 +140,7 @@ function useTapeSession(): TapeSession {
       setError(null)
       client.events.on('phase', setPhase)
       client.events.on('status', setStatus)
+      client.events.on('sync', (r) => setLastSyncAt(r.at))
       client.events.on('live', (p) => {
         const arr = bufRef.current
         const last = arr[arr.length - 1]
@@ -154,7 +174,8 @@ function useTapeSession(): TapeSession {
       if (!/cancel/i.test(msg)) setError(msg)
       return
     }
-    await attach(new DeviceClient(transport, new MemorySyncStore()), 'ble')
+    await tapeLogReady
+    await attach(new DeviceClient(transport, tapeLog), 'ble')
   }, [attach, support])
 
   const startDemo = useCallback(async () => {
@@ -224,6 +245,7 @@ function useTapeSession(): TapeSession {
     holdMs: current ? current.holdMs : null,
     busy,
     lastCalibration,
+    lastSyncAt,
     error,
     connectTape,
     startDemo,

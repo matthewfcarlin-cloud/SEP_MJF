@@ -1,10 +1,13 @@
 import { router } from 'expo-router'
+import { useState } from 'react'
 import { Switch, View } from 'react-native'
-import { DISCLAIMER, SEED_DAYS } from '@reco/core'
+import { DISCLAIMER, SEED_DAYS, tapeDays } from '@reco/core'
 
 import { copy } from '@/copy'
+import { exportTrialData } from '@/export'
 import { shortDate } from '@/format'
 import { useStore } from '@/store/provider'
+import { useTapeRecords } from '@/tape/tape-log'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { SampleTag } from '@/components/ui/sample-tag'
@@ -14,8 +17,24 @@ import { Txt } from '@/components/ui/txt'
 import { space } from '@/theme/tokens'
 
 export default function SettingsScreen() {
-  const { state, view, setPtReminder, resetToSample, restartOnboarding } = useStore()
+  const { state, today, view, setPtReminder, resetToSample, restartOnboarding } = useStore()
   const { profile } = state.data
+  const tapeRecords = useTapeRecords()
+  const [exportNote, setExportNote] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
+
+  const runExport = async () => {
+    setExporting(true)
+    try {
+      await exportTrialData(state, today)
+      setExportNote(copy.settings.exportDone)
+    } catch (error) {
+      console.warn('RECO: export did not complete.', error)
+      setExportNote(copy.settings.exportFailed)
+    } finally {
+      setExporting(false)
+    }
+  }
   const facts = [
     copy.settings.profileInjury[profile.injury],
     profile.hadSurgery ? copy.settings.profileSurgery.yes : copy.settings.profileSurgery.no,
@@ -66,6 +85,22 @@ export default function SettingsScreen() {
           {copy.settings.dataBody}
         </Txt>
         <Button label={copy.settings.resetSample} variant="secondary" onPress={() => { resetToSample(); router.back() }} />
+      </Card>
+
+      <Card index={3}>
+        <SectionLabel>{copy.settings.exportTitle}</SectionLabel>
+        <Txt kind="small" color="textSecondary">
+          {copy.settings.exportBody}
+        </Txt>
+        <Txt kind="small" color="textMuted">
+          {copy.settings.tapeStored(tapeRecords.length, tapeDays(tapeRecords).length)}
+        </Txt>
+        <Button label={copy.settings.exportButton} variant="secondary" disabled={exporting} onPress={() => void runExport()} />
+        {exportNote ? (
+          <Txt kind="small" color="textSecondary">
+            {exportNote}
+          </Txt>
+        ) : null}
       </Card>
 
       <Button label={copy.settings.startOver} variant="ghost" onPress={startOver} />
