@@ -2,6 +2,7 @@
 // header, so the browser build (served at reco site /try) uses expo-router's JS tabs with
 // a bottom bar styled from the same tokens. iOS keeps _layout.tsx and its SF Symbols.
 import { Redirect, Tabs } from 'expo-router'
+import { useEffect } from 'react'
 import type { ColorValue } from 'react-native'
 import Svg, { Circle, Line, Path, Polyline, Rect } from 'react-native-svg'
 
@@ -70,10 +71,21 @@ function DocIcon({ color, size }: IconProps) {
 const TAB_ICON_SIZE = 22
 const TAB_BAR_HEIGHT = 64
 
+/** Site links such as /try/?tape=demo or /try/?sample=1 should land on a live Today, not on onboarding. */
+function sampleRequestedByUrl(): boolean {
+  if (typeof window === 'undefined') return false
+  const q = window.location.search
+  return q.includes('tape=demo') || q.includes('sample=1')
+}
+
 export default function TabsLayout() {
-  const { ready, state } = useStore()
+  const { ready, state, startWithSample } = useStore()
   const colors = useColors()
-  if (!ready) return null
+  const autoSample = ready && !state.onboarded && sampleRequestedByUrl()
+  useEffect(() => {
+    if (autoSample) startWithSample()
+  }, [autoSample, startWithSample])
+  if (!ready || autoSample) return null
   if (!state.onboarded) return <Redirect href="/onboarding" />
 
   return (
