@@ -85,7 +85,7 @@ Spec v0.2 reconciled with the Notion brief, Figma design directions and a token 
 Done and committed on `main`:
 - Core: manual-log module (activities, pain logs, morning check-in, status rule, suggestion, ROM progress and milestones, flare-up insights, weekly summary and share text), 21-day seed, 120 tests, 97% line coverage. Every screen string and every generated sentence is checked against the banned-words list.
 - Mobile: all eight screens built and walked through on the iOS simulator in Expo Go: onboarding, Today (progress bar, status, suggestion, pain button, load bars, check-in and "Did it settle?" cards), pain flow with the next-morning local notification, settle sheet, morning check-in with the picture scale, daily log, Insights (the game-day observation fires first on the seed), Progress (bend and straighten charts with milestones), weekly report with the share sheet, settings. Light and dark both render from the placeholder tokens.
-- Config: app renamed RECO, bundle id `com.reco.app`, EAS build profiles, placeholder icon, README with the TestFlight and direct-install commands.
+- Config: app renamed RECO, bundle id `com.recoapp.recovery`, EAS build profiles, placeholder icon, README with the TestFlight and direct-install commands.
 
 Open:
 - **EAS login and the first TestFlight build** need Matthew's Expo and Apple logins; commands are in `apps/mobile/README.md`.
@@ -94,7 +94,7 @@ Open:
 - Nine Expo packages are a patch version behind (`npx expo install --check`); harmless for the demo, run it before the TestFlight build.
 
 ### Fri Oct 23, late
-- Native development client builds and installs on the simulator from the `~/kinn-native` worktree (`com.reco.app`, full notification support). The EAS/TestFlight step is still Matthew's for Saturday.
+- Native development client builds and installs on the simulator from the `~/kinn-native` worktree (`com.recoapp.recovery`, full notification support). The EAS/TestFlight step is still Matthew's for Saturday.
 - Polish: Insights now shows one headline observation (conditions that restate the same flare-ups are dropped) plus a "knee load the day before" contrast card; Today shows the goal under the greeting; the progress bar fills on mount; cards fade in; chips, pain scale and saves give haptic feedback; the load chart has week labels.
 - Still placeholders for Figma: palette and type (`src/theme/tokens.ts`), app icon, swelling picture scale.
 

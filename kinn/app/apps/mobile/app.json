@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.reco.app",
+      "bundleIdentifier": "com.recoapp.recovery",
       "buildNumber": "1",
       "supportsTablet": false,
       "infoPlist": {
@@ -24,7 +24,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.reco.app"
+      "package": "com.recoapp.recovery"
     },
     "web": {
       "output": "server",
