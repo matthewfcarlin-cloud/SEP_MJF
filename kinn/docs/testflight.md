@@ -20,9 +20,22 @@ For a Monday demo with teammates, internal testing is enough. For athletes or PT
 - No HealthKit, no tracking SDKs, no network calls from the app. App Privacy can be answered as **Data Not Collected**.
 - A privacy policy page at `site/public/privacy/index.html`. Once the site deploys it is at `https://<your site domain>/privacy/`.
 
-## Your steps, in order
+## Two ways to get a build to TestFlight
 
-Everything below needs your Apple ID or Expo account, so it has to run from your terminal. Each command prompts and waits.
+**Route A, Xcode only (chosen 2026-10-26).** No Expo account. Archive on this Mac from the non-iCloud checkout at `~/kinn-native` and upload from Xcode's Organizer. Needs only the paid Apple Developer account that already exists.
+
+1. Bring the checkout to the latest commit and regenerate the native project (run by Claude, or by hand):
+   ```bash
+   cd ~/kinn-native && git checkout -- . && git checkout --detach main
+   cd kinn/app && npm install && cd apps/mobile && rm -rf ios && npx expo prebuild --platform ios && open ios/RECO.xcworkspace
+   ```
+2. In Xcode: select the **RECO** target → **Signing & Capabilities** → tick *Automatically manage signing* → choose your **Team** (the paid account, not "Personal Team"). Xcode creates the App ID `com.reco.app` and a profile. If the bundle id is already taken by someone else, Xcode says so here; change `ios.bundleIdentifier` in `app.json`, rerun step 1.
+3. Set the run destination to **Any iOS Device (arm64)**, then **Product → Archive**. First archive takes 5 to 10 minutes.
+4. The Organizer opens with the archive. **Distribute App → TestFlight & App Store → Upload**, accept the defaults (Xcode manages signing). Sign in with your Apple ID if asked. Upload takes a few minutes; processing on Apple's side 5 to 30 more.
+5. If App Store Connect has no app record yet, Xcode's upload creates one with the bundle id; otherwise create it first at appstoreconnect.apple.com → Apps → "+" (name **RECO**, iOS, English (U.S.), bundle id `com.reco.app`, SKU `reco-ios`).
+6. Each later build: pull latest into `~/kinn-native`, bump `ios.buildNumber` in `app.json` (Xcode rejects a repeat), `npx expo prebuild --platform ios`, Archive, Upload.
+
+**Route B, EAS (cloud, needs a free Expo account).** Kept for when nobody has a Mac with Xcode handy.
 
 1. **Check the bundle id is free.** In [App Store Connect](https://appstoreconnect.apple.com) → Apps → "+" → New App, try bundle id `com.reco.app`. If Apple says it is taken, pick `com.reco.recovery` (or similar) and change `ios.bundleIdentifier` and `android.package` in `app.json` before the next step. Do not create the app record yet; `eas submit` can create it for you, or create it here with name **RECO**, platform iOS, primary language English (U.S.), SKU `reco-ios`.
 
@@ -58,7 +71,7 @@ Everything below needs your Apple ID or Expo account, so it has to run from your
 
 7. **App Privacy** (App Store Connect → App Privacy): answer **Data Not Collected**. This is accurate: the app has no server, no analytics and no identifiers.
 
-## Each new build after that
+## Each new build after that (Route B)
 
 ```bash
 cd kinn/app/apps/mobile
@@ -77,7 +90,7 @@ The build number increments on EAS; testers see an update in TestFlight within t
 ## Not needed for TestFlight
 
 - App Store screenshots, description, keywords, age rating: those are for the public App Store submission, not for TestFlight.
-- The `~/kinn-native` worktree: EAS builds in the cloud from the committed source. The worktree is only for plugging a phone into Xcode.
+- An Expo account, if you use Route A.
 
 ## Before public App Store release (later)
 
