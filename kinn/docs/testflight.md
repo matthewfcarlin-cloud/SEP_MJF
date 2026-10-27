@@ -18,7 +18,7 @@ For a Monday demo with teammates, internal testing is enough. For athletes or PT
 - 1024 px icon without transparency (placeholder art), splash, dark splash background.
 - Export compliance answered in the build: `ITSAppUsesNonExemptEncryption = false`, so TestFlight will not ask on every upload.
 - No HealthKit, no tracking SDKs, no network calls from the app. App Privacy can be answered as **Data Not Collected**.
-- A privacy policy page at `site/public/privacy/index.html`. Once the site deploys it is at `https://<your site domain>/privacy/`.
+- A privacy policy page at `site/public/privacy/index.html`. Published at https://matthewfcarlin-cloud.github.io/reco-privacy/privacy/ via GitHub Pages (repo `reco-privacy`), independent of the marketing site.
 
 ## Two ways to get a build to TestFlight
 
@@ -64,7 +64,7 @@ For a Monday demo with teammates, internal testing is enough. For athletes or PT
 6. **External testers (athletes, PTs).** TestFlight → External Testing → "+" group. Fill in:
    - **Beta App Description**: "RECO is a knee-recovery companion for athletes coming back from ACL and meniscus injuries. Log activity, pain and morning check-ins; see what tends to come before a flare-up; share a weekly summary with your PT. This beta runs on sample data you can reset from Settings."
    - **Feedback email**: yours.
-   - **Privacy Policy URL**: `https://<your site domain>/privacy/` after the site deploys.
+   - **Privacy Policy URL**: `https://matthewfcarlin-cloud.github.io/reco-privacy/privacy/` (GitHub Pages, repo matthewfcarlin-cloud/reco-privacy; the same page is also in `site/public/privacy/`).
    - **What to Test**: the demo path. Open the app, answer the morning questions, log a pain, look at Insights and Progress, share a report.
    - **Review notes**: "No login required. Sample data is preloaded. Settings → Reset to sample data restores it."
    Add the build, submit for Beta App Review. After approval, share the public link or add emails.
