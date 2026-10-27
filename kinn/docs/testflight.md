@@ -32,7 +32,7 @@ For a Monday demo with teammates, internal testing is enough. For athletes or PT
 2. In Xcode: select the **RECO** target → **Signing & Capabilities** → tick *Automatically manage signing* → choose your **Team** (the paid account, not "Personal Team"). Xcode creates the App ID `com.recoapp.recovery` and a profile. If the bundle id is already taken by someone else, Xcode says so here; change `ios.bundleIdentifier` in `app.json`, rerun step 1.
 3. Set the run destination to **Any iOS Device (arm64)**, then **Product → Archive**. First archive takes 5 to 10 minutes.
 4. The Organizer opens with the archive. **Distribute App → TestFlight & App Store → Upload**, accept the defaults (Xcode manages signing). Sign in with your Apple ID if asked. Upload takes a few minutes; processing on Apple's side 5 to 30 more.
-5. If App Store Connect has no app record yet, Xcode's upload creates one with the bundle id; otherwise create it first at appstoreconnect.apple.com → Apps → "+" (name **RECO**, iOS, English (U.S.), bundle id `com.recoapp.recovery`, SKU `reco-ios`).
+5. Create the app record first at appstoreconnect.apple.com → Apps → "+": iOS, name **RECO Knee Recovery** (the plain name "RECO" is taken on the App Store; the listing name must be unique store-wide, while the home-screen name stays RECO), English (U.S.), bundle id `com.recoapp.recovery`, SKU `reco-ios`. Letting Xcode create the record fails with "App Name you entered is already being used".
 6. Each later build: pull latest into `~/kinn-native`, bump `ios.buildNumber` in `app.json` (Xcode rejects a repeat), `npx expo prebuild --platform ios`, Archive, Upload.
 
 **Route B, EAS (cloud, needs a free Expo account).** Kept for when nobody has a Mac with Xcode handy.
