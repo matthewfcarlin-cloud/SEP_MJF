@@ -43,10 +43,6 @@ a{color:inherit;text-decoration:none}
 .hero{padding-top:calc(140px + env(safe-area-inset-top,0px));padding-bottom:40px;display:grid;gap:40px}
 .hero h1{font-weight:600;letter-spacing:-.05em;line-height:.95;font-size:clamp(2.8rem,8vw,6.5rem);margin:0;text-wrap:balance;max-width:11ch}
 .hero .lede{color:var(--dim);font-size:clamp(1rem,1.5vw,1.2rem);max-width:40em}
-.hero .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--dim)}
-.hero .meta span{display:inline-flex;align-items:center;gap:8px}
-.hero .meta i{width:7px;height:7px;border-radius:50%;background:var(--fg);display:inline-block}
-.hero .meta i.c{background:var(--caution)}
 .showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,3vw,40px);align-items:end;margin-top:24px}
 .showcase .phone:nth-child(2){transform:translateY(-32px)}
 @media (max-width:760px){.showcase{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -22px;padding:6px 22px 18px;scrollbar-width:none}.showcase::-webkit-scrollbar{display:none}.showcase .phone{flex:0 0 64%;max-width:300px;scroll-snap-align:center}.showcase .phone:nth-child(2){transform:none;order:-1}}
@@ -81,23 +77,26 @@ a{color:inherit;text-decoration:none}
 .showcase{align-items:center}
 .showcase .phone.video{transform:translateY(-18px)}
 .phone video{display:block;width:100%;height:auto;aspect-ratio:603/1311;border-radius:clamp(18px,3.5vw,42px);object-fit:cover;background:#0e0e0f}
-.hero .playhint{color:var(--dim);font-size:12px;letter-spacing:.02em;max-width:52em}
-.hero .playhint i{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block;margin-right:10px;vertical-align:middle;animation:blink 1.6s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* pinned scene: one phone stays put, the screen and its callouts change as the steps scroll by */
-.scene{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:clamp(28px,6vw,96px);align-items:start;padding-block:clamp(40px,8vh,90px)}
-.scene .stage{position:sticky;top:max(72px,calc(50vh - 46vw));align-self:start;display:grid;justify-items:center}
-.scene .stage .phone{width:min(100%,360px)}
+/* pinned scene: one phone stays put, the screen and its callouts change as the steps scroll by.
+   The stage is wider than the phone on purpose: the gutters either side hold the callout labels. */
+.scene{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,3.5vw,48px);align-items:start;padding-block:clamp(40px,8vh,90px)}
+.scene .stage{position:sticky;top:max(72px,calc(50vh - 46vw));align-self:start;display:grid;justify-items:center;container-type:inline-size;--phone:280px;--phone:clamp(220px,44cqw,280px)}
+.scene .stage .phone{width:var(--phone)}
 .screenstack{position:relative;width:100%;aspect-ratio:603/1311}
 .screenstack img{position:absolute;inset:0;width:100%;height:100%;border-radius:clamp(18px,3.5vw,42px);object-fit:cover;opacity:0;transform:scale(1.015);transition:opacity .55s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
 .screenstack img.on{opacity:1;transform:none}
-.callout{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;pointer-events:none;opacity:0;transition:opacity .4s ease .25s,transform .5s cubic-bezier(.2,.8,.2,1) .25s;z-index:2;white-space:nowrap}
+/* callout: a small dot on the screen, a leader line out past the bezel, the label in the gutter. Nothing sits over the screen but the dot. */
+.callout{--rail:16px;position:absolute;left:0;right:0;top:var(--y);height:0;pointer-events:none;opacity:0;transition:opacity .4s ease .25s;z-index:2}
 .callout.on{opacity:1}
-.callout .dot{width:12px;height:12px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 4px rgba(237,237,237,.18),0 0 0 10px rgba(237,237,237,.06)}
-.callout .tag{font-size:12px;letter-spacing:.02em;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.72);border:1px solid #2a2a2a;color:var(--fg);backdrop-filter:blur(8px)}
-.callout.left{flex-direction:row-reverse;transform:translate(calc(-100% + 6px),-50%)}
-.callout.right{transform:translate(-6px,-50%)}
+.callout .dot{position:absolute;left:var(--x);top:0;width:8px;height:8px;border-radius:50%;background:var(--fg);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(237,237,237,.2),0 0 0 7px rgba(237,237,237,.07)}
+.callout .line{position:absolute;top:0;height:1px;background:#6a6a6a;transform:scaleX(0);transition:transform .6s cubic-bezier(.2,.8,.2,1) .3s}
+.callout.on .line{transform:none}
+.callout.right .line{left:var(--x);width:calc(100% - var(--x) + var(--rail));transform-origin:left center}
+.callout.left .line{left:calc(-1 * var(--rail));width:calc(var(--x) + var(--rail));transform-origin:right center}
+.callout .tag{position:absolute;top:0;transform:translateY(-50%);font-size:clamp(11px,1.9cqw,12.5px);line-height:1.35;letter-spacing:.02em;color:var(--fg);text-wrap:balance;width:150px;width:calc((100cqw - var(--phone) - 20px)/2 - var(--rail) - 12px)}
+.callout.right .tag{left:calc(100% + var(--rail) + 8px);text-align:left}
+.callout.left .tag{right:calc(100% + var(--rail) + 8px);text-align:right}
 .steps{display:grid;gap:clamp(38vh,46vh,54vh);padding-block:18vh 28vh}
 .step{display:grid;gap:16px;max-width:30em;opacity:.55;transition:opacity .4s ease}
 .step.on{opacity:1}
@@ -106,7 +105,7 @@ a{color:inherit;text-decoration:none}
 .step h2{font-weight:600;letter-spacing:-.04em;line-height:1;font-size:clamp(1.9rem,3.6vw,3rem);margin:0;text-wrap:balance}
 .step p{color:var(--dim);font-size:clamp(1rem,1.25vw,1.08rem)}
 .step .pills{display:flex;gap:8px;flex-wrap:wrap}
-@media (max-width:860px){.scene{grid-template-columns:minmax(0,1fr);gap:0}.scene .stage{position:sticky;top:0;z-index:3;background:linear-gradient(var(--bg) 78%,transparent);padding:14px 0 26px}.scene .stage .phone{width:min(42vw,180px)}.steps{gap:26vh;padding-block:4vh 18vh}.step{max-width:none}.callout .tag{font-size:11px;padding:4px 8px}}
+@media (max-width:860px){.scene{grid-template-columns:minmax(0,1fr);gap:0}.scene .stage{position:sticky;top:0;z-index:3;background:linear-gradient(var(--bg) 78%,transparent);padding:14px 0 26px}.scene .stage .phone{width:min(42vw,180px)}.steps{gap:26vh;padding-block:4vh 18vh}.step{max-width:none}.callout{display:none}}
 
 /* try-it band */
 .try{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px 40px;align-items:center;padding:clamp(28px,4vw,44px);border:1px solid var(--line);border-radius:28px;margin-block:40px 20px}
@@ -151,8 +150,6 @@ footer .foot-logo{display:block;height:24px;width:24px}
     <h1>One loop a day.</h1>
   </div>
   <p class="lede">RECO is the app that comes with the tape. Every morning it asks two questions and gives the knee one status for the day. One tap when something hurts. By the weekend it can tell you what came before a bad morning. Every screen below is the real app, running on sample data.</p>
-  <div class="meta small"><span><i class="c"></i>Status, every day</span><span><i></i>Bend and straightening via the tape</span><span><i></i>Nothing leaves the phone</span></div>
-  <p class="playhint"><i></i>Recorded from the app, one real morning on sample data. Scroll for the walkthrough, <a href="/try/" style="color:var(--fg);border-bottom:1px solid var(--faint)">try it yourself</a>, or <a href="/try/?tape=demo" style="color:var(--fg);border-bottom:1px solid var(--faint)">watch the tape signal live</a>.</p>
   <div class="showcase">
     <figure class="phone rv"><img src="img/app-settle.webp" width="603" height="1311" alt="Did it settle? Last night you logged pain at 4. Yes settled, a bit, or no."></figure>
     <figure class="phone video rv"><video autoplay muted loop playsinline preload="metadata" poster="video/reco-demo-poster.jpg" width="602" height="1310" aria-label="A screen recording of the RECO app: answering the two morning questions, the recovery dial settling on Steady, logging pain, then the Insights, Progress and Report tabs"><source src="video/reco-demo.webm" type="video/webm"><source src="video/reco-demo.mp4" type="video/mp4"></video></figure>
@@ -172,24 +169,24 @@ footer .foot-logo{display:block;height:24px;width:24px}
         <img src="img/app-insights.webp" width="603" height="1311" alt="" data-s="insights" loading="lazy">
         <img src="img/app-progress.webp" width="603" height="1311" alt="" data-s="progress" loading="lazy">
         <img src="img/app-report.webp" width="603" height="1311" alt="" data-s="report" loading="lazy">
-        <!-- callouts: position in % of the screen; shown for one step each -->
-        <span class="callout right" data-for="asks" style="--x:18%;--y:29%"><span class="dot"></span><span class="tag">Waits at the top until you answer</span></span>
-        <span class="callout left" data-for="asks" style="--x:82%;--y:52%"><span class="dot"></span><span class="tag">Yesterday's status, until then</span></span>
-        <span class="callout right" data-for="settle" style="--x:15%;--y:25%"><span class="dot"></span><span class="tag">Last night's log, with the time</span></span>
-        <span class="callout left" data-for="settle" style="--x:84%;--y:60%"><span class="dot"></span><span class="tag">Three answers, no typing</span></span>
-        <span class="callout right" data-for="checkin" style="--x:26%;--y:30%"><span class="dot"></span><span class="tag">0 to 10, with a word on it</span></span>
-        <span class="callout left" data-for="checkin" style="--x:50%;--y:77%"><span class="dot"></span><span class="tag">Shows the status before you commit</span></span>
-        <span class="callout right" data-for="today" style="--x:50%;--y:30%"><span class="dot"></span><span class="tag">Recovery, against your own usual</span></span>
-        <span class="callout left" data-for="today" style="--x:50%;--y:53%"><span class="dot"></span><span class="tag">One status for the day</span></span>
-        <span class="callout right" data-for="today" style="--x:50%;--y:69%"><span class="dot"></span><span class="tag">Straightening and bend, via the tape</span></span>
-        <span class="callout left" data-for="pain" style="--x:50%;--y:21%"><span class="dot"></span><span class="tag">Tapping 5 reads “Hard to ignore”</span></span>
-        <span class="callout right" data-for="pain" style="--x:18%;--y:44%"><span class="dot"></span><span class="tag">What you were doing, optional</span></span>
-        <span class="callout right" data-for="insights" style="--x:12%;--y:24%"><span class="dot"></span><span class="tag">One sentence, from your own days</span></span>
-        <span class="callout left" data-for="insights" style="--x:88%;--y:59%"><span class="dot"></span><span class="tag">Load the day before, vs other days</span></span>
-        <span class="callout right" data-for="progress" style="--x:14%;--y:48%"><span class="dot"></span><span class="tag">Bike range reached, Oct 21</span></span>
-        <span class="callout left" data-for="progress" style="--x:86%;--y:22%"><span class="dot"></span><span class="tag">10° to full bend</span></span>
-        <span class="callout right" data-for="report" style="--x:14%;--y:27%"><span class="dot"></span><span class="tag">The week in one line</span></span>
-        <span class="callout left" data-for="report" style="--x:86%;--y:60%"><span class="dot"></span><span class="tag">Dot: how the knee read next morning</span></span>
+        <!-- callouts: the dot sits at --x/--y (% of the screen); the label goes to the nearer gutter (left or right); shown for one step each -->
+        <span class="callout left" data-for="asks" style="--x:18%;--y:29%"><span class="dot"></span><span class="line"></span><span class="tag">Waits at the top until you answer</span></span>
+        <span class="callout right" data-for="asks" style="--x:82%;--y:52%"><span class="dot"></span><span class="line"></span><span class="tag">Yesterday's status, until then</span></span>
+        <span class="callout left" data-for="settle" style="--x:15%;--y:25%"><span class="dot"></span><span class="line"></span><span class="tag">Last night's log, with the time</span></span>
+        <span class="callout right" data-for="settle" style="--x:84%;--y:60%"><span class="dot"></span><span class="line"></span><span class="tag">Three answers, no typing</span></span>
+        <span class="callout left" data-for="checkin" style="--x:26%;--y:30%"><span class="dot"></span><span class="line"></span><span class="tag">0 to 10, with a word on it</span></span>
+        <span class="callout left" data-for="checkin" style="--x:38%;--y:77%"><span class="dot"></span><span class="line"></span><span class="tag">Shows the status before you commit</span></span>
+        <span class="callout right" data-for="today" style="--x:70%;--y:30%"><span class="dot"></span><span class="line"></span><span class="tag">Recovery, against your own usual</span></span>
+        <span class="callout left" data-for="today" style="--x:40%;--y:53%"><span class="dot"></span><span class="line"></span><span class="tag">One status for the day</span></span>
+        <span class="callout right" data-for="today" style="--x:72%;--y:69%"><span class="dot"></span><span class="line"></span><span class="tag">Straightening and bend, via the tape</span></span>
+        <span class="callout left" data-for="pain" style="--x:49%;--y:26%"><span class="dot"></span><span class="line"></span><span class="tag">Tapping 5 reads “Hard to ignore”</span></span>
+        <span class="callout left" data-for="pain" style="--x:18%;--y:44%"><span class="dot"></span><span class="line"></span><span class="tag">What you were doing, optional</span></span>
+        <span class="callout left" data-for="insights" style="--x:12%;--y:24%"><span class="dot"></span><span class="line"></span><span class="tag">One sentence, from your own days</span></span>
+        <span class="callout right" data-for="insights" style="--x:88%;--y:59%"><span class="dot"></span><span class="line"></span><span class="tag">Load the day before, vs other days</span></span>
+        <span class="callout left" data-for="progress" style="--x:14%;--y:48%"><span class="dot"></span><span class="line"></span><span class="tag">Bike range reached, Oct 21</span></span>
+        <span class="callout right" data-for="progress" style="--x:86%;--y:22%"><span class="dot"></span><span class="line"></span><span class="tag">10° to full bend</span></span>
+        <span class="callout left" data-for="report" style="--x:9%;--y:24%"><span class="dot"></span><span class="line"></span><span class="tag">The week in one line</span></span>
+        <span class="callout right" data-for="report" style="--x:86%;--y:60%"><span class="dot"></span><span class="line"></span><span class="tag">Dot: how the knee read next morning</span></span>
       </div>
     </div>
   </div>
