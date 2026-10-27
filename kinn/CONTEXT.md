@@ -209,7 +209,7 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 
 - **ICP narrowed:** pro and college athletes recovering from ACL reconstruction, weeks 4 to 24, who see a physio 1 to 2× a week.
 - **Core feature:** a daily 0 to 100 knee **Load score** against a stage-based target band, with a plain-language call (Room to push / On target / Ease off) and a reason sentence. Range alert, Moments (coin button), flare-up insights and an athlete-controlled physio report support it. Never adherence or compliance language.
-- **Documents:** [`docs/feature-spec.md`](docs/feature-spec.md) (features, load model, physio questions, FDA wording), [`docs/architecture.md`](docs/architecture.md) (Expo + TypeScript core, data model, sensor abstraction), [`docs/decisions.md`](docs/decisions.md) (running decision log).
+- **Documents:** [`docs/feature-spec.md`](docs/feature-spec.md) (features, load model, physio questions, FDA wording), [`docs/architecture.md`](docs/architecture.md) (Expo + TypeScript core, data model, sensor abstraction), [`docs/decisions.md`](docs/decisions.md) (running decision log), [`docs/scoring-methods.md`](docs/scoring-methods.md) (how Recovery % and Knee load are computed, with evidence tags).
 - **Interview evidence so far:** five Granola-recorded calls, Oct 15 to 19 (sarena, Akshay, Lowie/Ava/Sammie, paxton, Riya). All athletes or friends; no physio yet.
 
 ## 14. Site v3.2 (Oct 26, 2026): copy matched to the Oct 23 ICP and the app
