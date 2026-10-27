@@ -24,6 +24,7 @@ One JSON document, under the key `reco.state.v1`, in the phone's AsyncStorage (t
 | `data.painLogs[]` | time, date, pain 0 to 10, what you were doing, later `settled` yes / a bit / no | Log pain button; "Did it settle?" next morning |
 | `data.checkIns[]` | date, morning pain 0 to 10, swelling none / some / a lot | Morning check-in, one per day |
 | `data.romDays[]` | date, extension deficit °, flexion °, source | Seed only today (`reco-tape-sim`). The tape does not write these yet. |
+| Tape log (separate key `reco.tape.v1`) | every synced minute record, sync cursors, calibrations | Each tape sync (`apps/mobile/src/tape/tape-log.ts`). Real tapes only; the demo tape never writes here. |
 | `onboarded`, `seededFor`, `ptReminder` | flags | Onboarding, reseed, Settings |
 
 Every record is immutable. Writes go through a reducer (`state.ts`) that returns a new state; the provider (`provider.tsx`) saves the whole document after each change and reloads it on launch.
@@ -82,7 +83,8 @@ DeviceTransport (bytes only)      DeviceClient (core)                  useTape (
 - **Protocol**: KineTape BLE v1, ported from github.com/jackcappo/kinetape on 2026-10-27. One service, four characteristics (LIVE, HISTORY, CONTROL, STATUS). All encoding and decoding is in `core/src/tape/codec.ts`, so the simulator exercises the same code as a real device.
 - **Live packets** carry stretch activation in permille, a contracting flag, raw ADC and uptime. The app keeps the last 10 seconds and publishes a fresh array at ~12 fps for the trace. `RepTracker` turns threshold crossings into reps with hold time and peak.
 - **History**: the device logs one record per minute (mean, peak, reps, active seconds). The client syncs from the last cursor, detects a cleared or reflashed log and starts a new generation, and reconstructs epoch time for records logged before the clock was set.
-- **Persistence**: `SyncStore` is the port. Today the app passes `MemorySyncStore`, so synced minutes live only for the session. Nothing from the tape reaches `data.romDays` or the load score yet; that is the next step on the roadmap.
+- **Persistence**: `SyncStore` is the port. A real tape syncs into `TapeLog` (`core/src/tape/log.ts`), saved under `reco.tape.v1` and restored on launch, so the next sync resumes from the stored cursor. While connected the app re-syncs every 5 minutes. The demo tape uses a throwaway `MemorySyncStore`.
+- **Tape days**: `deriveToday(data, today, tapeRecords)` rolls the minutes up per RECO day (`core/src/tape/days.ts`: worn minutes, fault minutes, active minutes, reps, peak and mean activation) as `tapeDays` / `todayTape`; Today shows one line from it. Nothing from the tape reaches `data.romDays` or the load score, because the v1 tape reports stretch activation, not angle.
 - **Where it runs**: Web Bluetooth in Chrome and Edge (the `/try` build). On iOS the tape screen offers the simulated tape only until native BLE lands.
 
 ## 6. The site's backend (the only server)
@@ -110,6 +112,5 @@ The mobile app has no automated tests; it is checked by hand on the iOS simulato
 ## 8. What is not there yet
 
 - Tape readings do not feed Recovery %, the load score or `romDays`. The ROM numbers on Progress are the seed.
-- Synced tape history is not persisted on the phone (in-memory store).
 - No native Bluetooth on iOS or Android.
-- No accounts, no sync between devices, no export beyond the Report screen's share sheet. These are deliberate for now: "nothing leaves the phone" is a product promise, not a gap.
+- No accounts and no sync between devices. Besides the Report share sheet, Settings has **Export trial data** (`core/src/export/trial.ts`): one JSON plus a daily CSV and a per-minute tape CSV, with sample entries flagged `sample: true`. It runs only when the athlete taps it. These are deliberate for now: "nothing leaves the phone" is a product promise, not a gap.

@@ -225,6 +225,13 @@ export const copy = {
     dataBody: 'Everything stays on this phone. Nothing is sent anywhere unless you share a report.',
     sampleBody: (days: number) => `This app is running on ${days} days of sample data for the demo.`,
     appVersion: 'RECO 0.1 · rough demo build',
+    exportTitle: 'Trial data',
+    exportBody: 'Save everything RECO has recorded: your logs, check-ins and every minute synced from the tape. Sample entries are marked so they can be left out.',
+    exportButton: 'Export trial data',
+    exportDone: 'Saved. Send the files to the RECO team when they ask.',
+    exportFailed: 'Could not save the export. Try again.',
+    tapeStored: (minutes: number, days: number) =>
+      minutes === 0 ? 'No tape minutes on this phone yet.' : `${minutes.toLocaleString('en-US')} tape minutes on this phone, across ${days === 1 ? '1 day' : `${days} days`}.`,
   },
 
   tape: {
@@ -281,6 +288,8 @@ export const copy = {
     cardIdle: 'Pair a tape, or run the simulated one, and the signal shows here while you use the app.',
     repsLine: (n: number) => (n === 1 ? '1 rep' : `${n} reps`),
     open: 'Tap for calibration and the full view',
+    todayLine: (minutes: number, reps: number) => `Today on the tape: ${minutes} min worn · ${reps === 1 ? '1 rep' : `${reps} reps`}`,
+    todayNone: 'No tape minutes synced today yet.',
     nativeSoon: 'Pairing from the phone app is coming. For now, open the browser version of RECO in Chrome or Edge to connect a tape.',
   },
 
