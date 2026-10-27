@@ -1,8 +1,8 @@
-# Kinn MVP: two-day rough build
+# RECO MVP: two-day rough build
 
 _Version 0.2 · 2026-10-23 (Friday) · Owner: Matthew Carlin · Status: proposal · Deadline: Monday Oct 26_
 
-Goal: a rough but demoable Kinn app on a phone by Monday, with three weeks of preloaded sample data so the insights and trends show up. Built in `kinn/app` with Claude Code. This supersedes the six-week plan from earlier today; the longer-term items are parked in section 6.
+Goal: a rough but demoable RECO app on a phone by Monday, with three weeks of preloaded sample data so the insights and trends show up. Built in `kinn/app` with Claude Code. This supersedes the six-week plan from earlier today; the longer-term items are parked in section 6.
 
 Companion docs: [feature-spec.md](feature-spec.md) (v0.1, not updated for this build; section 1 below is the working screen list), [architecture.md](architecture.md), [decisions.md](decisions.md).
 
@@ -29,9 +29,9 @@ Must-haves are the demo path. Should-haves are built if time allows, in order.
 | Must | **Today** (home) | Progress bar (extension/flexion trend), status pill (Keep going / Steady / Ease off), one suggestion for the day, Load as a small tile, big Pain button. | Status comes from the latest morning check-in plus yesterday's load. |
 | Must | **Pain button flow** | Tap → 0 to 10 slider → optional "what were you doing?" chips → done. Schedules "Did it settle?" for 8 am tomorrow. | Chips: practice, game, gym, PT, stairs, walking, rest, other. |
 | Must | **Insights** | 2 to 3 observation cards: "3 of your last 4 flare-ups came after game days." | Rules from feature-spec 1.4 run over the seed. A test asserts at least two insights fire on the seed. |
-| Must | **Progress** | 3-week timeline, bend/straighten trend chart labelled "via Kinn tape", milestone marker "full straightening reached". | Simple SVG line chart with react-native-svg; no chart library. |
+| Must | **Progress** | 3-week timeline, bend/straighten trend chart labelled "via RECO tape", milestone marker "full straightening reached". | Simple SVG line chart with react-native-svg; no chart library. |
 | Should | **Onboarding** (1 screen) | Injury (ACL / meniscus / other), date, surgery yes/no, sport, PT yes/no, goal text. | Skippable in the demo; the seed persona is prefilled. |
-| Should | **Daily log** | Activity chips plus intensity (light / moderate / hard). Banner: "Automatic with the Kinn tape". | Writes a log entry; adds to today's load. |
+| Should | **Daily log** | Activity chips plus intensity (light / moderate / hard). Banner: "Automatic with the RECO tape". | Writes a log entry; adds to today's load. |
 | Should | **Morning check-in** | Pain 0 to 10 plus swelling from a 3-step picture scale. Sets today's status. | Appears as a card on Today before 11 am if not done. |
 | Should | **Weekly report** | One screen: 7-day load bars, flare-ups, deepest bend, activities. "Share with PT" opens the share sheet with a text summary. | No PDF. |
 | Out | Range alert, physio adjustment, other-knee check, checkpoints, exercise prescriptions, AI chat, PT dashboard, pairing. | | "Remind me of my PT's plan" is one toggle in settings if time allows. |
@@ -85,7 +85,7 @@ Spec v0.2 reconciled with the Notion brief, Figma design directions and a token 
 Done and committed on `main`:
 - Core: manual-log module (activities, pain logs, morning check-in, status rule, suggestion, ROM progress and milestones, flare-up insights, weekly summary and share text), 21-day seed, 120 tests, 97% line coverage. Every screen string and every generated sentence is checked against the banned-words list.
 - Mobile: all eight screens built and walked through on the iOS simulator in Expo Go: onboarding, Today (progress bar, status, suggestion, pain button, load bars, check-in and "Did it settle?" cards), pain flow with the next-morning local notification, settle sheet, morning check-in with the picture scale, daily log, Insights (the game-day observation fires first on the seed), Progress (bend and straighten charts with milestones), weekly report with the share sheet, settings. Light and dark both render from the placeholder tokens.
-- Config: app renamed Kinn, bundle id `com.kinn.app`, EAS build profiles, placeholder icon, README with the TestFlight and direct-install commands.
+- Config: app renamed RECO, bundle id `com.reco.app`, EAS build profiles, placeholder icon, README with the TestFlight and direct-install commands.
 
 Open:
 - **EAS login and the first TestFlight build** need Matthew's Expo and Apple logins; commands are in `apps/mobile/README.md`.
@@ -94,7 +94,7 @@ Open:
 - Nine Expo packages are a patch version behind (`npx expo install --check`); harmless for the demo, run it before the TestFlight build.
 
 ### Fri Oct 23, late
-- Native development client builds and installs on the simulator from the `~/kinn-native` worktree (`com.kinn.app`, full notification support). The EAS/TestFlight step is still Matthew's for Saturday.
+- Native development client builds and installs on the simulator from the `~/kinn-native` worktree (`com.reco.app`, full notification support). The EAS/TestFlight step is still Matthew's for Saturday.
 - Polish: Insights now shows one headline observation (conditions that restate the same flare-ups are dropped) plus a "knee load the day before" contrast card; Today shows the goal under the greeting; the progress bar fills on mount; cards fade in; chips, pain scale and saves give haptic feedback; the load chart has week labels.
 - Still placeholders for Figma: palette and type (`src/theme/tokens.ts`), app icon, swelling picture scale.
 

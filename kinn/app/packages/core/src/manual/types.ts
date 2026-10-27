@@ -1,6 +1,6 @@
 /**
  * Manual-log MVP types. The athlete logs activities, pain and a morning
- * check-in by hand; range-of-motion days are simulated "via Kinn tape".
+ * check-in by hand; range-of-motion days are simulated "via RECO tape".
  * All records are immutable.
  */
 import type { Swelling } from '../domain/types'
@@ -10,7 +10,7 @@ export type Intensity = 'light' | 'moderate' | 'hard'
 
 export interface ActivityLog {
   readonly id: string
-  /** Kinn day key (YYYY-MM-DD). */
+  /** RECO day key (YYYY-MM-DD). */
   readonly date: string
   readonly activity: ManualActivity
   readonly intensity: Intensity
@@ -44,7 +44,7 @@ export interface RomDay {
   readonly date: string
   readonly extensionDeficitDeg: number
   readonly flexionDeg: number
-  readonly source: 'kinn-tape-sim'
+  readonly source: 'reco-tape-sim'
 }
 
 export type Injury = 'acl' | 'meniscus' | 'other'

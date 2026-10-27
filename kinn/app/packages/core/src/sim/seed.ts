@@ -106,7 +106,7 @@ export function seedDataset(today: string): Dataset {
     { id: 'seed-pain-last-night', t: startOfDay(lastNight, 20) + 30 * 60_000, date: lastNight, pain: 4, doing: 'practice' as const },
   ]
 
-  const romDays: RomDay[] = PLAN.map((_, i) => ({ date: dateAt(i), ...romFor(i), source: 'kinn-tape-sim' as const }))
+  const romDays: RomDay[] = PLAN.map((_, i) => ({ date: dateAt(i), ...romFor(i), source: 'reco-tape-sim' as const }))
 
   return { profile: SEED_PROFILE, activityLogs, painLogs, checkIns, romDays }
 }

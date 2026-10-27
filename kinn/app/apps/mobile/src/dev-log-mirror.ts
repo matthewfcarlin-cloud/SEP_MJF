@@ -28,7 +28,7 @@ const safeStringify = (value: unknown): string => {
   }
 }
 
-const FLAG = '__kinnDevLogMirrorInstalled'
+const FLAG = '__recoDevLogMirrorInstalled'
 
 export function installDevLogMirror(): void {
   if (!__DEV__) return

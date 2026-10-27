@@ -1,6 +1,6 @@
 import { router } from 'expo-router'
 import { Switch, View } from 'react-native'
-import { DISCLAIMER, SEED_DAYS } from '@kinn/core'
+import { DISCLAIMER, SEED_DAYS } from '@reco/core'
 
 import { copy } from '@/copy'
 import { shortDate } from '@/format'

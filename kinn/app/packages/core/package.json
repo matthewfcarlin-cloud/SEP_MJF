@@ -1,8 +1,8 @@
 {
-  "name": "@kinn/core",
+  "name": "@reco/core",
   "version": "0.1.0",
   "private": true,
-  "description": "Kinn domain logic: load model, range alerts, moments, insights, simulator. No React Native imports.",
+  "description": "RECO domain logic: load model, range alerts, moments, insights, simulator. No React Native imports.",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

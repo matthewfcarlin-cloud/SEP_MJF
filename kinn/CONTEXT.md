@@ -1,4 +1,6 @@
-# Kinn — Product Context
+# Kinn (now RECO) — Product Context
+
+> **Rebrand (Oct 26, 2026):** the product and app are now **RECO**. This file keeps the Kinn name in its history. App and docs: [`docs/decisions.md`](docs/decisions.md).
 
 _Last updated: October 14, 2026 · Owner: Matthew Carlin (USC Iovine and Young Academy)_
 

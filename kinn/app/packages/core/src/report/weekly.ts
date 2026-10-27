@@ -145,10 +145,10 @@ export function shareBody(summary: WeeklySummary, athleteName: string): string {
     .join(', ')
   const rom =
     summary.bestExtensionDeficitDeg !== undefined && summary.peakFlexionDeg !== undefined
-      ? `Best straightening ${summary.bestExtensionDeficitDeg}° short of full, deepest bend ${summary.peakFlexionDeg}° (via Kinn tape, sample data).`
+      ? `Best straightening ${summary.bestExtensionDeficitDeg}° short of full, deepest bend ${summary.peakFlexionDeg}° (via RECO tape, sample data).`
       : 'No range-of-motion data this week.'
   return [
-    `Kinn weekly summary for ${athleteName}, ${summary.weekStart} to ${summary.weekEnd}.`,
+    `RECO weekly summary for ${athleteName}, ${summary.weekStart} to ${summary.weekEnd}.`,
     `Average daily knee load ${avg} of 100. Sessions recorded: ${sessions || 'none'}.`,
     `${plural(summary.flares.length, 'flare-up morning')}${summary.flares.length ? ` (${summary.flares.map((f) => f.date).join(', ')})` : ''}. ${plural(summary.painLogCount, 'pain log')}.`,
     rom,

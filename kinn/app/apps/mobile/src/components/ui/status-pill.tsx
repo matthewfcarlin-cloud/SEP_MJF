@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import type { Status } from '@kinn/core'
+import type { Status } from '@reco/core'
 
 import { Txt } from './txt'
 import { copy } from '@/copy'

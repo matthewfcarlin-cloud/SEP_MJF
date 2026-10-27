@@ -1,13 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { dayKey, deriveToday } from '@kinn/core'
-import type { Doing, Intensity, ManualActivity, Profile, Settled, Swelling, TodayView } from '@kinn/core'
+import { dayKey, deriveToday } from '@reco/core'
+import type { Doing, Intensity, ManualActivity, Profile, Settled, Swelling, TodayView } from '@reco/core'
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { initialState, onlySeedData, reducer } from './state'
 import type { AppState } from './state'
 
-const STORAGE_KEY = 'kinn.state.v1'
+const STORAGE_KEY = 'reco.state.v1'
 
 const newId = (prefix: string): string => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 
@@ -38,7 +38,7 @@ async function loadState(today: string): Promise<AppState> {
     const stale = stored.seededFor !== today && onlySeedData(stored.data)
     return stale ? reducer(stored, { type: 'reseed', today }) : stored
   } catch (error) {
-    console.warn('Kinn: could not load saved state, starting from the sample.', error)
+    console.warn('RECO: could not load saved state, starting from the sample.', error)
     return initialState(today)
   }
 }
@@ -65,7 +65,7 @@ export function StoreProvider({ children }: { readonly children: ReactNode }) {
   useEffect(() => {
     if (!hydrated.current) return
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch((error: unknown) =>
-      console.warn('Kinn: could not save state.', error),
+      console.warn('RECO: could not save state.', error),
     )
   }, [state])
 

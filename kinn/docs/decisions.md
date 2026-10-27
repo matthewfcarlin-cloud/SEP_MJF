@@ -54,3 +54,7 @@ Claims in the spec are tagged [interview], [founder], [lit] or [assumption]. All
 
 ## 2026-10-23 · Two-day rough MVP for Monday Oct 26 (Matthew)
 A demoable manual-log app on a phone by Monday beats a designed one later. Screens are built on a neutral placeholder token file while Matthew continues the visual design in Figma; the palette and type are his call and get swapped into the token file when ready. In-memory store seeded with 21 days of sample data, no SQLite, no Figma screens, no spec rewrite. Plan in [mvp-plan.md](mvp-plan.md). Would change our mind: the deadline moving.
+
+## 2026-10-26 · Rebrand: the product is now RECO (Matthew)
+The app, bundle id (`com.reco.app`), npm packages (`@reco/core`, `reco-mobile`), URL scheme (`reco://`), all athlete-facing copy and the TestFlight listing use RECO. The repo folder stays `kinn/` and the native worktree stays `~/kinn-native` so paths and history do not break; older docs (feature-spec, architecture, CONTEXT) keep "Kinn" where they quote earlier work. The marketing site under `site/` still says Kinn and is a separate rebrand job.
+

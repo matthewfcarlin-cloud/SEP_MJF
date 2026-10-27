@@ -10,7 +10,7 @@ export function localDateKey(t: number): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
-/** The Kinn day key: local date after shifting the 04:00 boundary back to midnight. */
+/** The RECO day key: local date after shifting the 04:00 boundary back to midnight. */
 export function dayKey(t: number): string {
   return localDateKey(t - DAY_BOUNDARY_HOUR * HOUR_MS)
 }

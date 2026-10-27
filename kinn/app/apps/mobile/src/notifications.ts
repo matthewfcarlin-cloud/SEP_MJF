@@ -21,7 +21,7 @@ export async function ensureNotificationPermission(): Promise<boolean> {
     const asked = await Notifications.requestPermissionsAsync()
     return asked.granted
   } catch (error) {
-    console.warn('Kinn: notification permission check failed.', error)
+    console.warn('RECO: notification permission check failed.', error)
     return false
   }
 }
@@ -45,7 +45,7 @@ export async function scheduleSettleReminder(painLogId: string): Promise<string 
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: nextMorning(new Date()) },
     })
   } catch (error) {
-    console.warn('Kinn: could not schedule the settle reminder.', error)
+    console.warn('RECO: could not schedule the settle reminder.', error)
     return undefined
   }
 }

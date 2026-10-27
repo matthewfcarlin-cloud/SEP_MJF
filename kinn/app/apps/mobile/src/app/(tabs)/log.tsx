@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import { MANUAL_UNITS, addDays, scoreFromUnits } from '@kinn/core'
-import type { Intensity, ManualActivity } from '@kinn/core'
+import { MANUAL_UNITS, addDays, scoreFromUnits } from '@reco/core'
+import type { Intensity, ManualActivity } from '@reco/core'
 
 import { copy } from '@/copy'
 import { weekday } from '@/format'

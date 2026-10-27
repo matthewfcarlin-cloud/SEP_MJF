@@ -1,7 +1,7 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { View } from 'react-native'
-import type { Doing } from '@kinn/core'
+import type { Doing } from '@reco/core'
 
 import { copy } from '@/copy'
 import { successFeedback } from '@/haptics'

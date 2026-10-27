@@ -1,5 +1,5 @@
 {
-  "name": "kinn-mobile",
+  "name": "reco-mobile",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
@@ -44,7 +44,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "echo \"mobile: copy is checked by @kinn/core tests (test/copy/mobile-copy.test.ts)\"",
+    "test": "echo \"mobile: copy is checked by @reco/core tests (test/copy/mobile-copy.test.ts)\"",
     "typecheck": "tsc --noEmit"
   },
   "private": true

@@ -2,7 +2,7 @@ import { Link, router } from 'expo-router'
 import { SymbolView } from 'expo-symbols'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import { addDays } from '@kinn/core'
+import { addDays } from '@reco/core'
 
 import { copy } from '@/copy'
 import { weekdayLetter } from '@/format'

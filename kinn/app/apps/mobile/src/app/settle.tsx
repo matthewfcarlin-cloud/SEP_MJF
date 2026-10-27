@@ -1,7 +1,7 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import type { Settled } from '@kinn/core'
+import type { Settled } from '@reco/core'
 
 import { copy } from '@/copy'
 import { successFeedback, tapFeedback } from '@/haptics'

@@ -1,14 +1,14 @@
 {
-  "name": "kinn-app",
+  "name": "reco-app",
   "private": true,
   "version": "0.1.0",
-  "description": "Kinn prototype: pure TypeScript core plus Expo mobile app. Simulated sensor data only.",
+  "description": "RECO prototype: pure TypeScript core plus Expo mobile app. Simulated sensor data only.",
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
-    "test": "npm run test -w @kinn/core",
-    "test:watch": "npm run test:watch -w @kinn/core",
-    "typecheck": "npm run typecheck -w @kinn/core",
-    "mobile": "npm run start -w kinn-mobile"
+    "test": "npm run test -w @reco/core",
+    "test:watch": "npm run test:watch -w @reco/core",
+    "typecheck": "npm run typecheck -w @reco/core",
+    "mobile": "npm run start -w reco-mobile"
   },
   "engines": { "node": ">=20" }
 }

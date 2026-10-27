@@ -1,6 +1,6 @@
-# Kinn mobile (rough MVP)
+# RECO mobile (rough MVP)
 
-Expo SDK 58 app for the Kinn manual-log demo. Domain logic lives in `../../packages/core` (`@kinn/core`); this app is screens, a small store and placeholder design tokens.
+Expo SDK 58 app for the RECO manual-log demo. Domain logic lives in `../../packages/core` (`@reco/core`); this app is screens, a small store and placeholder design tokens.
 
 ## Run it
 
@@ -54,4 +54,4 @@ cd ~/kinn-native && git checkout -- . && git checkout --detach main && cd kinn/a
 npx expo run:ios --device
 ```
 
-Pick the phone from the list. Xcode signs with your Apple ID (free personal team works for 7 days; the paid team has no expiry). If signing fails, open `ios/Kinn.xcworkspace` in Xcode, select the Kinn target, Signing & Capabilities, choose your team, and run once from Xcode.
+Pick the phone from the list. Xcode signs with your Apple ID (free personal team works for 7 days; the paid team has no expiry). If signing fails, open `ios/RECO.xcworkspace` in Xcode, select the RECO target, Signing & Capabilities, choose your team, and run once from Xcode.

@@ -1,5 +1,7 @@
 # Kinn app architecture (prototype)
 
+> **Rebrand note (2026-10-26):** the product is now called **RECO**. This document predates the rename and keeps "Kinn" as written; see [decisions.md](decisions.md).
+
 _Version 0.1 · 2026-10-19 · pairs with [feature-spec.md](feature-spec.md)_
 
 ## 1. Stack

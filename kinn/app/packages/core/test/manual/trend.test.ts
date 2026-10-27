@@ -5,7 +5,7 @@ const rom = (date: string, extensionDeficitDeg: number, flexionDeg: number): Rom
   date,
   extensionDeficitDeg,
   flexionDeg,
-  source: 'kinn-tape-sim',
+  source: 'reco-tape-sim',
 })
 
 describe('progressPercent', () => {

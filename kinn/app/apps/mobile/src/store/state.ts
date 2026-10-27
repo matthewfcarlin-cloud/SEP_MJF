@@ -1,5 +1,5 @@
-import type { ActivityLog, Dataset, Doing, Intensity, ManualActivity, MorningCheckIn, PainLog, Profile, Settled, Swelling } from '@kinn/core'
-import { seedDataset } from '@kinn/core'
+import type { ActivityLog, Dataset, Doing, Intensity, ManualActivity, MorningCheckIn, PainLog, Profile, Settled, Swelling } from '@reco/core'
+import { seedDataset } from '@reco/core'
 
 export interface AppState {
   readonly onboarded: boolean

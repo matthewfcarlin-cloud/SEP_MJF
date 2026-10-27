@@ -1,5 +1,7 @@
 # Kinn feature spec
 
+> **Rebrand note (2026-10-26):** the product is now called **RECO**. This document predates the rename and keeps "Kinn" as written; see [decisions.md](decisions.md).
+
 _Version 0.1 · 2026-10-19 · Owner: Matthew Carlin · Status: draft for review_
 
 This spec says what the Kinn app does, why each feature exists, what data it needs, how the logic works, and what we are assuming. It is written for a 10-week prototype sprint. Decisions behind it are logged in [decisions.md](decisions.md); the technical plan is in [architecture.md](architecture.md); the product history is in [../CONTEXT.md](../CONTEXT.md).

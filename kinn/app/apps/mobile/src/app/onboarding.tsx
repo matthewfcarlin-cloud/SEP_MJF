@@ -1,8 +1,8 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { TextInput, View } from 'react-native'
-import { addDays, dayKey } from '@kinn/core'
-import type { Injury } from '@kinn/core'
+import { addDays, dayKey } from '@reco/core'
+import type { Injury } from '@reco/core'
 
 import { copy } from '@/copy'
 import { tapFeedback } from '@/haptics'

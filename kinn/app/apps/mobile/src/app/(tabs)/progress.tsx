@@ -1,6 +1,6 @@
 import { View } from 'react-native'
-import { ROM_TARGETS } from '@kinn/core'
-import type { RomDay } from '@kinn/core'
+import { ROM_TARGETS } from '@reco/core'
+import type { RomDay } from '@reco/core'
 
 import { copy } from '@/copy'
 import { shortDate } from '@/format'

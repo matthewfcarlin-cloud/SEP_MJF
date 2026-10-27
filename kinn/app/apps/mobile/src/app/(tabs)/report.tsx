@@ -1,6 +1,6 @@
 import { Share, View } from 'react-native'
-import { addDays, shareBody, shareText, weekChange, weekHeadline, weeklySummary } from '@kinn/core'
-import type { ManualActivity, MorningMark } from '@kinn/core'
+import { addDays, shareBody, shareText, weekChange, weekHeadline, weeklySummary } from '@reco/core'
+import type { ManualActivity, MorningMark } from '@reco/core'
 
 import { copy } from '@/copy'
 import { shortDate, weekday } from '@/format'
@@ -45,7 +45,7 @@ export default function ReportScreen() {
     try {
       await Share.share({ message: shareText(summary, state.data.profile.name) })
     } catch (error) {
-      console.warn('Kinn: share failed.', error)
+      console.warn('RECO: share failed.', error)
     }
   }
 

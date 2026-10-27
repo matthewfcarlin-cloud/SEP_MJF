@@ -1,6 +1,6 @@
 /**
  * PLACEHOLDER design tokens. The real palette, type and radii are being
- * decided in the KINN Figma file; drop the values in here and every screen
+ * decided in the RECO (formerly RECO) Figma file; drop the values in here and every screen
  * follows. Keep this the only place a colour or size is written down.
  */
 import { Platform } from 'react-native'

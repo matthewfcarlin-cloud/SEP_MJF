@@ -1,6 +1,6 @@
 import { View } from 'react-native'
-import { addDays } from '@kinn/core'
-import type { ManualActivity, TimelineDay } from '@kinn/core'
+import { addDays } from '@reco/core'
+import type { ManualActivity, TimelineDay } from '@reco/core'
 
 import { copy } from '@/copy'
 import { shortDate, weekdayLetter } from '@/format'

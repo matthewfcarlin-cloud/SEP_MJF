@@ -1,5 +1,5 @@
 /**
- * Kinn domain types. Pure data, no behaviour, no React Native.
+ * RECO domain types. Pure data, no behaviour, no React Native.
  * Records are immutable: functions in this package return new objects.
  */
 

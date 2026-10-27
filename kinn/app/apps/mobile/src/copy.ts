@@ -3,13 +3,13 @@
  * insight and report text; this file has the rest. Checked against the
  * banned-words list in core by the copy test.
  */
-import type { Status } from '@kinn/core'
+import type { Status } from '@reco/core'
 
 export const copy = {
-  appName: 'Kinn',
+  appName: 'RECO',
   done: 'Done',
   sampleData: 'Sample data',
-  viaTape: 'via Kinn tape',
+  viaTape: 'via RECO tape',
   tabs: { today: 'Today', log: 'Log', insights: 'Insights', progress: 'Progress', report: 'Report' },
 
   status: {
@@ -87,8 +87,8 @@ export const copy = {
 
   log: {
     title: 'Daily log',
-    autoBanner: 'Automatic with the Kinn tape',
-    autoTag: 'Kinn tape soon',
+    autoBanner: 'Automatic with the RECO tape',
+    autoTag: 'RECO tape soon',
     autoBody: 'For now, tap what you did. The tape will log it for you.',
     activityTitle: 'What did you do today?',
     intensityTitle: 'How hard?',
@@ -213,7 +213,7 @@ export const copy = {
   settings: {
     title: 'Settings',
     ptReminder: 'Remind me of my PT’s plan',
-    ptReminderBody: 'A daily nudge to do the exercises your PT gave you. Kinn doesn’t prescribe exercises.',
+    ptReminderBody: 'A daily nudge to do the exercises your PT gave you. RECO doesn’t prescribe exercises.',
     resetSample: 'Reset to sample data',
     startOver: 'Start over from onboarding',
     profileTitle: 'Your comeback',
@@ -224,7 +224,7 @@ export const copy = {
     dataTitle: 'Data',
     dataBody: 'Everything stays on this phone. Nothing is sent anywhere unless you share a report.',
     sampleBody: (days: number) => `This app is running on ${days} days of sample data for the demo.`,
-    appVersion: 'Kinn 0.1 · rough demo build',
+    appVersion: 'RECO 0.1 · rough demo build',
   },
 
   disclaimerShort: 'Not a medical device.',
