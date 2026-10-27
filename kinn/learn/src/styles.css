@@ -1,22 +1,26 @@
-/* Kinn: black, monochrome, Manrope. The coin's light ring is the only color in the UI. */
+/* Kinn: warm graphite and ceramic with earth neutrals (sand, clay, stone, sage), Manrope. Strong colour only for the day's call. */
 :root {
   color-scheme: dark;
-  /* Kinn brand system: graphite and ceramic, the coin's teal as the only light. */
-  --bg: #08090a;
-  --surface: #0f1113;
-  --surface-2: #1b1e22;
-  --line: #22262a;
-  --line-2: #2e3237;
+  /* Kinn brand system: warm graphite and ceramic, earth neutrals for labels and data. */
+  --bg: #0b0a09;
+  --surface: #141210;
+  --surface-2: #221f1b;
+  --line: #2a2622;
+  --line-2: #3a342d;
   --fg: #f2f1ec;
-  --dim: #9aa0a6;
-  --faint: #6b7178;
+  --dim: #a59f95;
+  --faint: #736c62;
+  --sand: #d8c4a0;
+  --clay: #c98d6c;
+  --stone: #7d7468;
+  --sage: #9fae92;
   --ring: #3ddbb8; /* signal: the coin's light, the Push call */
   --on-ring: #04241d;
   --ease: #f5b544;
   --rest: #ff6f61;
   --learning: #80878f;
-  --data-load: #4c93ec;
-  --data-muscle: #9d92ee;
+  --data-load: var(--sand);
+  --data-muscle: var(--clay);
   --sans: 'Manrope', 'Helvetica Neue', Arial, sans-serif;
   --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --radius: 14px;
@@ -52,7 +56,7 @@ button:disabled {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ring);
+  outline: 2px solid var(--sand);
   outline-offset: 2px;
 }
 
@@ -142,6 +146,10 @@ button:disabled {
 
 .dim {
   color: var(--dim);
+}
+
+.intro h1 .dim {
+  color: var(--sand);
 }
 
 .lede {
@@ -235,7 +243,11 @@ button:disabled {
 
 .step.active {
   color: var(--fg);
-  border-left-color: var(--fg);
+  border-left-color: var(--sand);
+}
+
+.step.active .step-n {
+  color: var(--sand);
 }
 
 .step-n {
@@ -387,7 +399,7 @@ input[type='range'] {
 }
 
 .card.focus {
-  border-color: #4a4a4a;
+  border-color: #5a4c39;
 }
 
 .card-title {
@@ -487,28 +499,28 @@ input[type='range'] {
 }
 
 .chart .grid {
-  stroke: #1a1a1a;
+  stroke: #221f1b;
   stroke-width: 1;
 }
 
 .chart .tick {
   font-size: 11px;
-  fill: #6f6f6f;
+  fill: var(--faint);
   font-variant-numeric: tabular-nums;
 }
 
 .chart .axis-title {
   font-size: 11px;
-  fill: #6f6f6f;
+  fill: var(--faint);
 }
 
 .chart .floor {
-  stroke: #444;
+  stroke: #4a433a;
   stroke-dasharray: 2 4;
 }
 
 .chart .marker {
-  stroke: #3a3a3a;
+  stroke: #3a342d;
   stroke-width: 1;
 }
 
@@ -518,7 +530,7 @@ input[type='range'] {
 }
 
 .chart .crosshair {
-  stroke: #666;
+  stroke: var(--stone);
   stroke-width: 1;
 }
 
@@ -545,7 +557,7 @@ input[type='range'] {
   min-width: 190px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #161616;
+  background: #1a1714;
   border: 1px solid var(--line-2);
   font-size: 12px;
   pointer-events: none;

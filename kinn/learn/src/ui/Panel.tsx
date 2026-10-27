@@ -7,7 +7,8 @@ import { AGE_LABEL, INJURY_LABEL, N_FEATURES, SENSORS, SENSOR_LABEL, SENSOR_SOUR
 import type { Focus } from '../story';
 import { LineChart, Sparkline } from './charts';
 
-const COLORS = { you: '#8c8c8c', fleet: '#3987e5', both: '#199e70', rare: '#9085e9' };
+// Earth neutrals: sand for the main line, clay for the rare-injury group.
+const COLORS = { you: '#8f877a', fleet: '#c9b48e', both: '#9fae92', rare: '#c98d6c' };
 
 const sizeLabel = (n: number) => (n >= 1000 ? `${n / 1000}k` : String(n));
 
