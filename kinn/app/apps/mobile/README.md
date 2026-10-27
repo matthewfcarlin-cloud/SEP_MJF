@@ -36,6 +36,8 @@ Copy the output to `kinn/site/public/try/`. The web build uses `src/app/(tabs)/_
 
 Known: the browser console shows one React hydration warning (#418) per page load. It comes from a `<Suspense>` boundary that expo-router's static render leaves out; React re-renders on the client and the app works. Not ours to fix.
 
+The React Compiler is on (`app.json` → `experiments.reactCompiler`). It memoises on identity, so anything a screen derives from must change identity when it changes: publish new arrays and objects, never mutate a ref in place and pass it as a prop (the tape's live buffer is snapshotted with `slice()` on a 12 fps tick for exactly this reason).
+
 ## TestFlight (EAS)
 
 One-time, by whoever owns the Apple Developer account (these prompts need your Expo and Apple logins, so run them yourself):

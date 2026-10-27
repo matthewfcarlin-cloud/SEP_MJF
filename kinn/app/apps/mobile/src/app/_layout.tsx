@@ -6,6 +6,7 @@ import { LogBox, useColorScheme } from 'react-native'
 
 import { installDevLogMirror } from '@/dev-log-mirror'
 import { StoreProvider } from '@/store/provider'
+import { TapeProvider } from '@/tape/use-tape'
 import '@/notifications'
 
 installDevLogMirror()
@@ -32,6 +33,7 @@ export default function RootLayout() {
   }, [])
   return (
     <StoreProvider>
+      <TapeProvider>
       <ThemeProvider value={scheme === 'light' ? DefaultTheme : DarkTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
@@ -43,6 +45,7 @@ export default function RootLayout() {
           <Stack.Screen name="tape" options={{ presentation: 'modal' }} />
         </Stack>
       </ThemeProvider>
+      </TapeProvider>
     </StoreProvider>
   )
 }

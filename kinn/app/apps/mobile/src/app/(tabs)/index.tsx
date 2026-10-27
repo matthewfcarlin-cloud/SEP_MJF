@@ -1,13 +1,14 @@
 import { Link, router } from 'expo-router'
 import { SymbolView } from 'expo-symbols'
 import { useState } from 'react'
-import { Pressable, View, Platform } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { addDays } from '@reco/core'
 
 import { copy } from '@/copy'
 import { weekdayLetter } from '@/format'
 import { useStore } from '@/store/provider'
 import { Dial } from '@/components/dial'
+import { TapeLiveCard } from '@/components/tape/live-card'
 import { Bars } from '@/components/ui/bars'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -48,8 +49,7 @@ function MorningAsks({ pendingSettle, checkInDone }: { readonly pendingSettle: b
   )
 }
 
-/** The browser build opens the tape screen from the tape tag; on the phone the tag is only a label. */
-const openTape = Platform.OS === 'web' ? () => router.push('/tape') : undefined
+const openTape = () => router.push('/tape')
 
 export default function TodayScreen() {
   const { view, state } = useStore()
@@ -101,6 +101,8 @@ export default function TodayScreen() {
           </View>
         ) : null}
       </View>
+
+      <TapeLiveCard index={0} />
 
       <Pressable
         accessibilityRole="button"

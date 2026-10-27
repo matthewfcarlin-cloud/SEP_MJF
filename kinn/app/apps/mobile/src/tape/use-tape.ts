@@ -1,9 +1,12 @@
 /**
- * Tape session for the browser build: connect a real tape over Web Bluetooth or run the
- * simulated tape, then expose phase, status, the live stream (last 10 s) and reps.
- * One session per screen; nothing is persisted (MemorySyncStore) so the demo stays clean.
+ * One tape session for the whole app: connect a real tape (Web Bluetooth in the browser)
+ * or run the simulated tape, then expose phase, status, the live stream (last 10 s) and
+ * reps to any screen. Nothing is persisted (MemorySyncStore) so the demo stays clean.
+ * On the web, opening the app with ?tape=demo starts the simulated tape straight away.
  */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { Platform } from 'react-native'
 import {
   DeviceClient,
   MemorySyncStore,
@@ -16,7 +19,8 @@ import {
   type RepEvent,
 } from '@reco/core'
 
-import { WebBluetoothTransport, bluetoothSupport } from './web-bluetooth'
+import { bluetoothSupport, requestBleTransport } from './ble'
+import type { BluetoothSupport } from './ble'
 
 export interface LiveSample {
   readonly t: number
@@ -28,7 +32,7 @@ export interface LiveSample {
 export type TapeSource = 'ble' | 'demo'
 
 export interface TapeSession {
-  readonly support: ReturnType<typeof bluetoothSupport>
+  readonly support: BluetoothSupport
   readonly source: TapeSource | null
   readonly name: string | null
   readonly phase: ClientPhase
@@ -52,10 +56,17 @@ export interface TapeSession {
 const WINDOW_MS = 10_000
 const FRAME_MS = 80
 const DEMO_NAME = 'RECO tape (demo)'
+const DEMO_QUERY = 'tape=demo'
 
 export const isConnected = (p: ClientPhase): boolean => p === 'ready' || p === 'syncing' || p === 'session'
 
-export function useTape(): TapeSession {
+/** True when the browser URL asks for the demo tape (the site links to /try/?tape=demo). */
+function demoRequestedByUrl(): boolean {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return false
+  return window.location.search.includes(DEMO_QUERY)
+}
+
+function useTapeSession(): TapeSession {
   const support = bluetoothSupport()
   const clientRef = useRef<DeviceClient | null>(null)
   const bufRef = useRef<LiveSample[]>([])
@@ -70,14 +81,16 @@ export function useTape(): TapeSession {
   const [busy, setBusy] = useState<'rest' | 'max' | 'identify' | null>(null)
   const [lastCalibration, setLastCalibration] = useState<CalibrationOutcome | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [, setFrame] = useState(0)
+  const [buffer, setBuffer] = useState<readonly LiveSample[]>([])
 
-  // Re-render at ~12 fps while packets arrive, instead of once per 20 Hz packet.
+  // Publish the ring buffer as a fresh array at ~12 fps rather than once per 20 Hz packet. A new
+  // array each time matters: the React Compiler memoises on identity, so an array mutated in
+  // place would never redraw the trace.
   useEffect(() => {
     const id = setInterval(() => {
       if (!dirty.current) return
       dirty.current = false
-      setFrame((f) => f + 1)
+      setBuffer(bufRef.current.slice())
     }, FRAME_MS)
     return () => clearInterval(id)
   }, [])
@@ -98,6 +111,7 @@ export function useTape(): TapeSession {
       await teardown()
       clientRef.current = client
       bufRef.current = []
+      setBuffer([])
       trackerRef.current.reset()
       setReps([])
       setLatest(null)
@@ -132,9 +146,9 @@ export function useTape(): TapeSession {
       setError(support.reason ?? 'Bluetooth is not available here.')
       return
     }
-    let transport: WebBluetoothTransport
+    let transport
     try {
-      transport = await WebBluetoothTransport.request()
+      transport = await requestBleTransport()
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Could not open the device chooser.'
       if (!/cancel/i.test(msg)) setError(msg)
@@ -147,6 +161,14 @@ export function useTape(): TapeSession {
     const transport = new SimulatedTransport({ name: DEMO_NAME, calibrated: true, restRaw: 310, maxRaw: 3300 })
     await attach(new DeviceClient(transport, new MemorySyncStore()), 'demo')
   }, [attach])
+
+  // ?tape=demo on the web: start the simulated tape once, so a site link lands on a live Today.
+  const autoStarted = useRef(false)
+  useEffect(() => {
+    if (autoStarted.current || !demoRequestedByUrl()) return
+    autoStarted.current = true
+    void startDemo()
+  }, [startDemo])
 
   const disconnect = useCallback(async () => {
     await teardown()
@@ -197,7 +219,7 @@ export function useTape(): TapeSession {
     phase,
     status,
     latest,
-    buffer: bufRef.current,
+    buffer,
     reps,
     holdMs: current ? current.holdMs : null,
     busy,
@@ -211,4 +233,18 @@ export function useTape(): TapeSession {
     resetReps,
     clearError: () => setError(null),
   }
+}
+
+const TapeContext = createContext<TapeSession | null>(null)
+
+/** Mount once at the root so a tape connected on one screen keeps streaming on the others. */
+export function TapeProvider({ children }: { readonly children: ReactNode }) {
+  const session = useTapeSession()
+  return createElement(TapeContext.Provider, { value: session }, children)
+}
+
+export function useTape(): TapeSession {
+  const session = useContext(TapeContext)
+  if (!session) throw new Error('useTape must be used inside TapeProvider')
+  return session
 }

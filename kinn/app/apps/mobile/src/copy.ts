@@ -276,6 +276,11 @@ export const copy = {
     disconnect: 'Disconnect',
     noContact: 'No contact: the sensor reads near zero. Press the tape down a little firmer over the muscle.',
     footnote: 'The tape shows muscle activity. It is not a medical device.',
+    cardTitle: 'RECO tape',
+    cardLive: 'RECO tape · live',
+    cardIdle: 'Pair a tape, or run the simulated one, and the signal shows here while you use the app.',
+    repsLine: (n: number) => (n === 1 ? '1 rep' : `${n} reps`),
+    open: 'Tap for calibration and the full view',
     nativeSoon: 'Pairing from the phone app is coming. For now, open the browser version of RECO in Chrome or Edge to connect a tape.',
   },
 
