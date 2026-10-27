@@ -5,12 +5,14 @@
 //   ADMIN_TOKEN      secret for /admin/waitlist.csv and /admin/stats (required to read the list)
 //   RESEND_API_KEY   optional: send a welcome email through Resend
 //   FROM_EMAIL       optional: sender for the welcome email, e.g. "Kinn <hello@yourdomain.com>"
+//   ANTHROPIC_API_KEY optional: lets Claude read typed check-ins on /learn (the page falls back to reading them on the device)
 //   PORT             set by Railway
 
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { checkin } = require('./checkin');
 
 const app = express();
 app.set('trust proxy', true);
@@ -87,14 +89,18 @@ const CHANNELS = ['clinic', 'teammate', 'online', 'social', 'event', 'other', ''
 const UPDATABLE = ['role', 'injury', 'sport', 'alert', 'channel', 'note'];
 const pickFrom = (list, v) => (list.includes(clean(v)) ? clean(v) : '');
 
-const hits = new Map();
-function rateLimited(ip) {
-  const now = Date.now(), win = 10 * 60 * 1000, max = 8;
-  const arr = (hits.get(ip) || []).filter(t => now - t < win);
-  arr.push(now); hits.set(ip, arr);
-  if (hits.size > 5000) hits.clear();
-  return arr.length > max;
+function rateLimiter(max, win = 10 * 60 * 1000) {
+  const hits = new Map();
+  return ip => {
+    const now = Date.now();
+    const arr = (hits.get(ip) || []).filter(t => now - t < win);
+    arr.push(now); hits.set(ip, arr);
+    if (hits.size > 5000) hits.clear();
+    return arr.length > max;
+  };
 }
+const rateLimited = rateLimiter(8);
+const checkinLimited = rateLimiter(30);
 function tokenOk(req) {
   const want = process.env.ADMIN_TOKEN; if (!want) return false;
   const got = String(req.query.token || req.get('x-admin-token') || '');
@@ -147,6 +153,11 @@ app.post('/api/waitlist', async (req, res) => {
   }
 });
 
+app.post('/api/checkin', (req, res) => {
+  if (checkinLimited(req.ip)) return res.status(429).json({ error: 'Too many check-ins. Wait a few minutes and try again.' });
+  checkin(req, res);
+});
+
 app.get('/api/waitlist/count', async (req, res) => {
   try { res.json({ count: await store.count() }); } catch { res.json({ count: null }); }
 });
@@ -167,7 +178,9 @@ app.get('/admin/stats', async (req, res) => {
   res.json({ total: rows.length, byRole: tally('role'), byInjury: tally('injury'), bySport: tally('sport'), wantsAlert: tally('alert'), byChannel: tally('channel'), bySource: tally('source') });
 });
 
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d', setHeaders: (res, p) => { if (p.endsWith('.html')) res.set('Cache-Control', 'no-cache'); } }));
+// Only the demo's hashed build files can be cached for long; everything else (pages, progress
+// screenshots, brand files) keeps its name when it changes, so browsers re-check it on every visit.
+app.use(express.static(path.join(__dirname, 'public'), { setHeaders: (res, p) => res.set('Cache-Control', p.includes(`${path.sep}learn${path.sep}assets${path.sep}`) ? 'public, max-age=31536000, immutable' : 'no-cache') }));
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const port = process.env.PORT || 3000;

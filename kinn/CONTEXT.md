@@ -195,14 +195,22 @@ Older full-length site (Stelo-style, Netlify Forms): [`archive/website-v1/`](arc
 - **The redesign doc** (paper/midnight/lime, hardware hidden) was tried and rejected. It's kept in `archive/website-v4/`.
 - **To validate:** what would actually make someone confident enough to push after an injury?
 
-## 12. App spec and decisions (Oct 19, 2026)
+## 12. AI demo for the hackathon (Oct 17, 2026): "Every Kinn gets smarter"
+
+- **Where:** a page on the Kinn site at `/learn` (linked from the header, the "It learns your recovery" section and the footer). Source in [`learn/`](learn/) (Vite + React), built into `site/public/learn/`; the site's server reads typed check-ins with Claude (`site/checkin.js`, needs `ANTHROPIC_API_KEY` on Railway). Its README has the demo script and the numbers.
+- **Prompt:** Continual Learning. Two loops: each phone learns from its wearer's evening check-ins (online learning), and every night the phones pool what they learned by federated averaging (only model weights leave the phone), so new wearers start smarter. Second track: Design. Scale is a pitch angle (data network effect).
+- **Sensors claimed:** stretch traces (bend), motion (deep bends), a muscle sensor over the quad for muscle fatigue (the KineTape prototype's thin-film pressure sensor), and skin temperature. Still "not a medical device"; it estimates flare-up risk, not tissue strain.
+- **App simplified** from KineTape's 8 tabs to 3: Today (one call: Push / Ease off / Rest, plus your line), Check in (one tap or a sentence Claude reads), Learned (what warns of a flare-up for you, and a timeline).
+- All wearers and readings are simulated; the learning math is real.
+
+## 13. App spec and decisions (Oct 19, 2026)
 
 - **ICP narrowed:** pro and college athletes recovering from ACL reconstruction, weeks 4 to 24, who see a physio 1 to 2× a week.
 - **Core feature:** a daily 0 to 100 knee **Load score** against a stage-based target band, with a plain-language call (Room to push / On target / Ease off) and a reason sentence. Range alert, Moments (coin button), flare-up insights and an athlete-controlled physio report support it. Never adherence or compliance language.
 - **Documents:** [`docs/feature-spec.md`](docs/feature-spec.md) (features, load model, physio questions, FDA wording), [`docs/architecture.md`](docs/architecture.md) (Expo + TypeScript core, data model, sensor abstraction), [`docs/decisions.md`](docs/decisions.md) (running decision log).
 - **Interview evidence so far:** five Granola-recorded calls, Oct 15 to 19 (sarena, Akshay, Lowie/Ava/Sammie, paxton, Riya). All athletes or friends; no physio yet.
 
-## 13. Site v3.2 (Oct 26, 2026): copy matched to the Oct 23 ICP and the app
+## 14. Site v3.2 (Oct 26, 2026): copy matched to the Oct 23 ICP and the app
 
 Visual style unchanged (black, monochrome, 3D coin hero, rendered flex). Only the words and the intake changed, so the site says what the Notion Product Brief and the app's Today screen say.
 

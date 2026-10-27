@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>Kinn · Build progress</title>
+<meta name="description" content="What's built so far for the Kinn app demo: screens, brand and what's next.">
+<link rel="icon" href="/brand/kinn-app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* One column of sections: the live demo, the app screen by screen, the brand, the log and what's next. Kinn brand system, dark only. */
+:root {
+  --ground: #08090a; --surface: #111316; --surface-2: #1b1e22; --line: #22262a;
+  --ink: #f2f1ec; --muted: #9aa0a6; --faint: #6b7178;
+  --signal: #3ddbb8; --ease: #f5b544; --rest: #ff6f61; --learning: #80878f; --load: #4c93ec; --muscle: #9d92ee;
+  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --sans: Manrope, 'Helvetica Neue', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+.gut { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { display: flex; align-items: center; gap: 20px; padding-block: 22px; border-bottom: 1px solid var(--line); }
+header.top .logo { height: 22px; width: auto; }
+header.top nav { margin-left: auto; display: flex; gap: 24px; flex-wrap: wrap; }
+header.top nav a { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; opacity: .85; }
+header.top nav a:hover { opacity: 1; }
+@media (max-width: 560px) { header.top nav a.hide-s { display: none; } }
+.eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--muted); margin: 0; }
+h1 { font-size: clamp(38px, 6vw, 72px); line-height: .98; letter-spacing: -.03em; font-weight: 600; margin: 14px 0 18px; text-wrap: balance; }
+h2 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.05; letter-spacing: -.02em; font-weight: 600; margin: 0; text-wrap: balance; }
+h3 { font-size: 17px; font-weight: 600; margin: 0; }
+p { line-height: 1.6; }
+.lede { color: var(--muted); font-size: 18px; max-width: 62ch; margin: 0; }
+.intro { padding-block: 56px 32px; }
+.status { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: var(--surface); font-size: 13px; }
+.pill i { width: 8px; height: 8px; border-radius: 50%; }
+section.block { padding-block: 56px; border-top: 1px solid var(--line); }
+.head { display: grid; gap: 10px; margin-bottom: 28px; max-width: 70ch; }
+.head p { margin: 0; color: var(--muted); }
+/* demo hero */
+.demo { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+@media (max-width: 900px) { .demo { grid-template-columns: minmax(0, 1fr); } }
+.shot { border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgba(0,0,0,.9); }
+.cta { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 14px 22px; border-radius: 999px; background: var(--ink); color: var(--ground); font-weight: 600; text-decoration: none; }
+.cta:hover { background: #fff; }
+.steps-mini { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 15px; }
+.steps-mini b { color: var(--ink); font-weight: 600; }
+/* screens */
+.moment { margin-top: 40px; }
+.moment:first-of-type { margin-top: 0; }
+.moment > .eyebrow { margin-bottom: 14px; }
+.screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px 22px; }
+figure { margin: 0; display: grid; gap: 12px; align-content: start; min-width: 0; }
+figure img { width: 100%; height: auto; aspect-ratio: 540 / 1112; object-fit: contain; }
+figcaption { display: grid; gap: 4px; }
+figcaption b { font-size: 15px; font-weight: 600; }
+figcaption span { font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+/* brand */
+.brand { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+@media (max-width: 900px) { .brand { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border-radius: 18px; padding: 24px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.logos { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+.logos .lockup { height: 44px; width: auto; }
+.logos .icon { width: 72px; height: 72px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+.sw { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+.sw i { height: 54px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--line); }
+.sw b { color: var(--ink); font-weight: 600; font-size: 13px; }
+.type-sample { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+.type-sample .num { font-family: var(--display); font-weight: 600; font-size: 72px; line-height: .9; }
+.type-sample .word { font-family: var(--display); font-weight: 600; font-size: 34px; letter-spacing: .03em; text-transform: uppercase; color: var(--signal); }
+.type-sample .text { font-size: 18px; font-weight: 600; }
+.calls { display: flex; gap: 8px; flex-wrap: wrap; }
+.call { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 10px; border-radius: 999px; background: var(--surface-2); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; }
+.call svg { width: 15px; height: 15px; }
+.wide { grid-column: 1 / -1; }
+/* log + next */
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.log li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
+.log li:first-child { border-top: 0; }
+@media (max-width: 560px) { .log li { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+.log time { font-family: var(--display); font-size: 20px; font-weight: 600; color: var(--muted); }
+.log h3 { margin-bottom: 6px; }
+.log p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.next { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.next .panel h3 { display: flex; align-items: center; gap: 10px; }
+.next .panel p { margin: 0; color: var(--muted); font-size: 14px; }
+.tag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); font-weight: 600; }
+footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var(--faint); font-size: 13px; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header class="top gut">
+  <a href="/" aria-label="Kinn home"><img class="logo" src="img/kinn-lockup-ceramic.svg" alt="kinn"></a>
+  <nav aria-label="Kinn site">
+    <a href="/" class="hide-s">Home</a>
+    <a href="/learn/">The demo</a>
+    <a href="#screens" class="hide-s">Screens</a>
+    <a href="#next">Next</a>
+  </nav>
+</header>
+
+<main>
+<div class="gut intro">
+  <p class="eyebrow">Build progress · updated October 21, 2026</p>
+  <h1>Building the Kinn app</h1>
+  <p class="lede">Where the iOS app demo stands: the interactive demo on this site, every screen of the app, the brand it's built in, and what comes next. The demo runs on simulated wearers; the learning math is real.</p>
+  <div class="status">
+    <span class="pill"><i style="background:var(--signal)"></i>Live: the demo at /learn</span>
+    <span class="pill"><i style="background:var(--signal)"></i>Done: app screens, brand, logo, opening animation</span>
+    <span class="pill"><i style="background:var(--ease)"></i>Next: notifications</span>
+  </div>
+</div>
+
+<section class="block gut" id="demo">
+  <div class="demo">
+    <a class="shot" href="/learn/"><img src="img/whole-page.webp" width="1200" height="833" alt="The How Kinn learns page: a walkthrough on the left, the phone app in the middle, the learning charts on the right"></a>
+    <div>
+      <p class="eyebrow">The demo</p>
+      <h2>How Kinn learns, with the app inside it</h2>
+      <p class="lede" style="font-size:16px;margin-top:12px">A six-step walkthrough. The phone in the middle is the app; the charts on the right show the learning working.</p>
+      <ol class="steps-mini">
+        <li><b>1 Meet Maya</b>: day one starts from 3,000 recoveries like hers.</li>
+        <li><b>2 It learns her</b>: her line moves, her warning sign appears.</li>
+        <li><b>3 A session</b>: ten reps live, full range checked.</li>
+        <li><b>4 Check in</b>: one tap changes tomorrow.</li>
+        <li><b>5 Every Kinn learns</b>: drag the wearers to 0 and back.</li>
+        <li><b>6 It never stops</b>: week six, the curves.</li>
+      </ol>
+      <a class="cta" href="/learn/">Open the demo <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="block gut" id="screens">
+  <div class="head">
+    <p class="eyebrow">The app, screen by screen</p>
+    <h2>One loop a day: connect, push or rest, check in, learn</h2>
+    <p>Captured from the demo. Every number on these screens comes from the model running in the page, not typed in. Open the demo to see the opening move.</p>
+  </div>
+
+  <div class="moment">
+    <p class="eyebrow">Opening the app</p>
+    <div class="screens">
+      <figure><img src="img/opening-1.webp" width="360" height="740" loading="lazy" alt="The coin floating, tilted, its chrome seam catching the light"><figcaption><b>The coin floats</b><span>A live 3D render of the coin (the same model as the site’s hero) drifts and turns.</span></figcaption></figure>
+      <figure><img src="img/opening-2.webp" width="360" height="740" loading="lazy" alt="The coin face-on with its ring lit white and a shockwave around it"><figcaption><b>It clicks into place</b><span>It turns to face you and clicks in: a press, a white flash of its light ring, a shockwave.</span></figcaption></figure>
+      <figure><img src="img/opening-3.webp" width="360" height="740" loading="lazy" alt="Gray-white printed traces run from the coin to the four corners of the screen"><figcaption><b>Charge to the corners</b><span>Printed traces, like the silver ones on the tape, carry the charge to each corner, and the app opens.</span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="moment">
+    <p class="eyebrow">First open</p>
+    <div class="screens">
+      <figure><img src="img/start.webp" width="540" height="1112" loading="lazy" alt="Starting point screen: an Ease off ring at 93 degrees and the line Kinn starts from 3,000 recoveries like yours"><figcaption><b>Starting point</b><span>Setup is skipped in the demo. Day 1 opens here: a real line borrowed from people like her.</span></figcaption></figure>
+      <figure><img src="img/today-day1.webp" width="540" height="1112" loading="lazy" alt="Today on day 1 with the Ease off ring, empty reading tiles, today's session and tonight's check-in"><figcaption><b>Today, day 1</b><span>The ring, one reason, no readings yet, the day's session and tonight's check-in.</span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="moment">
+    <p class="eyebrow">Every morning</p>
+    <div class="screens">
+      <figure><img src="img/connect.webp" width="540" height="1112" loading="lazy" alt="Connect screen: the coin with a white ring and the words Rest today. It's part of the work."><figcaption><b>The coin connects</b><span>Every new morning the opening plays again, with what changed overnight. After a flare-up: "Rest today. It’s part of the work."</span></figcaption></figure>
+      <figure><img src="img/today.webp" width="540" height="1112" loading="lazy" alt="Today: a Rest ring at 121 degrees, muscle fatigue and deep bends tiles against her normal, a rest-day session card"><figcaption><b>Today</b><span>The coin is the dial: its light ring glows up to your line. Above it, the last seven days’ calls; tap one to open that day.</span></figcaption></figure>
+      <figure><img src="img/today-data.webp" width="360" height="740" loading="lazy" alt="Behind today's call with three signals and yesterday's hour-by-hour bending ribbon with peak bend, minutes past the line, deep bends and muscle fatigue"><figcaption><b>More on Today</b><span>What’s behind the call, from her own model, and yesterday on the strip hour by hour: peak bend, time past her line, deep bends, muscle fatigue.</span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="moment">
+    <p class="eyebrow">During the day</p>
+    <div class="screens">
+      <figure><img src="img/past-line.webp" width="540" height="1112" loading="lazy" alt="Past your line: a banner says 130 degrees is over your 121 degree line, and the ring turns coral past the line"><figcaption><b>Past your line</b><span>The coin buzzes, a banner drops in, the ring turns coral past the tick.</span></figcaption></figure>
+      <figure><img src="img/session-live.webp" width="540" height="1112" loading="lazy" alt="Guided session in progress: the ring shows the knee bending, rep and full-range counters"><figcaption><b>Guided session</b><span>The PT's exercise, ten reps, read live from the strip: range, holds, full range.</span></figcaption></figure>
+      <figure><img src="img/session-done.webp" width="540" height="1112" loading="lazy" alt="Session done: 7 of 10 reps hit full range, average hold and target, and when the quad tired"><figcaption><b>Session done</b><span>How many reps hit full range, and the rep where the muscle sensor saw her quad tire.</span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="moment">
+    <p class="eyebrow">Every evening</p>
+    <div class="screens">
+      <figure><img src="img/checkin.webp" width="540" height="1112" loading="lazy" alt="Check-in: three buttons, Felt good, A bit sore, Flare-up, and a box to say it in your own words"><figcaption><b>Check in</b><span>One tap, or a sentence that Claude reads. This answer is what teaches the model.</span></figcaption></figure>
+      <figure><img src="img/got-it.webp" width="540" height="1112" loading="lazy" alt="Got it screen: what the answer changed, Rest instead of Push, line 121 instead of 128"><figcaption><b>Got it</b><span>What the answer changed for tomorrow, side by side with the opposite answer.</span></figcaption></figure>
+    </div>
+  </div>
+
+  <div class="moment">
+    <p class="eyebrow">Anytime</p>
+    <div class="screens">
+      <figure><img src="img/learned.webp" width="540" height="1112" loading="lazy" alt="Learned tab: week recap card, what warns of a flare-up for you compared with people like you, and a timeline"><figcaption><b>Learned</b><span>Her line day by day with each day’s peak bend and the flare-ups, her warning signs next to people like her, and every change Kinn made.</span></figcaption></figure>
+      <figure><img src="img/week.webp" width="540" height="1112" loading="lazy" alt="Week recap: your line went up, a line chart, calls right to date, flare-ups and check-ins"><figcaption><b>Week recap</b><span>Line trend, flare-ups, how often the calls were right. Share with her PT.</span></figcaption></figure>
+      <figure><img src="img/you.webp" width="540" height="1112" loading="lazy" alt="You tab: coin connected, strip day 3 of 5 with reorder, PT sharing, Help other Kinns learn switch"><figcaption><b>You</b><span>Coin, strip life with reorder, PT sharing, and the switch for sharing model updates.</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="block gut" id="brand">
+  <div class="head">
+    <p class="eyebrow">The brand</p>
+    <h2>Graphite and ceramic, one light from the coin</h2>
+    <p>WHOOP's discipline (dark, data-first, one answer a day) in Kinn's own look. The mark is the coin's ring with a tick at your line.</p>
+  </div>
+  <div class="brand">
+    <div class="panel">
+      <p class="eyebrow">Logo</p>
+      <div class="logos">
+        <img class="lockup" src="img/kinn-lockup-ceramic.svg" alt="Kinn lockup: the ring mark and the lowercase wordmark kinn">
+        <img class="icon" src="img/kinn-app-icon.svg" alt="Kinn app icon">
+      </div>
+      <p class="eyebrow">Calls: always a word and a shape</p>
+      <div class="calls">
+        <span class="call"><svg viewBox="0 0 16 16" fill="none" stroke="var(--signal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 8 6l4.5 4.5"/></svg>Push</span>
+        <span class="call"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="6.5" width="11" height="3" rx="1.5" fill="var(--ease)"/></svg>Ease off</span>
+        <span class="call"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.5" fill="var(--rest)"/></svg>Rest</span>
+        <span class="call"><svg viewBox="0 0 16 16" fill="none" stroke="var(--learning)" stroke-width="2" stroke-dasharray="1.5 2.6" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/></svg>Learning you</span>
+      </div>
+    </div>
+    <div class="panel">
+      <p class="eyebrow">Type</p>
+      <div class="type-sample"><span class="num">123°</span><span class="word">Push</span><span class="text">Ready for another day.</span></div>
+      <p class="eyebrow">Colour</p>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--ground)"></i><b>Ground</b>#08090A</div>
+        <div class="sw"><i style="background:var(--surface-2)"></i><b>Surface</b>#1B1E22</div>
+        <div class="sw"><i style="background:var(--ink)"></i><b>Ceramic</b>#F2F1EC</div>
+        <div class="sw"><i style="background:var(--signal)"></i><b>Signal · Push</b>#3DDBB8</div>
+        <div class="sw"><i style="background:var(--ease)"></i><b>Ease off</b>#F5B544</div>
+        <div class="sw"><i style="background:var(--rest)"></i><b>Rest</b>#FF6F61</div>
+      </div>
+    </div>
+    <figure class="panel wide"><img src="img/logo-in-use.webp" width="1400" height="937" loading="lazy" alt="The logo in use: app icon on a home screen, splash screen, engraved on the coin, printed on the tape, a lock-screen alert and the site header"><figcaption><span>The logo in use: home screen, splash, coin, tape, lock-screen alert, site header.</span></figcaption></figure>
+  </div>
+</section>
+
+<section class="block gut" id="log">
+  <div class="head">
+    <p class="eyebrow">Log</p>
+    <h2>What changed, and when</h2>
+  </div>
+  <ol class="log">
+    <li><time datetime="2026-10-21">Oct 21</time><div><h3>Warm neutrals</h3><p>The main screens were too bland, so the greys warm up: sand for labels, the line chart and your bars; clay for what raises risk, flare-ups and time past your line; sage for what lowers risk; stone for the people-like-you bars and the hourly ribbon. Today’s session sits on a sand card, with a soft warm light at the top of each screen. The opening stays grey and white.</p></div></li>
+    <li><time datetime="2026-10-21">Oct 21</time><div><h3>A calmer palette</h3><p>Less techno, fewer colors. The opening’s charge and the coin’s light are now gray and white, not green. Charts, the week strip, signal bars and the live session dial are ink and gray. Color is kept for one thing: the day’s call (push, ease, rest).</p></div></li>
+    <li><time datetime="2026-10-21">Oct 21</time><div><h3>The opening, the coin dial, more data</h3><p>Opening the app now plays a live 3D coin that floats, clicks into place and sends charge along printed traces to the corners. Today’s dial is the coin with its light ring as the gauge, plus a 7-day strip, what’s behind the call, and yesterday hour by hour. Learned gains a day-by-day chart.</p></div></li>
+    <li><time datetime="2026-10-21">Oct 21</time><div><h3>The new logo, everywhere</h3><p>The ring-and-tick lockup replaces the text logo in the site header and footer, the demo page, the app's starting screen and on the coin. New favicon and home-screen icon.</p></div></li>
+    <li><time datetime="2026-10-21">Oct 21</time><div><h3>The app, rebuilt to the flow</h3><p>Starting point, morning connect, Today with the new ring, guided sessions, check-in and "Got it", Learned with the week recap, and You. All in the brand system. This progress page.</p></div></li>
+    <li><time datetime="2026-10-20">Oct 20</time><div><h3>Brand system and user flow</h3><p>Logo (the coin's ring with a tick at your line), colours, type, components and voice. The user flow for the iOS demo: setup, the daily loop, every screen.</p></div></li>
+    <li><time datetime="2026-10-20">Oct 20</time><div><h3>The demo joins the site</h3><p>"How Kinn learns" moved onto this site at /learn, linked from the home page. Typed check-ins are read by Claude when the server has a key.</p></div></li>
+    <li><time datetime="2026-10-17">Oct 17</time><div><h3>The learning engine</h3><p>Simulated wearers, learning on each phone from check-ins, federated averaging across phones, and honest scoring on people the model never saw.</p></div></li>
+  </ol>
+</section>
+
+<section class="block gut" id="next">
+  <div class="head">
+    <p class="eyebrow">Next</p>
+    <h2>What's coming</h2>
+  </div>
+  <div class="next">
+        <div class="panel"><h3>Notifications <span class="tag">next</span></h3><p>The 9pm check-in reminder and the lock-screen "Past your line" alert, shown on the demo phone.</p></div>
+    <div class="panel"><h3>A phone on your shin <span class="tag">later</span></h3><p>Live bend from a real phone's motion sensor, so judges can try the buzz themselves.</p></div>
+  </div>
+</section>
+</main>
+
+<footer class="gut">Kinn · Trust your comeback · In development; not a medical device. Demo data is simulated.</footer>
+</body>
+</html>

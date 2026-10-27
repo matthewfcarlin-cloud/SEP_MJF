@@ -1,0 +1,13 @@
+(footprint "Antenna_IFA_2G4_Puck"
+	(version 20240108)
+	(generator "kinetape_gen")
+	(layer "F.Cu")
+	(descr "Printed inverted-F antenna, 2.4 GHz, for 25.4 mm round board. Arm+stub length 19.9 mm, intentionally long: trim open end while measuring S11.")
+	(net_tie_pad_groups "1,2")
+	(property "Reference" "REF**" (at 0 -8.0 0) (layer "F.SilkS") (effects (font (size 0.6 0.6) (thickness 0.1))))
+	(property "Value" "Antenna_IFA_2G4_Puck" (at 0 8.0 0) (layer "F.Fab") (effects (font (size 0.6 0.6) (thickness 0.1))))
+	(attr smd exclude_from_pos_files exclude_from_bom)
+	(pad "1" smd custom (at -5.3 -6.2) (size 0.4 0.4) (layers "F.Cu") (options (clearance outline) (anchor rect)) (primitives (gr_line (start 0.000 0.000) (end 0.000 -3.100) (width 0.5)) (gr_line (start -2.100 -3.100) (end 12.804 -3.100) (width 0.5)) (gr_line (start 12.804 -3.100) (end 13.081 -2.870) (width 0.5)) (gr_line (start 13.081 -2.870) (end 13.350 -2.631) (width 0.5)) (gr_line (start 13.350 -2.631) (end 13.613 -2.385) (width 0.5)) (gr_line (start 13.613 -2.385) (end 13.867 -2.131) (width 0.5)) (gr_line (start 13.867 -2.131) (end 14.114 -1.869) (width 0.5)) (gr_line (start 14.114 -1.869) (end 14.353 -1.600) (width 0.5))))
+	(pad "2" smd custom (at -7.4 -5.9) (size 0.5 0.5) (layers "F.Cu") (zone_connect 2) (options (clearance outline) (anchor rect)) (primitives (gr_line (start 0.000 0.000) (end 0.000 -3.400) (width 0.5))))
+	(fp_text user "ANT" (at 0 -7.700000000000001 0) (layer "F.Fab") (effects (font (size 0.6 0.6) (thickness 0.1))))
+)

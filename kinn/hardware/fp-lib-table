@@ -1,0 +1,4 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "KineTape") (type "KiCad") (uri "${KIPRJMOD}/KineTape.pretty") (options "") (descr "KineTape custom footprints"))
+)

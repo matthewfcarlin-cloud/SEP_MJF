@@ -1,0 +1,8 @@
+tools/
+*.kicad_prl
+*-backups/
+fp-info-cache
+*.dsn
+*.ses
+logs/
+~*.lck

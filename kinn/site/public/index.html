@@ -9,7 +9,8 @@
 <meta property="og:description" content="Get stronger. Push forward. Trust your comeback. Join the waitlist.">
 <meta property="og:image" content="/img/hero.webp">
 <meta name="theme-color" content="#000000">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Cpath d='M9 4l5 10v4L9 28M23 4l-5 10v4l5 10' stroke='%23ededed' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="/brand/kinn-app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap">
@@ -40,10 +41,11 @@ a{color:inherit;text-decoration:none}
 /* top bar */
 .top{position:fixed;z-index:30;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding-top:calc(20px + env(safe-area-inset-top,0px));pointer-events:none;mix-blend-mode:difference;color:#fff}
 .top>*{pointer-events:auto}
-.mark{font-weight:600;font-size:15px;line-height:1.05;letter-spacing:-.02em}
+.mark{display:grid;gap:7px;font-size:15px;line-height:1.05;letter-spacing:-.02em;pointer-events:auto}
+.mark .logo{display:block;height:22px;width:auto}
 .mark span{display:block;font-weight:400;color:#9a9a9a}
 .top nav{display:flex;gap:28px;white-space:nowrap}
-@media (max-width:560px){.top nav a:first-child{display:none}}
+@media (max-width:560px){.top nav a:not([data-join]){display:none}}
 .top nav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
 .top nav a:hover{opacity:1}
 
@@ -148,6 +150,8 @@ a{color:inherit;text-decoration:none}
 .learns .cols b{font-weight:500;font-size:clamp(1.2rem,2vw,1.6rem);letter-spacing:-.02em}
 .learns .cols p{color:var(--dim);font-size:14px;max-width:26em}
 .learns .note{color:#5a5a5a;font-size:11px}
+.learns .more{justify-self:start;font-size:clamp(1.05rem,1.6vw,1.3rem);letter-spacing:-.01em;border-bottom:1px solid var(--line);padding-bottom:6px}
+.learns .more:hover{border-color:var(--fg)}
 @media (max-width:760px){.learns .cols{grid-template-columns:minmax(0,1fr)}}
 
 /* join */
@@ -208,7 +212,9 @@ select option{background:#111;color:var(--fg)}
 footer{display:grid;justify-items:center;gap:14px;padding-block:40px calc(36px + env(safe-area-inset-bottom,0px))}
 footer nav{display:flex;gap:44px}
 footer nav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+@media (max-width:560px){footer nav{gap:12px 24px;flex-wrap:wrap}footer nav a{white-space:nowrap}}
 footer .small{color:#5a5a5a;font-size:11px}
+footer .foot-logo{display:block;height:26px;width:auto;margin-bottom:6px}
 
 /* reveal */
 .rv{transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.2,.8,.2,1)}
@@ -225,8 +231,8 @@ footer .small{color:#5a5a5a;font-size:11px}
 <body>
 
 <header class="top gut">
-  <a class="mark" href="#top" aria-label="Kinn home">Kinn<span>Trust your comeback</span></a>
-  <nav aria-label="Main"><a href="#mission">Mission</a><a href="#join" data-join>Join waitlist</a></nav>
+  <a class="mark" href="#top" aria-label="Kinn home"><svg class="logo" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6465 1904"><circle cx="952.25" cy="952.25" r="818.935" fill="none" stroke="currentColor" stroke-width="180.17"/><line x1="1411.82" y1="686.92" x2="1911.11" y2="398.65" stroke="#3ddbb8" stroke-width="180.17" stroke-linecap="round"/><g fill="currentColor" transform="translate(2566.4 1684.8) scale(1 -1) translate(0 0.0)"><path transform="translate(0.0 0)" d="M138 0 140 1440H384V560L779 1080H1080L661 540L1116 0H797L384 520V0Z"/><path transform="translate(1036.0 0)" d="M160 1244V1465H401V1244ZM160 0V1080H401V0Z"/><path transform="translate(1557.0 0)" d="M887 0V520Q887 571 880.0 633.0Q873 695 847.5 752.5Q822 810 771.5 847.0Q721 884 635 884Q589 884 544.0 869.0Q499 854 462.5 817.5Q426 781 404.0 717.5Q382 654 382 555V0H138V1080H353V960Q394 1009 450 1045Q554 1111 706 1111Q826 1111 904.0 1071.0Q982 1031 1028.0 969.0Q1074 907 1096.0 837.0Q1118 767 1124.5 704.5Q1131 642 1131 603V0Z"/><path transform="translate(2768.0 0)" d="M887 0V520Q887 571 880.0 633.0Q873 695 847.5 752.5Q822 810 771.5 847.0Q721 884 635 884Q589 884 544.0 869.0Q499 854 462.5 817.5Q426 781 404.0 717.5Q382 654 382 555V0H138V1080H353V960Q394 1009 450 1045Q554 1111 706 1111Q826 1111 904.0 1071.0Q982 1031 1028.0 969.0Q1074 907 1096.0 837.0Q1118 767 1124.5 704.5Q1131 642 1131 603V0Z"/></g></svg><span>Trust your comeback</span></a>
+  <nav aria-label="Main"><a href="#mission">Mission</a><a href="/learn/">How it learns</a><a href="#join" data-join>Join waitlist</a></nav>
 </header>
 
 <section class="hero" id="top" aria-label="A small coin turns, drops and snaps into a thin knee strip, then the view pulls back to show the whole strip">
@@ -293,6 +299,7 @@ footer .small{color:#5a5a5a;font-size:11px}
     <div class="rv"><span class="caps small">02</span><b>One tap when it hurts</b><p>Press the coin or the app. Next morning Kinn asks whether it settled, the same rule physios use to decide if yesterday was too much.</p></div>
     <div class="rv"><span class="caps small">03</span><b>What came before</b><p>See what your knee did on the days before a flare-up. Not causes, just what happened first. Share a short summary with your physio when you choose.</p></div>
   </div>
+  <a class="more rv" href="/learn/">See how Kinn learns, from you and from everyone <span aria-hidden="true">→</span></a>
   <p class="note rv">The goal: a comeback you can see, with fewer setbacks. Kinn tracks and shows; your physio makes the calls. Kinn is in development and is not a medical device.</p>
 </section>
 
@@ -369,7 +376,8 @@ footer .small{color:#5a5a5a;font-size:11px}
 </dialog>
 
 <footer class="gut">
-  <nav aria-label="Footer"><a href="#mission">Mission</a><a href="#join" data-join>Join waitlist</a></nav>
+  <a href="#top" aria-label="Kinn home"><img class="foot-logo" src="/brand/kinn-lockup-ceramic.svg" width="88" height="26" alt=""></a>
+  <nav aria-label="Footer"><a href="#mission">Mission</a><a href="/learn/">How it learns</a><a href="/progress/">Progress</a><a href="#join" data-join>Join waitlist</a></nav>
   <p class="small">© 2026 Kinn. In development; not a medical device.</p>
 </footer>
 
