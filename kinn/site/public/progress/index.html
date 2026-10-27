@@ -2,271 +2,206 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<meta name="color-scheme" content="dark">
-<title>Kinn · Build progress</title>
-<meta name="description" content="What's built so far for the Kinn app: every screen of the iOS app, the web demo, the brand and what's next.">
+<title>Kinn · How the app works</title>
+<meta name="description" content="How the RECO app works, screen by screen: two questions every morning, one status for the day, one tap when something hurts, and what it learns.">
+<meta name="theme-color" content="#000000">
 <link rel="icon" href="/brand/kinn-app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&display=swap">
 <style>
-/* One column of sections: the live demo, the app screen by screen, the brand, the log and what's next. Kinn brand system, dark only. */
-:root {
-  --ground: #08090a; --surface: #111316; --surface-2: #1b1e22; --line: #22262a;
-  --ink: #f2f1ec; --muted: #9aa0a6; --faint: #6b7178;
-  --signal: #3ddbb8; --ease: #f5b544; --rest: #ff6f61; --learning: #80878f; --load: #4c93ec; --muscle: #9d92ee;
-  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --sans: Manrope, 'Helvetica Neue', Arial, sans-serif;
-}
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: clip; }
-a { color: inherit; }
-img { max-width: 100%; display: block; }
-.gut { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-header.top { display: flex; align-items: center; gap: 20px; padding-block: 22px; border-bottom: 1px solid var(--line); }
-header.top .logo { height: 22px; width: auto; }
-header.top nav { margin-left: auto; display: flex; gap: 24px; flex-wrap: wrap; }
-header.top nav a { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; opacity: .85; }
-header.top nav a:hover { opacity: 1; }
-@media (max-width: 560px) { header.top nav a.hide-s { display: none; } }
-.eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--muted); margin: 0; }
-h1 { font-size: clamp(38px, 6vw, 72px); line-height: .98; letter-spacing: -.03em; font-weight: 600; margin: 14px 0 18px; text-wrap: balance; }
-h2 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.05; letter-spacing: -.02em; font-weight: 600; margin: 0; text-wrap: balance; }
-h3 { font-size: 17px; font-weight: 600; margin: 0; }
-p { line-height: 1.6; }
-.lede { color: var(--muted); font-size: 18px; max-width: 62ch; margin: 0; }
-.intro { padding-block: 56px 32px; }
-.status { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
-.pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: var(--surface); font-size: 13px; }
-.pill i { width: 8px; height: 8px; border-radius: 50%; }
-section.block { padding-block: 56px; border-top: 1px solid var(--line); }
-.head { display: grid; gap: 10px; margin-bottom: 28px; max-width: 70ch; }
-.head p { margin: 0; color: var(--muted); }
-/* demo hero */
-.demo { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 32px; align-items: center; }
-@media (max-width: 900px) { .demo { grid-template-columns: minmax(0, 1fr); } }
-.shot { border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px var(--line), 0 30px 60px -30px rgba(0,0,0,.9); }
-.cta { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 14px 22px; border-radius: 999px; background: var(--ink); color: var(--ground); font-weight: 600; text-decoration: none; }
-.cta:hover { background: #fff; }
-.steps-mini { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 15px; }
-.steps-mini b { color: var(--ink); font-weight: 600; }
-/* screens */
-.moment { margin-top: 40px; }
-.moment:first-of-type { margin-top: 0; }
-.moment > .eyebrow { margin-bottom: 14px; }
-.screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px 22px; }
-figure { margin: 0; display: grid; gap: 12px; align-content: start; min-width: 0; }
-figure img { width: 100%; height: auto; aspect-ratio: 603 / 1311; object-fit: contain; border-radius: 22px; box-shadow: 0 0 0 1px var(--line); }
-figcaption { display: grid; gap: 4px; }
-figcaption b { font-size: 15px; font-weight: 600; }
-figcaption span { font-size: 13.5px; line-height: 1.5; color: var(--muted); }
-/* brand */
-.brand { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
-@media (max-width: 900px) { .brand { grid-template-columns: minmax(0, 1fr); } }
-.panel { background: var(--surface); border-radius: 18px; padding: 24px; display: grid; gap: 18px; align-content: start; min-width: 0; }
-.logos { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
-.logos .lockup { height: 44px; width: auto; }
-.logos .icon { width: 72px; height: 72px; }
-.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
-.sw { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
-.sw i { height: 54px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--line); }
-.sw b { color: var(--ink); font-weight: 600; font-size: 13px; }
-.type-sample { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
-.type-sample .num { font-family: var(--display); font-weight: 600; font-size: 72px; line-height: .9; }
-.type-sample .word { font-family: var(--display); font-weight: 600; font-size: 34px; letter-spacing: .03em; text-transform: uppercase; color: var(--signal); }
-.type-sample .text { font-size: 18px; font-weight: 600; }
-.calls { display: flex; gap: 8px; flex-wrap: wrap; }
-.call { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 10px; border-radius: 999px; background: var(--surface-2); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; }
-.call svg { width: 15px; height: 15px; }
-.wide { grid-column: 1 / -1; }
-/* log + next */
-.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-.log li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
-.log li:first-child { border-top: 0; }
-@media (max-width: 560px) { .log li { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
-.log time { font-family: var(--display); font-size: 20px; font-weight: 600; color: var(--muted); }
-.log h3 { margin-bottom: 6px; }
-.log p { margin: 0; color: var(--muted); font-size: 14.5px; }
-.next { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-.next .panel h3 { display: flex; align-items: center; gap: 10px; }
-.next .panel p { margin: 0; color: var(--muted); font-size: 14px; }
-.tag { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); font-weight: 600; }
-footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var(--faint); font-size: 13px; }
-:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+/* Same stage as the home page: black, Manrope, very few words. One loop a day, told in five moments, each with the real app screens in a phone frame. */
+:root{--bg:#000;--fg:#ededed;--dim:#8c8c8c;--faint:#3b3b3b;--line:#1f1f1f;--sans:"Manrope","Helvetica Neue",Arial,sans-serif;--good:#8fbf8f;--caution:#d9c38a;--warn:#e0896b;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-weight:400;font-size:15px;line-height:1.55;letter-spacing:.01em;-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{max-width:100%;display:block}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+.small{font-size:12px;letter-spacing:.02em;color:var(--dim)}
+.caps{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.gut{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* top bar (as on the home page) */
+.top{position:fixed;z-index:30;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;padding-top:calc(20px + env(safe-area-inset-top,0px));pointer-events:none;mix-blend-mode:difference;color:#fff}
+.top>*{pointer-events:auto}
+.mark{display:grid;gap:7px;font-size:15px;line-height:1.05;letter-spacing:-.02em}
+.mark .logo{display:block;height:22px;width:auto}
+.mark span{display:block;font-weight:400;color:#9a9a9a}
+.top nav{display:flex;gap:28px;white-space:nowrap}
+@media (max-width:560px){.top nav a:not([data-join]){display:none}}
+.top nav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+.top nav a:hover{opacity:1}
+
+/* hero */
+.hero{padding-top:calc(140px + env(safe-area-inset-top,0px));padding-bottom:40px;display:grid;gap:40px}
+.hero h1{font-weight:600;letter-spacing:-.05em;line-height:.95;font-size:clamp(2.8rem,8vw,6.5rem);margin:0;text-wrap:balance;max-width:11ch}
+.hero .lede{color:var(--dim);font-size:clamp(1rem,1.5vw,1.2rem);max-width:40em}
+.hero .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--dim)}
+.hero .meta span{display:inline-flex;align-items:center;gap:8px}
+.hero .meta i{width:7px;height:7px;border-radius:50%;background:var(--fg);display:inline-block}
+.hero .meta i.c{background:var(--caution)}
+.showcase{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,3vw,40px);align-items:end;margin-top:24px}
+.showcase .phone:nth-child(2){transform:translateY(-32px)}
+@media (max-width:760px){.showcase{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -22px;padding:6px 22px 18px;scrollbar-width:none}.showcase::-webkit-scrollbar{display:none}.showcase .phone{flex:0 0 64%;max-width:300px;scroll-snap-align:center}.showcase .phone:nth-child(2){transform:none;order:-1}}
+
+/* phone frame: bezel, screen, soft light */
+.phone{margin:0;position:relative;border-radius:clamp(22px,4.2vw,50px);background:#0b0b0b;padding:clamp(4px,.8vw,9px);box-shadow:0 0 0 1px #262626,0 0 0 2px #0a0a0a,0 40px 80px -40px rgba(0,0,0,.9),0 0 120px -60px rgba(237,237,237,.18)}
+.phone img{width:100%;height:auto;aspect-ratio:603/1311;border-radius:clamp(18px,3.5vw,42px);object-fit:cover;background:#0e0e0f}
+.phone figcaption{position:absolute;left:0;right:0;bottom:-30px;text-align:center;font-size:12px;letter-spacing:.02em;color:var(--dim)}
+.phone.labeled{margin-bottom:34px}
+
+/* moments */
+.moments{display:grid;gap:clamp(90px,14vh,160px);padding-block:clamp(70px,10vh,120px)}
+.moment{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:center}
+.moment:nth-child(even){grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.moment:nth-child(even) .words{order:2}
+.moment .words{display:grid;gap:18px;align-content:center;max-width:34em}
+.moment .n{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:14px}
+.moment .n::after{content:"";height:1px;width:40px;background:var(--faint)}
+.moment h2{font-weight:600;letter-spacing:-.04em;line-height:1;font-size:clamp(2rem,4.2vw,3.4rem);margin:0;text-wrap:balance}
+.moment p{color:var(--dim);font-size:clamp(1rem,1.3vw,1.1rem)}
+.moment .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 11px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:500}
+.pill i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.shots{display:grid;gap:clamp(12px,2.4vw,28px);align-items:start}
+.shots.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.shots.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.shots.one{grid-template-columns:minmax(0,1fr);max-width:340px;margin:0 auto}
+.shots.two .phone:last-child,.shots.three .phone:nth-child(2){transform:translateY(28px)}
+@media (max-width:860px){.moment,.moment:nth-child(even){grid-template-columns:minmax(0,1fr)}.moment:nth-child(even) .words{order:0}.shots.two .phone:last-child,.shots.three .phone:nth-child(2){transform:none}.shots.one{margin:0;max-width:300px}.shots.two,.shots.three{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -22px;padding:6px 22px 18px;scrollbar-width:none}.shots.two::-webkit-scrollbar,.shots.three::-webkit-scrollbar{display:none}.shots.two .phone,.shots.three .phone{flex:0 0 64%;max-width:300px;scroll-snap-align:center}}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* notes + next */
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px 40px;padding-block:60px;border-top:1px solid var(--line)}
+.notes b{display:block;font-weight:500;margin-bottom:8px}
+.notes p{color:var(--dim);font-size:14px}
+.more{display:inline-flex;align-items:center;gap:10px;margin-top:14px;border-bottom:1px solid var(--line);padding-bottom:4px;font-size:14px}
+.more:hover{border-color:var(--fg)}
+
+footer{display:grid;justify-items:center;gap:14px;padding-block:40px calc(36px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+footer nav{display:flex;gap:44px}
+footer nav a{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+@media (max-width:560px){footer nav{gap:12px 24px;flex-wrap:wrap}footer nav a{white-space:nowrap}}
+footer .small{color:#5a5a5a;font-size:11px}
+footer .foot-logo{display:block;height:26px;width:auto;margin-bottom:6px}
 </style>
 </head>
 <body>
+
 <header class="top gut">
-  <a href="/" aria-label="Kinn home"><img class="logo" src="img/kinn-lockup-ceramic.svg" alt="kinn"></a>
-  <nav aria-label="Kinn site">
-    <a href="/" class="hide-s">Home</a>
-    <a href="/learn/">The demo</a>
-    <a href="#screens" class="hide-s">Screens</a>
-    <a href="#next">Next</a>
-  </nav>
+  <a class="mark" href="/" aria-label="Kinn home"><img class="logo" src="/brand/kinn-lockup-ceramic.svg" width="75" height="22" alt="kinn"><span>Trust your comeback</span></a>
+  <nav aria-label="Main"><a href="/">Home</a><a href="/learn/">How it learns</a><a href="/#join" data-join>Join waitlist</a></nav>
 </header>
 
-<main>
-<div class="gut intro">
-  <p class="eyebrow">Build progress · updated October 26, 2026</p>
-  <h1>Building the Kinn app</h1>
-  <p class="lede">Where the Kinn app stands: every screen of the iOS app as it runs today, the interactive web demo, the brand, and what comes next. The app runs on a 21-day sample athlete; the demo runs on simulated wearers.</p>
-  <div class="status">
-    <span class="pill"><i style="background:var(--signal)"></i>Live: the demo at /learn</span>
-    <span class="pill"><i style="background:var(--signal)"></i>Done: the iOS app’s daily loop, on the simulator</span>
-    <span class="pill"><i style="background:var(--ease)"></i>Next: readings from the tape</span>
+<main class="gut">
+<section class="wrap hero">
+  <div>
+    <p class="caps small" style="margin-bottom:18px">The app · as built, October 27, 2026</p>
+    <h1>One loop a day.</h1>
   </div>
-</div>
-
-<section class="block gut" id="demo">
-  <div class="demo">
-    <a class="shot" href="/learn/"><img src="img/whole-page.webp" width="1200" height="833" alt="The How Kinn learns page: a walkthrough on the left, the phone app in the middle, the learning charts on the right"></a>
-    <div>
-      <p class="eyebrow">The demo</p>
-      <h2>How Kinn learns, with the app inside it</h2>
-      <p class="lede" style="font-size:16px;margin-top:12px">A six-step walkthrough. The phone in the middle is an earlier mock of the app; the charts on the right show the learning working.</p>
-      <ol class="steps-mini">
-        <li><b>1 Meet Maya</b>: day one starts from 3,000 recoveries like hers.</li>
-        <li><b>2 It learns her</b>: her line moves, her warning sign appears.</li>
-        <li><b>3 A session</b>: ten reps live, full range checked.</li>
-        <li><b>4 Check in</b>: one tap changes tomorrow.</li>
-        <li><b>5 Every Kinn learns</b>: drag the wearers to 0 and back.</li>
-        <li><b>6 It never stops</b>: week six, the curves.</li>
-      </ol>
-      <a class="cta" href="/learn/">Open the demo <span aria-hidden="true">→</span></a>
-    </div>
+  <p class="lede">RECO is the app that comes with the tape. Every morning it asks two questions and gives the knee one status for the day. One tap when something hurts. By the weekend it can tell you what came before a bad morning. Every screen below is the real app, running on sample data.</p>
+  <div class="meta small"><span><i class="c"></i>Status, every day</span><span><i></i>Bend and straightening via the tape</span><span><i></i>Nothing leaves the phone</span></div>
+  <div class="showcase">
+    <figure class="phone rv"><img src="img/app-settle.webp" width="603" height="1311" alt="Did it settle? Last night you logged pain at 4. Yes settled, a bit, or no."></figure>
+    <figure class="phone rv"><img src="img/app-today.webp" width="603" height="1311" alt="Today: a recovery dial at 69 percent, the status Steady, the reason, fully straight and a 125 degree bend via the tape, and a Log pain button" fetchpriority="high"></figure>
+    <figure class="phone rv"><img src="img/app-progress.webp" width="603" height="1311" alt="Progress: bend climbing from 90 to 125 degrees with the bike-range milestone, and straightening now fully straight"></figure>
   </div>
 </section>
 
-<section class="block gut" id="screens">
-  <div class="head">
-    <p class="eyebrow">The app, screen by screen</p>
-    <h2>One loop a day: check in, move, log pain, learn</h2>
-    <p>Captured from the iOS app running on the simulator, on its 21-day sample athlete: Maya, ACL reconstruction, week 8, back to basketball. Every number is the app’s own; the bend and straightening readings stand in for the tape.</p>
-  </div>
-
-  <div class="moment">
-    <p class="eyebrow">Getting started</p>
-    <div class="screens">
-      <figure><img src="img/app-onboarding.webp" width="603" height="1311" loading="lazy" alt="Onboarding step 1 of 3, What happened: ACL, 2 months ago, surgery yes, and a link to use the sample athlete instead"><figcaption><b>What happened?</b><span>Three steps: the injury and when, a bit about you, what you are coming back to. Or load the sample athlete and look around.</span></figcaption></figure>
+<section class="wrap moments" id="loop">
+  <article class="moment">
+    <div class="words rv">
+      <p class="n">01 · Every morning</p>
+      <h2>Two quick questions, before anything else.</h2>
+      <p>If you logged pain yesterday, RECO asks whether it settled overnight: yes, a bit, or no. Then a thirty-second check-in, pain and swelling. Both wait at the top of Today until you answer.</p>
     </div>
-  </div>
-
-  <div class="moment">
-    <p class="eyebrow">Every morning</p>
-    <div class="screens">
-      <figure><img src="img/app-today-asks.webp" width="603" height="1311" loading="lazy" alt="Today with a Start with this card holding two buttons, Did it settle and Check in, above the recovery dial"><figcaption><b>Start with this</b><span>Two quick questions before the dial: did last night’s pain settle, and how does the knee feel this morning.</span></figcaption></figure>
-      <figure><img src="img/app-settle.webp" width="603" height="1311" loading="lazy" alt="Did it settle sheet: pain 4, noticeable, logged 8:30 pm during practice, with Yes settled, A bit and No"><figcaption><b>Did it settle?</b><span>Last night’s pain, with when and what you were doing. Yes, a bit, or no.</span></figcaption></figure>
-      <figure><img src="img/app-settled.webp" width="603" height="1311" loading="lazy" alt="The answer Yes settled with the line Good sign, pain that settles overnight is the kind you can keep training through"><figcaption><b>A one-line answer back</b><span>Pain that settles overnight is the kind you can keep training through. A no reads Ease off for the day.</span></figcaption></figure>
-      <figure><img src="img/app-checkin.webp" width="603" height="1311" loading="lazy" alt="Morning check-in: pain 2 barely there, swelling none, and a preview saying today would read Steady"><figcaption><b>Morning check-in</b><span>Pain 0 to 10 and swelling in three words. The sheet shows the status it will set before you commit.</span></figcaption></figure>
+    <div class="shots three">
+      <figure class="phone rv"><img src="img/app-today-asks.webp" width="603" height="1311" loading="lazy" alt="Today with a Start with this card: Did it settle? and Check in"></figure>
+      <figure class="phone rv"><img src="img/app-settled.webp" width="603" height="1311" loading="lazy" alt="Yes, settled. Good sign. Pain that settles overnight is the kind you can keep training through."></figure>
+      <figure class="phone rv"><img src="img/app-checkin.webp" width="603" height="1311" loading="lazy" alt="Morning check-in: pain 2, barely there; swelling none; today would read Steady"></figure>
     </div>
-  </div>
+  </article>
 
-  <div class="moment">
-    <p class="eyebrow">The call for today</p>
-    <div class="screens">
-      <figure><img src="img/app-today.webp" width="603" height="1311" loading="lazy" alt="Today: a tick-arc recovery dial at 69 percent, a Steady pill, the reason, fully straight and 125 degree bend via Kinn tape, and a Log pain button"><figcaption><b>Today</b><span>A recovery dial, one of three statuses (Keep going, Steady, Ease off), the reason in plain words, and today’s straightening and bend. Then the one button that matters: Log pain.</span></figcaption></figure>
+  <article class="moment">
+    <div class="words rv">
+      <p class="n">02 · The call for today</p>
+      <h2>One status. The reason in plain words.</h2>
+      <p>A recovery dial, then one of three calls against your own usual, never a clinical threshold. Under it, today's straightening and deepest bend from the tape. Nothing to interpret.</p>
+      <div class="pills"><span class="pill"><i style="background:var(--good)"></i>Keep going</span><span class="pill"><i style="background:var(--caution)"></i>Steady</span><span class="pill"><i style="background:var(--warn)"></i>Ease off</span></div>
     </div>
-  </div>
-
-  <div class="moment">
-    <p class="eyebrow">When something hurts</p>
-    <div class="screens">
-      <figure><img src="img/app-pain.webp" width="603" height="1311" loading="lazy" alt="How much does it hurt: 5, hard to ignore, with Practice selected under What were you doing"><figcaption><b>Log pain</b><span>One tap from Today. A 0 to 10 scale with words on it, what you were doing, and Kinn asks the next morning whether it settled.</span></figcaption></figure>
-      <figure><img src="img/app-log.webp" width="603" height="1311" loading="lazy" alt="Daily log: what did you do today with Practice selected, moderate, adds about 50, today so far against usual 40, and the last 7 days"><figcaption><b>Daily log</b><span>Until the tape logs it for you: what you did and how hard, what it adds against your usual, and the last seven days.</span></figcaption></figure>
+    <div class="shots one">
+      <figure class="phone rv"><img src="img/app-today.webp" width="603" height="1311" loading="lazy" alt="Today after the morning asks: 69 percent recovery, Steady, and the reason sentence"></figure>
     </div>
-  </div>
+  </article>
 
-  <div class="moment">
-    <p class="eyebrow">What it learns</p>
-    <div class="screens">
-      <figure><img src="img/app-insights.webp" width="603" height="1311" loading="lazy" alt="Insights: 3 of your last 4 flare-ups came after game days, a 30-day timeline, knee load the day before a flare-up 82 versus 20"><figcaption><b>Insights</b><span>What came before your flare-ups, in one sentence and a 30-day timeline. Things that happened before, not causes.</span></figcaption></figure>
-      <figure><img src="img/app-progress.webp" width="603" height="1311" loading="lazy" alt="Progress: recovery 69 percent, next up full bend 10 degrees to go, bend chart from 90 to 125 degrees with the bike range milestone, straightening fully straight"><figcaption><b>Progress</b><span>Bend and straightening day by day against the milestones: bike range, full bend, fully straight. Plus the gains since day one and this week.</span></figcaption></figure>
-      <figure><img src="img/app-report.webp" width="603" height="1311" loading="lazy" alt="Weekly report, Oct 19 to 25: a heavier week than last, 2 flare-up mornings, the knee straightened fully, bend up 8 degrees, then day by day and versus last week"><figcaption><b>Weekly report</b><span>The week in one line, each day with how the knee read the next morning, and the change versus last week. Share it with your PT.</span></figcaption></figure>
+  <article class="moment">
+    <div class="words rv">
+      <p class="n">03 · When something hurts</p>
+      <h2>One tap. RECO asks about it tomorrow.</h2>
+      <p>Log pain is the only big button on Today. A number with a word on it, what you were doing, done. Until the tape logs your day for you, a daily log takes what you did and how hard, and shows what it adds against your usual.</p>
     </div>
-  </div>
-
-  <div class="moment">
-    <p class="eyebrow">Yours</p>
-    <div class="screens">
-      <figure><img src="img/app-settings.webp" width="603" height="1311" loading="lazy" alt="Settings: your comeback, back to basketball, ACL, surgery, seeing a PT, week 8; a PT plan reminder switch; data stays on this phone"><figcaption><b>Settings</b><span>Your comeback in a line, a reminder for your PT’s plan (Kinn doesn’t prescribe exercises), and data that stays on the phone.</span></figcaption></figure>
+    <div class="shots two">
+      <figure class="phone rv"><img src="img/app-pain.webp" width="603" height="1311" loading="lazy" alt="How much does it hurt? 5, hard to ignore, during practice"></figure>
+      <figure class="phone rv"><img src="img/app-log.webp" width="603" height="1311" loading="lazy" alt="Daily log: practice, moderate, adds about 50; today so far against usual 40; the last seven days"></figure>
     </div>
-  </div>
+  </article>
 
+  <article class="moment">
+    <div class="words rv">
+      <p class="n">04 · What it learns</p>
+      <h2>What came before the bad mornings.</h2>
+      <p>Insights puts it in one sentence: three of your last four flare-ups came after game days. Progress shows bend and straightening climbing toward the milestones. The weekly report tells the week in one line, ready to share with your physio.</p>
+    </div>
+    <div class="shots three">
+      <figure class="phone rv"><img src="img/app-insights.webp" width="603" height="1311" loading="lazy" alt="Insights: 3 of your last 4 flare-ups came after game days, with a 30-day timeline"></figure>
+      <figure class="phone rv"><img src="img/app-progress.webp" width="603" height="1311" loading="lazy" alt="Progress: recovery 69 percent, full bend 10 degrees to go, the bend chart with the bike-range milestone"></figure>
+      <figure class="phone rv"><img src="img/app-report.webp" width="603" height="1311" loading="lazy" alt="Weekly report: a heavier week than last, 2 flare-up mornings, the knee straightened fully, bend up 8 degrees"></figure>
+    </div>
+  </article>
+
+  <article class="moment">
+    <div class="words rv">
+      <p class="n">05 · Yours</p>
+      <h2>Three steps to start. Everything stays on your phone.</h2>
+      <p>What happened, about you, what you are coming back to. Settings keeps your comeback in one line, a reminder for your physio's plan, and the data where it is. RECO tracks and shows; your physio makes the calls.</p>
+    </div>
+    <div class="shots two">
+      <figure class="phone rv"><img src="img/app-onboarding.webp" width="603" height="1311" loading="lazy" alt="Onboarding step 1 of 3: What happened? ACL, two months ago, surgery yes"></figure>
+      <figure class="phone rv"><img src="img/app-settings.webp" width="603" height="1311" loading="lazy" alt="Settings: your comeback, back to basketball, ACL, surgery, seeing a PT; PT plan reminder; data stays on this phone"></figure>
+    </div>
+  </article>
 </section>
 
-<section class="block gut" id="brand">
-  <div class="head">
-    <p class="eyebrow">The brand</p>
-    <h2>Graphite and ceramic, one light from the coin</h2>
-    <p>WHOOP's discipline (dark, data-first, one answer a day) in Kinn's own look. The mark is the coin's ring with a tick at your line. The iOS app above keeps the dark ground and the logo but runs a quieter palette: warm off-white, with sand, sage and clay for Steady, Keep going and Ease off.</p>
-  </div>
-  <div class="brand">
-    <div class="panel">
-      <p class="eyebrow">Logo</p>
-      <div class="logos">
-        <img class="lockup" src="img/kinn-lockup-ceramic.svg" alt="Kinn lockup: the ring mark and the lowercase wordmark kinn">
-        <img class="icon" src="img/kinn-app-icon.svg" alt="Kinn app icon">
-      </div>
-      <p class="eyebrow">Calls: always a word and a shape</p>
-      <div class="calls">
-        <span class="call"><svg viewBox="0 0 16 16" fill="none" stroke="var(--signal)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 8 6l4.5 4.5"/></svg>Push</span>
-        <span class="call"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="6.5" width="11" height="3" rx="1.5" fill="var(--ease)"/></svg>Ease off</span>
-        <span class="call"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.5" fill="var(--rest)"/></svg>Rest</span>
-        <span class="call"><svg viewBox="0 0 16 16" fill="none" stroke="var(--learning)" stroke-width="2" stroke-dasharray="1.5 2.6" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/></svg>Learning you</span>
-      </div>
-    </div>
-    <div class="panel">
-      <p class="eyebrow">Type</p>
-      <div class="type-sample"><span class="num">123°</span><span class="word">Push</span><span class="text">Ready for another day.</span></div>
-      <p class="eyebrow">Colour</p>
-      <div class="swatches">
-        <div class="sw"><i style="background:var(--ground)"></i><b>Ground</b>#08090A</div>
-        <div class="sw"><i style="background:var(--surface-2)"></i><b>Surface</b>#1B1E22</div>
-        <div class="sw"><i style="background:var(--ink)"></i><b>Ceramic</b>#F2F1EC</div>
-        <div class="sw"><i style="background:var(--signal)"></i><b>Signal · Push</b>#3DDBB8</div>
-        <div class="sw"><i style="background:var(--ease)"></i><b>Ease off</b>#F5B544</div>
-        <div class="sw"><i style="background:var(--rest)"></i><b>Rest</b>#FF6F61</div>
-      </div>
-    </div>
-    <figure class="panel wide"><img src="img/logo-in-use.webp" width="1400" height="937" loading="lazy" alt="The logo in use: app icon on a home screen, splash screen, engraved on the coin, printed on the tape, a lock-screen alert and the site header"><figcaption><span>The logo in use: home screen, splash, coin, tape, lock-screen alert, site header.</span></figcaption></figure>
-  </div>
-</section>
-
-<section class="block gut" id="log">
-  <div class="head">
-    <p class="eyebrow">Log</p>
-    <h2>What changed, and when</h2>
-  </div>
-  <ol class="log">
-    <li><time datetime="2026-10-26">Oct 26</time><div><h3>The real app on this page</h3><p>The screen-by-screen section now shows the iOS app itself, captured on the simulator, instead of the web demo’s phone: onboarding, the morning asks, the recovery dial with Keep going, Steady and Ease off, log pain, the daily log, insights, progress, the weekly report and settings. The demo at /learn is unchanged.</p></div></li>
-    <li><time datetime="2026-10-25">Oct 23–25</time><div><h3>The app’s polish round</h3><p>Tick-arc recovery dial on Today with the morning asks first. Pain scale with words and graded colour. “Did it settle?” sheet with last night’s context and a one-line reaction. Progress charts with milestone flags and gains. The weekly report tells the week’s story. Three-step onboarding with goal chips. Settings with your comeback and data cards.</p></div></li>
-    <li><time datetime="2026-10-21">Oct 21</time><div><h3>Warm neutrals</h3><p>The main screens were too bland, so the greys warm up: sand for labels, the line chart and your bars; clay for what raises risk, flare-ups and time past your line; sage for what lowers risk; stone for the people-like-you bars and the hourly ribbon. Today’s session sits on a sand card, with a soft warm light at the top of each screen. The opening stays grey and white.</p></div></li>
-    <li><time datetime="2026-10-21">Oct 21</time><div><h3>A calmer palette</h3><p>Less techno, fewer colors. The opening’s charge and the coin’s light are now gray and white, not green. Charts, the week strip, signal bars and the live session dial are ink and gray. Color is kept for one thing: the day’s call (push, ease, rest).</p></div></li>
-    <li><time datetime="2026-10-21">Oct 21</time><div><h3>The opening, the coin dial, more data</h3><p>Opening the app now plays a live 3D coin that floats, clicks into place and sends charge along printed traces to the corners. Today’s dial is the coin with its light ring as the gauge, plus a 7-day strip, what’s behind the call, and yesterday hour by hour. Learned gains a day-by-day chart.</p></div></li>
-    <li><time datetime="2026-10-21">Oct 21</time><div><h3>The new logo, everywhere</h3><p>The ring-and-tick lockup replaces the text logo in the site header and footer, the demo page, the app's starting screen and on the coin. New favicon and home-screen icon.</p></div></li>
-    <li><time datetime="2026-10-21">Oct 21</time><div><h3>The app, rebuilt to the flow</h3><p>Starting point, morning connect, Today with the new ring, guided sessions, check-in and "Got it", Learned with the week recap, and You. All in the brand system. This progress page.</p></div></li>
-    <li><time datetime="2026-10-20">Oct 20</time><div><h3>Brand system and user flow</h3><p>Logo (the coin's ring with a tick at your line), colours, type, components and voice. The user flow for the iOS demo: setup, the daily loop, every screen.</p></div></li>
-    <li><time datetime="2026-10-20">Oct 20</time><div><h3>The demo joins the site</h3><p>"How Kinn learns" moved onto this site at /learn, linked from the home page. Typed check-ins are read by Claude when the server has a key.</p></div></li>
-    <li><time datetime="2026-10-17">Oct 17</time><div><h3>The learning engine</h3><p>Simulated wearers, learning on each phone from check-ins, federated averaging across phones, and honest scoring on people the model never saw.</p></div></li>
-  </ol>
-</section>
-
-<section class="block gut" id="next">
-  <div class="head">
-    <p class="eyebrow">Next</p>
-    <h2>What's coming</h2>
-  </div>
-  <div class="next">
-    <div class="panel"><h3>Readings from the tape <span class="tag">next</span></h3><p>The coin’s bend and straightening readings replace the hand-typed log. The Log tab already carries the “Kinn tape soon” tag for it.</p></div>
-    <div class="panel"><h3>The demo phone catches up <span class="tag">later</span></h3><p>The walkthrough at /learn still shows the earlier mock of the app. Its phone gets the app’s current screens once the tape readings are in.</p></div>
-  </div>
+<section class="wrap notes">
+  <div class="rv"><b>Where it stands</b><p>The daily loop runs end to end on iOS with a 21-day sample athlete. Next: readings from the tape replace the hand-typed log.</p></div>
+  <div class="rv"><b>How it learns</b><p>The continual-learning demo shows how each phone learns from its wearer and how every phone learns from everyone. Its phone is an earlier mock of the app.</p><a class="more" href="/learn/">Open the demo <span aria-hidden="true">→</span></a></div>
+  <div class="rv"><b>Not a medical device</b><p>RECO shows what your knee did and how it felt the next morning. It does not diagnose, treat, or clear anyone to play.</p></div>
 </section>
 </main>
 
-<footer class="gut">Kinn · Trust your comeback · In development; not a medical device. Every screen runs on sample data.</footer>
+<footer class="gut">
+  <a href="/" aria-label="Kinn home"><img class="foot-logo" src="/brand/kinn-lockup-ceramic.svg" width="88" height="26" alt=""></a>
+  <nav aria-label="Footer"><a href="/#mission">Mission</a><a href="/learn/">How it learns</a><a href="/progress/">How it works</a><a href="/#join" data-join>Join waitlist</a></nav>
+  <p class="small">© 2026 Kinn. In development; not a medical device. Every screen runs on sample data.</p>
+</footer>
+
+<script>
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:.1});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
 </body>
 </html>

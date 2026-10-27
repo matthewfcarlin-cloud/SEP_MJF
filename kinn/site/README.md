@@ -73,7 +73,7 @@ Without `DATABASE_URL`, signups go to `data/waitlist.json`. That's for local tes
 - `scripts/copy-waitlist.js`: one-off copy of the waitlist between two Postgres databases
 - `checkin.js`: the `/api/checkin` route (Claude reads a typed check-in for `/learn`)
 - `public/learn/`: the built "How Kinn learns" page (source in `../learn/`)
-- `public/progress/`: the build-progress page; its `img/app-*.webp` are simulator screenshots of the iOS app in `../app/apps/mobile`
+- `public/progress/`: the “How it works” page: the daily loop with `img/app-*.webp`, simulator screenshots of the iOS app in `../app/apps/mobile`
 - `public/index.html`: the page
 - `public/vid/`: 97 frames of the Higgsfield pull-back, scrubbed by scroll
 - `public/spin/`: 144 frames of the 360 turntable render
