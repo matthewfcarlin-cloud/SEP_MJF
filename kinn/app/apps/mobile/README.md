@@ -26,6 +26,16 @@ First launch shows onboarding. "Use the sample athlete instead" loads the 21-day
 | "Did it settle?" notification | `src/notifications.ts` |
 | Seed data, status rules, insights, report text | `../../packages/core/src/{sim,manual,report}` |
 
+## Web build (the site's /try)
+
+```bash
+npx expo export --platform web --output-dir /tmp/reco-web   # static, base path /try (app.json → web.output, experiments.baseUrl)
+```
+
+Copy the output to `kinn/site/public/try/`. The web build uses `src/app/(tabs)/_layout.web.tsx` (bottom tabs, SVG icons) instead of NativeTabs, and gains the `/tape` screen: pair a RECO tape over Web Bluetooth (Chrome/Edge) or run the simulated tape. Protocol, simulator and client are in `@reco/core` (`src/tape/`); the Web Bluetooth transport is `src/tape/web-bluetooth.ts`.
+
+Known: the browser console shows one React hydration warning (#418) per page load. It comes from a `<Suspense>` boundary that expo-router's static render leaves out; React re-renders on the client and the app works. Not ours to fix.
+
 ## TestFlight (EAS)
 
 One-time, by whoever owns the Apple Developer account (these prompts need your Expo and Apple logins, so run them yourself):

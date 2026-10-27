@@ -1,0 +1,10 @@
+/** Tape (KineTape BLE protocol v1): codec, simulated device, client. Source: github.com/jackcappo/kinetape webapp, ported Oct 27, 2026. */
+export * from './constants'
+export * from './codec'
+export * from './types'
+export * from './emitter'
+export * from './random'
+export * from './SimDevice'
+export * from './SimulatedTransport'
+export * from './DeviceClient'
+export * from './repTracker'

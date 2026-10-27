@@ -40,6 +40,7 @@ export default function RootLayout() {
           <Stack.Screen name="settle" options={{ presentation: 'modal' }} />
           <Stack.Screen name="checkin" options={{ presentation: 'modal' }} />
           <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="tape" options={{ presentation: 'modal' }} />
         </Stack>
       </ThemeProvider>
     </StoreProvider>

@@ -1,7 +1,7 @@
 import { Link, router } from 'expo-router'
 import { SymbolView } from 'expo-symbols'
 import { useState } from 'react'
-import { Pressable, View } from 'react-native'
+import { Pressable, View, Platform } from 'react-native'
 import { addDays } from '@reco/core'
 
 import { copy } from '@/copy'
@@ -48,6 +48,9 @@ function MorningAsks({ pendingSettle, checkInDone }: { readonly pendingSettle: b
   )
 }
 
+/** The browser build opens the tape screen from the tape tag; on the phone the tag is only a label. */
+const openTape = Platform.OS === 'web' ? () => router.push('/tape') : undefined
+
 export default function TodayScreen() {
   const { view, state } = useStore()
   const colors = useColors()
@@ -88,7 +91,7 @@ export default function TodayScreen() {
                 {copy.progress.extension}
               </Txt>
             </View>
-            <SampleTag label={copy.viaTape} />
+            <SampleTag label={copy.viaTape} onPress={openTape} />
             <View style={{ alignItems: 'center' }}>
               <Txt kind="bodyStrong">{copy.progress.flexionValue(view.latestRom.flexionDeg)}</Txt>
               <Txt kind="small" color="textMuted">

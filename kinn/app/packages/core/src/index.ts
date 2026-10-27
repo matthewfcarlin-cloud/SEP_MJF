@@ -6,3 +6,4 @@ export { BANNED_WORDS, containsBannedWord, findBannedWords } from './copy/banned
 export { DISCLAIMER } from './copy/disclaimer'
 export { addDays, dayKey, localDateKey, startOfDay, weeksSince } from './time/day'
 export { scoreFromUnits } from './load/score'
+export * from './tape'

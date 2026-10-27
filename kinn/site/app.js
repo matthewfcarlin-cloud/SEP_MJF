@@ -1,19 +1,17 @@
-// Kinn teaser site + waitlist API: the Express app, without a listener.
+// RECO teaser site + waitlist API: the Express app, without a listener.
 // server.js runs it as a normal process (local dev); api/index.js exports it as a Vercel function.
 // Storage: Postgres when DATABASE_URL is set, otherwise a local JSON file for development.
 // Env vars:
 //   DATABASE_URL     Postgres connection string (Neon through Vercel Storage, or any Postgres)
 //   ADMIN_TOKEN      secret for /admin/waitlist.csv and /admin/stats (required to read the list)
 //   RESEND_API_KEY   optional: send a welcome email through Resend
-//   FROM_EMAIL       optional: sender for the welcome email, e.g. "Kinn <hello@yourdomain.com>"
-//   ANTHROPIC_API_KEY optional: lets Claude read typed check-ins on /learn (the page falls back to reading them on the device)
+//   FROM_EMAIL       optional: sender for the welcome email, e.g. "RECO <hello@yourdomain.com>"
 //   VERCEL           set by Vercel; static files and the index.html fallback are then left to Vercel's CDN (see vercel.json)
 
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const { checkin } = require('./checkin');
 
 const app = express();
 app.set('trust proxy', true);
@@ -105,7 +103,6 @@ function rateLimiter(max, win = 10 * 60 * 1000) {
   };
 }
 const rateLimited = rateLimiter(8);
-const checkinLimited = rateLimiter(30);
 function tokenOk(req) {
   const want = process.env.ADMIN_TOKEN; if (!want) return false;
   const got = String(req.query.token || req.get('x-admin-token') || '');
@@ -120,8 +117,8 @@ async function welcomeEmail(to) {
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: process.env.FROM_EMAIL, to,
-        subject: "You're on the Kinn waitlist",
-        text: "Thanks for joining the Kinn waitlist.\n\nWe're building a thin knee tape with a reusable coin that tracks how your knee bends and straightens through a comeback from an ACL or meniscus injury, so you know when to push and when to ease off. You'll get early access and updates as we build.\n\n— The Kinn team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
+        subject: "You're on the RECO waitlist",
+        text: "Thanks for joining the RECO waitlist.\n\nWe're building a thin knee tape with a reusable coin that tracks how your knee bends and straightens through a comeback from an ACL or meniscus injury, so you know when to push and when to ease off. You'll get early access and updates as we build.\n\n— The RECO team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
       }),
     });
   } catch (e) { console.error('welcome email failed', e.message); }
@@ -158,11 +155,6 @@ app.post('/api/waitlist', async (req, res) => {
   }
 });
 
-app.post('/api/checkin', (req, res) => {
-  if (checkinLimited(req.ip)) return res.status(429).json({ error: 'Too many check-ins. Wait a few minutes and try again.' });
-  checkin(req, res);
-});
-
 app.get('/api/waitlist/count', async (req, res) => {
   try { res.json({ count: await store.count() }); } catch { res.json({ count: null }); }
 });
@@ -187,7 +179,8 @@ app.get('/admin/stats', async (req, res) => {
 // long; everything else keeps its name when it changes, so browsers re-check it on every visit.
 // On Vercel the CDN serves public/ and vercel.json sends unknown paths to index.html, so the function never sees them.
 if (!process.env.VERCEL) {
-  app.use(express.static(path.join(__dirname, 'public'), { setHeaders: (res, p) => res.set('Cache-Control', p.includes(`${path.sep}learn${path.sep}assets${path.sep}`) ? 'public, max-age=31536000, immutable' : 'no-cache') }));
+  // extensions: ['html'] mirrors Vercel's cleanUrls, so /try/tape serves try/tape.html locally too.
+  app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'], setHeaders: (res, p) => res.set('Cache-Control', p.includes(`${path.sep}learn${path.sep}assets${path.sep}`) ? 'public, max-age=31536000, immutable' : 'no-cache') }));
   app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'index.html')));
 }
 

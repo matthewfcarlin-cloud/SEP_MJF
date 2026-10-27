@@ -1,5 +1,6 @@
+import { router } from 'expo-router'
 import { useState } from 'react'
-import { Pressable, View } from 'react-native'
+import { Pressable, View, Platform } from 'react-native'
 import { MANUAL_UNITS, addDays, scoreFromUnits } from '@reco/core'
 import type { Intensity, ManualActivity } from '@reco/core'
 
@@ -43,6 +44,9 @@ function LoadVersusUsual({ score, usual, max }: { readonly score: number; readon
   )
 }
 
+/** The browser build opens the tape screen from the tape tag; on the phone the tag is only a label. */
+const openTape = Platform.OS === 'web' ? () => router.push('/tape') : undefined
+
 export default function LogScreen() {
   const { state, today, addActivity, removeActivity, view } = useStore()
   const colors = useColors()
@@ -72,7 +76,7 @@ export default function LogScreen() {
   }
 
   return (
-    <Screen title={copy.log.title} right={<SampleTag label={copy.log.autoTag} />}>
+    <Screen title={copy.log.title} right={<SampleTag label={copy.log.autoTag} onPress={openTape} />}>
       <Card index={0}>
         <SectionLabel>{copy.log.activityTitle}</SectionLabel>
         <ChipRow>

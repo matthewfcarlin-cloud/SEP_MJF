@@ -1,4 +1,4 @@
-# Kinn teaser site + waitlist
+# RECO teaser site + waitlist
 
 A one-page teaser (scroll film hero, the problem, a first look at the renders, waitlist) served by a small Node server that saves waitlist signups to Postgres.
 
@@ -15,7 +15,7 @@ The site is static files in `public/` plus a few API routes. On Vercel the CDN s
 7. Optional variables, under **Settings → Environment Variables** (redeploy after adding): `RESEND_API_KEY` and `FROM_EMAIL` for the welcome email, `ANTHROPIC_API_KEY` for typed check-ins on `/learn`.
 8. Own domain: **Settings → Domains → Add**, then set the DNS records Vercel shows at your registrar.
 
-Every push to `main` redeploys. Pull requests get preview URLs that share the same database.
+Every push to `main` redeploys. `vercel.json` turns on clean URLs (so `/try/tape` serves `tape.html`), redirects `/learn` to `/try/`, and caches the hashed Expo bundles for a year. Pull requests get preview URLs that share the same database.
 
 ### Moving the signups from Railway
 
@@ -49,12 +49,15 @@ Sign up at resend.com, verify a sending domain, then add:
 
 New signups then get a short "You're on the waitlist" email. Without these variables, nothing is sent.
 
-## The "How Kinn learns" page (/learn)
+## The app in the browser (/try)
 
-`public/learn/` is a built page: the interactive continual-learning demo from [`../learn/`](../learn/). Edit it there and run `npm run build` in `kinn/learn`, which writes into `public/learn/`. Typed check-ins on that page go to `POST /api/checkin`, where Claude reads them. To turn that on, add:
-- `ANTHROPIC_API_KEY` = your Anthropic API key
+`public/try/` is the Expo web export of the app. `/learn` (the hackathon demo) now redirects there; its source is kept in `../archive/learn-demo-v1/`.
 
-Without it, the page reads check-ins on the device instead and still works.
+```
+cd kinn/app/apps/mobile
+npx expo export --platform web --output-dir /tmp/reco-web
+rm -rf ../../../site/public/try && cp -R /tmp/reco-web ../../../site/public/try && rm ../../../site/public/try/_sitemap.html
+```
 
 ## Run locally
 
@@ -73,7 +76,8 @@ Without `DATABASE_URL`, signups go to `data/waitlist.json`. That's for local tes
 - `scripts/copy-waitlist.js`: one-off copy of the waitlist between two Postgres databases
 - `checkin.js`: the `/api/checkin` route (Claude reads a typed check-in for `/learn`)
 - `public/learn/`: the built "How Kinn learns" page (source in `../learn/`)
-- `public/progress/`: the “How it works” page: the daily loop with `img/app-*.webp`, simulator screenshots of the iOS app in `../app/apps/mobile`
+- `public/progress/`: the “How it works” page: a recorded demo (`video/reco-demo.{mp4,webm}`, cut with ffmpeg from a simulator recording) and a pinned walkthrough over `img/app-*.webp`, simulator screenshots of the iOS app in `../app/apps/mobile`
+- `public/try/`: the app itself, built for the web with `npx expo export --platform web` from `../app/apps/mobile` (base path `/try`). Rebuild it after app changes and copy the output here. On the web the tape tag on Today opens `/tape`, which pairs a RECO tape over Web Bluetooth (Chrome/Edge) or runs the simulated tape.
 - `public/index.html`: the page
 - `public/vid/`: 97 frames of the Higgsfield pull-back, scrubbed by scroll
 - `public/spin/`: 144 frames of the 360 turntable render
