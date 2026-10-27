@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="dark">
 <title>Kinn · Build progress</title>
-<meta name="description" content="What's built so far for the Kinn app demo: screens, brand and what's next.">
+<meta name="description" content="What's built so far for the Kinn app: every screen of the iOS app, the web demo, the brand and what's next.">
 <link rel="icon" href="/brand/kinn-app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +59,7 @@ section.block { padding-block: 56px; border-top: 1px solid var(--line); }
 .moment > .eyebrow { margin-bottom: 14px; }
 .screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px 22px; }
 figure { margin: 0; display: grid; gap: 12px; align-content: start; min-width: 0; }
-figure img { width: 100%; height: auto; aspect-ratio: 540 / 1112; object-fit: contain; }
+figure img { width: 100%; height: auto; aspect-ratio: 603 / 1311; object-fit: contain; border-radius: 22px; box-shadow: 0 0 0 1px var(--line); }
 figcaption { display: grid; gap: 4px; }
 figcaption b { font-size: 15px; font-weight: 600; }
 figcaption span { font-size: 13.5px; line-height: 1.5; color: var(--muted); }
@@ -111,13 +111,13 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var
 
 <main>
 <div class="gut intro">
-  <p class="eyebrow">Build progress · updated October 21, 2026</p>
+  <p class="eyebrow">Build progress · updated October 26, 2026</p>
   <h1>Building the Kinn app</h1>
-  <p class="lede">Where the iOS app demo stands: the interactive demo on this site, every screen of the app, the brand it's built in, and what comes next. The demo runs on simulated wearers; the learning math is real.</p>
+  <p class="lede">Where the Kinn app stands: every screen of the iOS app as it runs today, the interactive web demo, the brand, and what comes next. The app runs on a 21-day sample athlete; the demo runs on simulated wearers.</p>
   <div class="status">
     <span class="pill"><i style="background:var(--signal)"></i>Live: the demo at /learn</span>
-    <span class="pill"><i style="background:var(--signal)"></i>Done: app screens, brand, logo, opening animation</span>
-    <span class="pill"><i style="background:var(--ease)"></i>Next: notifications</span>
+    <span class="pill"><i style="background:var(--signal)"></i>Done: the iOS app’s daily loop, on the simulator</span>
+    <span class="pill"><i style="background:var(--ease)"></i>Next: readings from the tape</span>
   </div>
 </div>
 
@@ -127,7 +127,7 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var
     <div>
       <p class="eyebrow">The demo</p>
       <h2>How Kinn learns, with the app inside it</h2>
-      <p class="lede" style="font-size:16px;margin-top:12px">A six-step walkthrough. The phone in the middle is the app; the charts on the right show the learning working.</p>
+      <p class="lede" style="font-size:16px;margin-top:12px">A six-step walkthrough. The phone in the middle is an earlier mock of the app; the charts on the right show the learning working.</p>
       <ol class="steps-mini">
         <li><b>1 Meet Maya</b>: day one starts from 3,000 recoveries like hers.</li>
         <li><b>2 It learns her</b>: her line moves, her warning sign appears.</li>
@@ -144,68 +144,65 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var
 <section class="block gut" id="screens">
   <div class="head">
     <p class="eyebrow">The app, screen by screen</p>
-    <h2>One loop a day: connect, push or rest, check in, learn</h2>
-    <p>Captured from the demo. Every number on these screens comes from the model running in the page, not typed in. Open the demo to see the opening move.</p>
+    <h2>One loop a day: check in, move, log pain, learn</h2>
+    <p>Captured from the iOS app running on the simulator, on its 21-day sample athlete: Maya, ACL reconstruction, week 8, back to basketball. Every number is the app’s own; the bend and straightening readings stand in for the tape.</p>
   </div>
 
   <div class="moment">
-    <p class="eyebrow">Opening the app</p>
+    <p class="eyebrow">Getting started</p>
     <div class="screens">
-      <figure><img src="img/opening-1.webp" width="360" height="740" loading="lazy" alt="The coin floating, tilted, its chrome seam catching the light"><figcaption><b>The coin floats</b><span>A live 3D render of the coin (the same model as the site’s hero) drifts and turns.</span></figcaption></figure>
-      <figure><img src="img/opening-2.webp" width="360" height="740" loading="lazy" alt="The coin face-on with its ring lit white and a shockwave around it"><figcaption><b>It clicks into place</b><span>It turns to face you and clicks in: a press, a white flash of its light ring, a shockwave.</span></figcaption></figure>
-      <figure><img src="img/opening-3.webp" width="360" height="740" loading="lazy" alt="Gray-white printed traces run from the coin to the four corners of the screen"><figcaption><b>Charge to the corners</b><span>Printed traces, like the silver ones on the tape, carry the charge to each corner, and the app opens.</span></figcaption></figure>
-    </div>
-  </div>
-
-  <div class="moment">
-    <p class="eyebrow">First open</p>
-    <div class="screens">
-      <figure><img src="img/start.webp" width="540" height="1112" loading="lazy" alt="Starting point screen: an Ease off ring at 93 degrees and the line Kinn starts from 3,000 recoveries like yours"><figcaption><b>Starting point</b><span>Setup is skipped in the demo. Day 1 opens here: a real line borrowed from people like her.</span></figcaption></figure>
-      <figure><img src="img/today-day1.webp" width="540" height="1112" loading="lazy" alt="Today on day 1 with the Ease off ring, empty reading tiles, today's session and tonight's check-in"><figcaption><b>Today, day 1</b><span>The ring, one reason, no readings yet, the day's session and tonight's check-in.</span></figcaption></figure>
+      <figure><img src="img/app-onboarding.webp" width="603" height="1311" loading="lazy" alt="Onboarding step 1 of 3, What happened: ACL, 2 months ago, surgery yes, and a link to use the sample athlete instead"><figcaption><b>What happened?</b><span>Three steps: the injury and when, a bit about you, what you are coming back to. Or load the sample athlete and look around.</span></figcaption></figure>
     </div>
   </div>
 
   <div class="moment">
     <p class="eyebrow">Every morning</p>
     <div class="screens">
-      <figure><img src="img/connect.webp" width="540" height="1112" loading="lazy" alt="Connect screen: the coin with a white ring and the words Rest today. It's part of the work."><figcaption><b>The coin connects</b><span>Every new morning the opening plays again, with what changed overnight. After a flare-up: "Rest today. It’s part of the work."</span></figcaption></figure>
-      <figure><img src="img/today.webp" width="540" height="1112" loading="lazy" alt="Today: a Rest ring at 121 degrees, muscle fatigue and deep bends tiles against her normal, a rest-day session card"><figcaption><b>Today</b><span>The coin is the dial: its light ring glows up to your line. Above it, the last seven days’ calls; tap one to open that day.</span></figcaption></figure>
-      <figure><img src="img/today-data.webp" width="360" height="740" loading="lazy" alt="Behind today's call with three signals and yesterday's hour-by-hour bending ribbon with peak bend, minutes past the line, deep bends and muscle fatigue"><figcaption><b>More on Today</b><span>What’s behind the call, from her own model, and yesterday on the strip hour by hour: peak bend, time past her line, deep bends, muscle fatigue.</span></figcaption></figure>
+      <figure><img src="img/app-today-asks.webp" width="603" height="1311" loading="lazy" alt="Today with a Start with this card holding two buttons, Did it settle and Check in, above the recovery dial"><figcaption><b>Start with this</b><span>Two quick questions before the dial: did last night’s pain settle, and how does the knee feel this morning.</span></figcaption></figure>
+      <figure><img src="img/app-settle.webp" width="603" height="1311" loading="lazy" alt="Did it settle sheet: pain 4, noticeable, logged 8:30 pm during practice, with Yes settled, A bit and No"><figcaption><b>Did it settle?</b><span>Last night’s pain, with when and what you were doing. Yes, a bit, or no.</span></figcaption></figure>
+      <figure><img src="img/app-settled.webp" width="603" height="1311" loading="lazy" alt="The answer Yes settled with the line Good sign, pain that settles overnight is the kind you can keep training through"><figcaption><b>A one-line answer back</b><span>Pain that settles overnight is the kind you can keep training through. A no reads Ease off for the day.</span></figcaption></figure>
+      <figure><img src="img/app-checkin.webp" width="603" height="1311" loading="lazy" alt="Morning check-in: pain 2 barely there, swelling none, and a preview saying today would read Steady"><figcaption><b>Morning check-in</b><span>Pain 0 to 10 and swelling in three words. The sheet shows the status it will set before you commit.</span></figcaption></figure>
     </div>
   </div>
 
   <div class="moment">
-    <p class="eyebrow">During the day</p>
+    <p class="eyebrow">The call for today</p>
     <div class="screens">
-      <figure><img src="img/past-line.webp" width="540" height="1112" loading="lazy" alt="Past your line: a banner says 130 degrees is over your 121 degree line, and the ring turns coral past the line"><figcaption><b>Past your line</b><span>The coin buzzes, a banner drops in, the ring turns coral past the tick.</span></figcaption></figure>
-      <figure><img src="img/session-live.webp" width="540" height="1112" loading="lazy" alt="Guided session in progress: the ring shows the knee bending, rep and full-range counters"><figcaption><b>Guided session</b><span>The PT's exercise, ten reps, read live from the strip: range, holds, full range.</span></figcaption></figure>
-      <figure><img src="img/session-done.webp" width="540" height="1112" loading="lazy" alt="Session done: 7 of 10 reps hit full range, average hold and target, and when the quad tired"><figcaption><b>Session done</b><span>How many reps hit full range, and the rep where the muscle sensor saw her quad tire.</span></figcaption></figure>
+      <figure><img src="img/app-today.webp" width="603" height="1311" loading="lazy" alt="Today: a tick-arc recovery dial at 69 percent, a Steady pill, the reason, fully straight and 125 degree bend via Kinn tape, and a Log pain button"><figcaption><b>Today</b><span>A recovery dial, one of three statuses (Keep going, Steady, Ease off), the reason in plain words, and today’s straightening and bend. Then the one button that matters: Log pain.</span></figcaption></figure>
     </div>
   </div>
 
   <div class="moment">
-    <p class="eyebrow">Every evening</p>
+    <p class="eyebrow">When something hurts</p>
     <div class="screens">
-      <figure><img src="img/checkin.webp" width="540" height="1112" loading="lazy" alt="Check-in: three buttons, Felt good, A bit sore, Flare-up, and a box to say it in your own words"><figcaption><b>Check in</b><span>One tap, or a sentence that Claude reads. This answer is what teaches the model.</span></figcaption></figure>
-      <figure><img src="img/got-it.webp" width="540" height="1112" loading="lazy" alt="Got it screen: what the answer changed, Rest instead of Push, line 121 instead of 128"><figcaption><b>Got it</b><span>What the answer changed for tomorrow, side by side with the opposite answer.</span></figcaption></figure>
+      <figure><img src="img/app-pain.webp" width="603" height="1311" loading="lazy" alt="How much does it hurt: 5, hard to ignore, with Practice selected under What were you doing"><figcaption><b>Log pain</b><span>One tap from Today. A 0 to 10 scale with words on it, what you were doing, and Kinn asks the next morning whether it settled.</span></figcaption></figure>
+      <figure><img src="img/app-log.webp" width="603" height="1311" loading="lazy" alt="Daily log: what did you do today with Practice selected, moderate, adds about 50, today so far against usual 40, and the last 7 days"><figcaption><b>Daily log</b><span>Until the tape logs it for you: what you did and how hard, what it adds against your usual, and the last seven days.</span></figcaption></figure>
     </div>
   </div>
 
   <div class="moment">
-    <p class="eyebrow">Anytime</p>
+    <p class="eyebrow">What it learns</p>
     <div class="screens">
-      <figure><img src="img/learned.webp" width="540" height="1112" loading="lazy" alt="Learned tab: week recap card, what warns of a flare-up for you compared with people like you, and a timeline"><figcaption><b>Learned</b><span>Her line day by day with each day’s peak bend and the flare-ups, her warning signs next to people like her, and every change Kinn made.</span></figcaption></figure>
-      <figure><img src="img/week.webp" width="540" height="1112" loading="lazy" alt="Week recap: your line went up, a line chart, calls right to date, flare-ups and check-ins"><figcaption><b>Week recap</b><span>Line trend, flare-ups, how often the calls were right. Share with her PT.</span></figcaption></figure>
-      <figure><img src="img/you.webp" width="540" height="1112" loading="lazy" alt="You tab: coin connected, strip day 3 of 5 with reorder, PT sharing, Help other Kinns learn switch"><figcaption><b>You</b><span>Coin, strip life with reorder, PT sharing, and the switch for sharing model updates.</span></figcaption></figure>
+      <figure><img src="img/app-insights.webp" width="603" height="1311" loading="lazy" alt="Insights: 3 of your last 4 flare-ups came after game days, a 30-day timeline, knee load the day before a flare-up 82 versus 20"><figcaption><b>Insights</b><span>What came before your flare-ups, in one sentence and a 30-day timeline. Things that happened before, not causes.</span></figcaption></figure>
+      <figure><img src="img/app-progress.webp" width="603" height="1311" loading="lazy" alt="Progress: recovery 69 percent, next up full bend 10 degrees to go, bend chart from 90 to 125 degrees with the bike range milestone, straightening fully straight"><figcaption><b>Progress</b><span>Bend and straightening day by day against the milestones: bike range, full bend, fully straight. Plus the gains since day one and this week.</span></figcaption></figure>
+      <figure><img src="img/app-report.webp" width="603" height="1311" loading="lazy" alt="Weekly report, Oct 19 to 25: a heavier week than last, 2 flare-up mornings, the knee straightened fully, bend up 8 degrees, then day by day and versus last week"><figcaption><b>Weekly report</b><span>The week in one line, each day with how the knee read the next morning, and the change versus last week. Share it with your PT.</span></figcaption></figure>
     </div>
   </div>
+
+  <div class="moment">
+    <p class="eyebrow">Yours</p>
+    <div class="screens">
+      <figure><img src="img/app-settings.webp" width="603" height="1311" loading="lazy" alt="Settings: your comeback, back to basketball, ACL, surgery, seeing a PT, week 8; a PT plan reminder switch; data stays on this phone"><figcaption><b>Settings</b><span>Your comeback in a line, a reminder for your PT’s plan (Kinn doesn’t prescribe exercises), and data that stays on the phone.</span></figcaption></figure>
+    </div>
+  </div>
+
 </section>
 
 <section class="block gut" id="brand">
   <div class="head">
     <p class="eyebrow">The brand</p>
     <h2>Graphite and ceramic, one light from the coin</h2>
-    <p>WHOOP's discipline (dark, data-first, one answer a day) in Kinn's own look. The mark is the coin's ring with a tick at your line.</p>
+    <p>WHOOP's discipline (dark, data-first, one answer a day) in Kinn's own look. The mark is the coin's ring with a tick at your line. The iOS app above keeps the dark ground and the logo but runs a quieter palette: warm off-white, with sand, sage and clay for Steady, Keep going and Ease off.</p>
   </div>
   <div class="brand">
     <div class="panel">
@@ -245,6 +242,8 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var
     <h2>What changed, and when</h2>
   </div>
   <ol class="log">
+    <li><time datetime="2026-10-26">Oct 26</time><div><h3>The real app on this page</h3><p>The screen-by-screen section now shows the iOS app itself, captured on the simulator, instead of the web demo’s phone: onboarding, the morning asks, the recovery dial with Keep going, Steady and Ease off, log pain, the daily log, insights, progress, the weekly report and settings. The demo at /learn is unchanged.</p></div></li>
+    <li><time datetime="2026-10-25">Oct 23–25</time><div><h3>The app’s polish round</h3><p>Tick-arc recovery dial on Today with the morning asks first. Pain scale with words and graded colour. “Did it settle?” sheet with last night’s context and a one-line reaction. Progress charts with milestone flags and gains. The weekly report tells the week’s story. Three-step onboarding with goal chips. Settings with your comeback and data cards.</p></div></li>
     <li><time datetime="2026-10-21">Oct 21</time><div><h3>Warm neutrals</h3><p>The main screens were too bland, so the greys warm up: sand for labels, the line chart and your bars; clay for what raises risk, flare-ups and time past your line; sage for what lowers risk; stone for the people-like-you bars and the hourly ribbon. Today’s session sits on a sand card, with a soft warm light at the top of each screen. The opening stays grey and white.</p></div></li>
     <li><time datetime="2026-10-21">Oct 21</time><div><h3>A calmer palette</h3><p>Less techno, fewer colors. The opening’s charge and the coin’s light are now gray and white, not green. Charts, the week strip, signal bars and the live session dial are ink and gray. Color is kept for one thing: the day’s call (push, ease, rest).</p></div></li>
     <li><time datetime="2026-10-21">Oct 21</time><div><h3>The opening, the coin dial, more data</h3><p>Opening the app now plays a live 3D coin that floats, clicks into place and sends charge along printed traces to the corners. Today’s dial is the coin with its light ring as the gauge, plus a 7-day strip, what’s behind the call, and yesterday hour by hour. Learned gains a day-by-day chart.</p></div></li>
@@ -262,12 +261,12 @@ footer { padding-block: 40px 56px; border-top: 1px solid var(--line); color: var
     <h2>What's coming</h2>
   </div>
   <div class="next">
-        <div class="panel"><h3>Notifications <span class="tag">next</span></h3><p>The 9pm check-in reminder and the lock-screen "Past your line" alert, shown on the demo phone.</p></div>
-    <div class="panel"><h3>A phone on your shin <span class="tag">later</span></h3><p>Live bend from a real phone's motion sensor, so judges can try the buzz themselves.</p></div>
+    <div class="panel"><h3>Readings from the tape <span class="tag">next</span></h3><p>The coin’s bend and straightening readings replace the hand-typed log. The Log tab already carries the “Kinn tape soon” tag for it.</p></div>
+    <div class="panel"><h3>The demo phone catches up <span class="tag">later</span></h3><p>The walkthrough at /learn still shows the earlier mock of the app. Its phone gets the app’s current screens once the tape readings are in.</p></div>
   </div>
 </section>
 </main>
 
-<footer class="gut">Kinn · Trust your comeback · In development; not a medical device. Demo data is simulated.</footer>
+<footer class="gut">Kinn · Trust your comeback · In development; not a medical device. Every screen runs on sample data.</footer>
 </body>
 </html>
