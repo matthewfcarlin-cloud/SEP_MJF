@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Txt } from '@/components/ui/txt'
+import { useStore } from '@/store/provider'
 import { isConnected, useTape } from '@/tape/use-tape'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
@@ -22,7 +23,13 @@ const MINI_GAUGE = 124
 export function TapeLiveCard({ index = 0 }: { readonly index?: number }) {
   const colors = useColors()
   const tape = useTape()
+  const { todayTape } = useStore().view
   const t = copy.tape
+  const todayLine = todayTape ? (
+    <Txt kind="small" color="textSecondary">
+      {t.todayLine(todayTape.wornMinutes, todayTape.reps)}
+    </Txt>
+  ) : null
 
   if (!tape.source) {
     return (
@@ -36,6 +43,7 @@ export function TapeLiveCard({ index = 0 }: { readonly index?: number }) {
         <Txt kind="small" color="textSecondary">
           {t.cardIdle}
         </Txt>
+        {todayLine}
         <View style={{ flexDirection: 'row', gap: space.sm }}>
           <Button label={t.connect} variant="secondary" disabled={!tape.support.ok} onPress={() => void tape.connectTape()} style={{ flex: 1 }} />
           <Button label={t.demo} variant="secondary" onPress={() => void tape.startDemo()} style={{ flex: 1 }} />
@@ -85,6 +93,13 @@ export function TapeLiveCard({ index = 0 }: { readonly index?: number }) {
           </View>
         </View>
         <LiveTrace buffer={tape.buffer} threshold={threshold} windowMs={WINDOW_MS} height={64} />
+        {tape.source === 'ble'
+          ? (todayLine ?? (
+              <Txt kind="small" color="textSecondary">
+                {t.todayNone}
+              </Txt>
+            ))
+          : null}
         <Txt kind="small" color="textMuted">
           {t.open}
         </Txt>

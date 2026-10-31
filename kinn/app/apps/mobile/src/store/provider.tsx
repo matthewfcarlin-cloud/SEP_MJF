@@ -4,6 +4,8 @@ import type { Doing, Intensity, ManualActivity, Profile, Settled, Swelling, Toda
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import { useTapeRecords } from '@/tape/tape-log'
+
 import { initialState, onlySeedData, reducer } from './state'
 import type { AppState } from './state'
 
@@ -69,7 +71,8 @@ export function StoreProvider({ children }: { readonly children: ReactNode }) {
     )
   }, [state])
 
-  const view = useMemo(() => deriveToday(state.data, today), [state.data, today])
+  const tapeRecords = useTapeRecords()
+  const view = useMemo(() => deriveToday(state.data, today, tapeRecords), [state.data, today, tapeRecords])
 
   const addPain = useCallback(
     (pain: number, doing: Doing | undefined): string => {
