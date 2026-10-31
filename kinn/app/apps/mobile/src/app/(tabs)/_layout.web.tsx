@@ -70,6 +70,7 @@ function DocIcon({ color, size }: IconProps) {
 
 const TAB_ICON_SIZE = 22
 const TAB_BAR_HEIGHT = 64
+const TAB_BAR_MARGIN = 12
 
 /** Site links such as /try/?tape=demo or /try/?sample=1 should land on a live Today, not on onboarding. */
 function sampleRequestedByUrl(): boolean {
@@ -93,8 +94,23 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.text,
-        tabBarInactiveTintColor: colors.textSecondary,
-        tabBarStyle: { backgroundColor: colors.bg, borderTopColor: colors.border, height: TAB_BAR_HEIGHT, paddingTop: 6 },
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarActiveBackgroundColor: colors.surfaceRaised,
+        // A floating pill, as in the ceramic screens; it stays in the layout flow so no screen needs extra bottom inset.
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopWidth: 1,
+          borderWidth: 1,
+          borderColor: colors.border,
+          borderTopColor: colors.border,
+          borderRadius: TAB_BAR_HEIGHT,
+          height: TAB_BAR_HEIGHT,
+          marginHorizontal: TAB_BAR_MARGIN,
+          marginBottom: TAB_BAR_MARGIN,
+          padding: 6,
+          boxShadow: `0 10px 30px ${colors.text}14`,
+        },
+        tabBarItemStyle: { borderRadius: TAB_BAR_HEIGHT, overflow: 'hidden' },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         sceneStyle: { backgroundColor: colors.bg },
       }}

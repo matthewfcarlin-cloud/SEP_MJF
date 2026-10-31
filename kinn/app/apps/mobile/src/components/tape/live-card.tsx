@@ -51,11 +51,11 @@ export function TapeLiveCard({ index = 0 }: { readonly index?: number }) {
 
   return (
     <Pressable accessibilityRole="button" onPress={() => router.push('/tape')} style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}>
-      <Card raised index={index} style={{ gap: space.sm }}>
+      <Card index={index} style={{ gap: space.sm }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <SectionLabel>{t.cardLive}</SectionLabel>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: connected ? colors.good : colors.caution }} />
+            <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: connected ? colors.live : colors.caution }} />
             <Txt kind="small" color="textSecondary">
               {tape.name}
             </Txt>
@@ -70,11 +70,11 @@ export function TapeLiveCard({ index = 0 }: { readonly index?: number }) {
                 paddingVertical: 4,
                 paddingHorizontal: 10,
                 borderRadius: radius.pill,
-                backgroundColor: contracting ? colors.good : colors.surface,
+                backgroundColor: contracting ? `${colors.good}38` : colors.surface,
                 borderWidth: 1,
                 borderColor: contracting ? colors.good : colors.border,
               }}>
-              <Txt kind="small" color={contracting ? 'onAccent' : 'textSecondary'}>
+              <Txt kind="small" color={contracting ? 'text' : 'textSecondary'}>
                 {contracting ? t.contracting : t.relaxed}
               </Txt>
             </View>

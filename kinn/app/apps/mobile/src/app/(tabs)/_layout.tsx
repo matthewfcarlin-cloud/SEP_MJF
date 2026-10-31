@@ -12,7 +12,7 @@ export default function TabsLayout() {
   if (!state.onboarded) return <Redirect href="/onboarding" />
 
   return (
-    <NativeTabs backgroundColor={colors.bg} indicatorColor={colors.surfaceRaised} labelStyle={{ selected: { color: colors.text } }}>
+    <NativeTabs backgroundColor={colors.bg} indicatorColor={colors.surfaceRaised} labelStyle={{ default: { color: colors.textMuted }, selected: { color: colors.text } }} iconColor={{ default: colors.textMuted, selected: colors.text }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{copy.tabs.today}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'sun.max', selected: 'sun.max.fill' }} />

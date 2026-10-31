@@ -19,6 +19,10 @@ interface StatusPillProps {
   readonly align?: 'flex-start' | 'center'
 }
 
+/**
+ * Today's status as a word plus its colour. Large: a dot and the word, no chip (Today).
+ * Small: a tinted chip. The word stays in ink so it reads on the light page at any status.
+ */
 export function StatusPill({ status, large = false, align = 'flex-start' }: StatusPillProps) {
   const colors = useColors()
   const tone = colors[statusColor[status]]
@@ -28,16 +32,14 @@ export function StatusPill({ status, large = false, align = 'flex-start' }: Stat
         alignSelf: align,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: space.sm,
-        paddingVertical: large ? 10 : 6,
-        paddingHorizontal: large ? space.md : 12,
+        gap: large ? 10 : space.sm,
+        paddingVertical: large ? 0 : 5,
+        paddingHorizontal: large ? 0 : 12,
         borderRadius: radius.pill,
-        backgroundColor: `${tone}22`,
-        borderWidth: 1,
-        borderColor: `${tone}66`,
+        backgroundColor: large ? 'transparent' : `${tone}2E`,
       }}>
       <View style={{ width: large ? 10 : 8, height: large ? 10 : 8, borderRadius: radius.pill, backgroundColor: tone }} />
-      <Txt kind={large ? 'heading' : 'small'} style={{ color: tone }}>
+      <Txt kind={large ? 'title' : 'small'} style={large ? { fontSize: 24, lineHeight: 30 } : undefined}>
         {copy.status[status]}
       </Txt>
     </View>
