@@ -1,5 +1,7 @@
 # Kinn app architecture (prototype)
 
+> **Vision note (2026-10-30):** [vision.md](vision.md) now sets the product's direction. The team has dropped the two-IMU design, so ignore `BleTwoImuSensor` and `ble-two-imu` below. The sensor abstraction still holds: a future tape only has to emit the same samples.
+>
 > **Rebrand note (2026-10-26):** the product is now called **RECO**. This document predates the rename and keeps "Kinn" as written; see [decisions.md](decisions.md).
 
 _Version 0.1 · 2026-10-19 · pairs with [feature-spec.md](feature-spec.md)_
