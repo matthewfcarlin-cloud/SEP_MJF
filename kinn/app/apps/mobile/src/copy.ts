@@ -33,6 +33,7 @@ export const copy = {
     goalLabel: (goal: string) => `Goal: ${goal}`,
     progressLabel: 'Recovery progress',
     dialLabel: 'Recovery',
+    callLabel: 'Today’s call',
     todayLabel: 'Today',
     suggestionLabel: 'One thing for today',
     loadLabel: 'Knee load',

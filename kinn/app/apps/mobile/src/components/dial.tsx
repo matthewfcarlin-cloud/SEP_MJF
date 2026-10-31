@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
-import Svg, { Circle, Line } from 'react-native-svg'
+import Svg, { Circle, Defs, Line, RadialGradient, Stop } from 'react-native-svg'
 import type { ReactNode } from 'react'
 
 import { radius } from '@/theme/tokens'
@@ -67,6 +67,8 @@ export function Dial({ value, color, size = 280, marker, children }: DialProps) 
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      {/* Soft lift under the ceramic disc; the ticks and their fill animation are unchanged. */}
+      <View style={{ position: 'absolute', width: discR * 2, height: discR * 2, borderRadius: radius.pill, boxShadow: `0 10px 24px ${colors.text}1F` }} />
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         {Array.from({ length: TICKS + 1 }, (_, i) => {
           const deg = START_DEG + (i / TICKS) * SWEEP_DEG
@@ -104,7 +106,13 @@ export function Dial({ value, color, size = 280, marker, children }: DialProps) 
             return <Line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={colors.textSecondary} strokeWidth={3} strokeLinecap="round" />
           })()
         ) : null}
-        <Circle cx={cx} cy={cy} r={discR} fill={colors.surface} stroke={colors.border} strokeWidth={1} />
+        <Defs>
+          <RadialGradient id="dial-disc" cx="38%" cy="30%" r="75%">
+            <Stop offset="0" stopColor={colors.surface} />
+            <Stop offset="1" stopColor={colors.surfaceRaised} />
+          </RadialGradient>
+        </Defs>
+        <Circle cx={cx} cy={cy} r={discR} fill="url(#dial-disc)" stroke={colors.border} strokeWidth={1} />
       </Svg>
       <View style={{ width: discR * 2 - 24, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill }}>{children}</View>
     </View>

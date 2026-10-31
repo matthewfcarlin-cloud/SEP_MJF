@@ -50,7 +50,7 @@ export function NumberScale({ value, onChange, lowLabel, highLabel }: NumberScal
                 borderColor: selected ? tone : `${tone}55`,
                 opacity: pressed ? 0.75 : 1,
               })}>
-              <Txt kind="small" style={{ color: selected ? colors.bg : colors.text }}>
+              <Txt kind="small" style={{ color: selected ? colors.onStatus : colors.text }}>
                 {n}
               </Txt>
             </Pressable>

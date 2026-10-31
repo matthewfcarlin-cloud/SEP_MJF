@@ -102,11 +102,11 @@ export default function TapeScreen() {
             paddingVertical: 6,
             paddingHorizontal: 14,
             borderRadius: radius.pill,
-            backgroundColor: contracting ? colors.good : colors.surface,
+            backgroundColor: contracting ? `${colors.good}38` : colors.surface,
             borderWidth: 1,
             borderColor: contracting ? colors.good : colors.border,
           }}>
-          <Txt kind="small" color={contracting ? 'onAccent' : 'textSecondary'}>
+          <Txt kind="small" color={contracting ? 'text' : 'textSecondary'}>
             {contracting ? t.contracting : t.relaxed}
           </Txt>
         </View>
