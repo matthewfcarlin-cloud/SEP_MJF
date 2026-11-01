@@ -1,5 +1,7 @@
 # Kinn feature spec
 
+> **Vision note (2026-10-30):** [vision.md](vision.md) now sets the product's direction. Where they differ, it overrides this spec, including the ICP (section 0), guided exercise being out of scope, and "two IMUs" as the sensor (sections 1.1 and 2.4; the team has dropped that design). The load model, wording rules and physio questions remain useful references.
+>
 > **Rebrand note (2026-10-26):** the product is now called **RECO**. This document predates the rename and keeps "Kinn" as written; see [decisions.md](decisions.md).
 
 _Version 0.1 · 2026-10-19 · Owner: Matthew Carlin · Status: draft for review_

@@ -58,3 +58,21 @@ A demoable manual-log app on a phone by Monday beats a designed one later. Scree
 ## 2026-10-26 · Rebrand: the product is now RECO (Matthew)
 The app, bundle id (`com.recoapp.recovery`), npm packages (`@reco/core`, `reco-mobile`), URL scheme (`reco://`), all athlete-facing copy and the TestFlight listing use RECO. The repo folder stays `kinn/` and the native worktree stays `~/kinn-native` so paths and history do not break; older docs (feature-spec, architecture, CONTEXT) keep "Kinn" where they quote earlier work. The marketing site under `site/` still says Kinn and is a separate rebrand job.
 
+## 2026-10-30 · The vision is now the source of truth (team)
+The team doc's "WHAT TF IS RECO" tab defines the product, expanded in [vision.md](vision.md). RECO is a smart tape and app for people recovering from a joint injury, with four core features: progress meter with an adaptive plan, pain logging from a button on the device, warning signs, and a PT report. This supersedes the feature spec's scope and the Oct 19 ICP of pro and college ACL athletes. It also widens the amateur athlete ICP in the team doc's Reco tab. The older docs stay in place as a record of how the current build works.
+
+## 2026-10-30 · RECO generates a plan when there is no PT (team)
+Onboarding forks on whether you have a PT. With one, the PT's plan and limits lead. Without one, RECO builds a plan from onboarding answers. This reverses the Oct 19 exclusion of exercise content and the app's current "RECO doesn't prescribe exercises" copy. Would change our mind: regulatory advice that this can't be offered to patients directly without clearance.
+
+## 2026-10-30 · Regulatory review before the plan and warnings reach real users (Claude, open to being overruled)
+The research gap analysis found that patient-facing guidance, not the sensor, sets the regulatory burden. A generated plan and overuse warnings go further than anything in the Oct 19 spec. Until reviewed, both run in trials or through a PT. The product says "warning signs", not "re-injury detector".
+
+## 2026-10-30 · Start with the knee, in months 3 to 9 (Claude, open to being overruled)
+The vision covers knee, shoulder and elbow. Everything built and heard so far is about the knee, and each joint needs its own tape shape, movement model and protocol data. Active people in the strengthening and return-to-activity stretch come first. Would change our mind: PTs or patients showing stronger demand for another joint.
+
+## 2026-10-30 · Sharing stays the patient's choice, even with schedule send (Claude, open to being overruled)
+The vision adds automatic sending before appointments, which changes the Oct 19 "local-first, no backend" decision once it ships. The patient picks the contents and turns scheduling on, so the record stays theirs and doesn't become policing. A first version can be a reminder that opens the share sheet before the appointment, with no backend.
+
+## 2026-10-30 · No two-IMU design (team)
+The team does not want thigh and shin IMUs for knee angle. We are planning around one shin IMU plus EMG and/or a stretch sensor, not yet locked. Experiments can still use a separate reference for true angle. The `ble-two-imu` device kind in `core` is unused and can go.
+

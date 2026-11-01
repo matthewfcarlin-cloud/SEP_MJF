@@ -1,5 +1,7 @@
 # Kinn (now RECO) — Product Context
 
+> **Current vision (Oct 30, 2026):** [`docs/vision.md`](docs/vision.md) is the source of truth for what RECO is. This file is the history of how it got here, so its product descriptions, ICPs and focus sections may be out of date.
+>
 > **Rebrand (Oct 26, 2026):** the product and app are now **RECO**. This file keeps the Kinn name in its history. App and docs: [`docs/decisions.md`](docs/decisions.md).
 
 _Last updated: October 14, 2026 · Owner: Matthew Carlin (USC Iovine and Young Academy)_

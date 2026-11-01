@@ -113,4 +113,4 @@ The mobile app has no automated tests; it is checked by hand on the iOS simulato
 
 - Tape readings do not feed Recovery %, the load score or `romDays`. The ROM numbers on Progress are the seed.
 - No native Bluetooth on iOS or Android.
-- No accounts and no sync between devices. Besides the Report share sheet, Settings has **Export trial data** (`core/src/export/trial.ts`): one JSON plus a daily CSV and a per-minute tape CSV, with sample entries flagged `sample: true`. It runs only when the athlete taps it. These are deliberate for now: "nothing leaves the phone" is a product promise, not a gap.
+- No accounts and no sync between devices. Besides the Report share sheet, Settings has **Export trial data** (`core/src/export/trial.ts`): one JSON plus a daily CSV and a per-minute tape CSV, with sample entries flagged `sample: true`. It runs only when the athlete taps it. These are deliberate for now: "nothing leaves the phone" is a product promise, not a gap. Schedule send in [vision.md](vision.md) will change this once it ships, and only with the patient's opt-in ([decisions.md](decisions.md)).
