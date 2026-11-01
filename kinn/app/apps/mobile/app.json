@@ -45,7 +45,11 @@
         {
           "color": "#111111"
         }
-      ]
+      ],
+      "expo-speech-recognition",
+      "expo-audio",
+      "expo-mail-composer",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -30,6 +30,35 @@ export interface PainLog {
   /** Answer to the next-morning "Did it settle?" notification. */
   readonly settled?: Settled
   readonly settledAt?: number
+  /** 'press' is a pain-button press (device or app); 'evening' is the end-of-day update. */
+  readonly kind?: 'press' | 'evening'
+  readonly note?: string
+  /** Local file URIs; never uploaded. */
+  readonly voiceUri?: string
+  readonly photoUri?: string
+}
+
+/** A voice or typed journal entry for the day, kept verbatim. */
+export interface JournalEntry {
+  readonly id: string
+  readonly t: number
+  readonly date: string
+  readonly text: string
+  readonly source: 'voice' | 'typed'
+}
+
+/** One plan item marked done, or skipped by choice with a reason. */
+export interface PlanMark {
+  readonly date: string
+  readonly itemId: string
+  readonly done: boolean
+}
+
+/** "That was wrong" on a warning: the athlete's correction, which loosens their line. */
+export interface WarningFeedback {
+  readonly date: string
+  readonly t: number
+  readonly kind: 'wrong' | 'helpful'
 }
 
 export interface MorningCheckIn {
@@ -47,10 +76,30 @@ export interface RomDay {
   readonly source: 'reco-tape-sim'
 }
 
-export type Injury = 'acl' | 'meniscus' | 'other'
+export type Joint = 'knee' | 'shoulder' | 'elbow'
+export type Side = 'left' | 'right'
+
+/** Injury types RECO knows a published protocol for, per joint. 'other' falls back to the joint's general plan. */
+export type Injury =
+  | 'acl'
+  | 'meniscus'
+  | 'rotator-cuff'
+  | 'shoulder-dislocation'
+  | 'ucl'
+  | 'tennis-elbow'
+  | 'other'
+
+export const INJURIES_BY_JOINT: Readonly<Record<Joint, readonly Injury[]>> = {
+  knee: ['acl', 'meniscus', 'other'],
+  shoulder: ['rotator-cuff', 'shoulder-dislocation', 'other'],
+  elbow: ['ucl', 'tennis-elbow', 'other'],
+}
 
 export interface Profile {
   readonly name: string
+  /** Missing on profiles saved before multi-joint onboarding; read it through `jointOf`. */
+  readonly joint?: Joint
+  readonly side?: Side
   readonly injury: Injury
   /** ISO date of injury or surgery. */
   readonly injuryDate: string
@@ -58,7 +107,15 @@ export interface Profile {
   readonly sport: string
   readonly hasPt: boolean
   readonly goal: string
+  /** The athlete's own words from voice or typed intake, kept for the PT report. */
+  readonly story?: string
+  readonly ptName?: string
+  readonly ptEmail?: string
+  /** ISO date of the next PT visit, for schedule send. */
+  readonly nextVisit?: string
 }
+
+export const jointOf = (p: Pick<Profile, 'joint'>): Joint => p.joint ?? 'knee'
 
 export type Status = 'keep-going' | 'steady' | 'ease-off'
 
@@ -80,4 +137,8 @@ export interface Dataset {
   readonly painLogs: readonly PainLog[]
   readonly checkIns: readonly MorningCheckIn[]
   readonly romDays: readonly RomDay[]
+  /** Optional so states saved before these features still load. */
+  readonly journal?: readonly JournalEntry[]
+  readonly planMarks?: readonly PlanMark[]
+  readonly warningFeedback?: readonly WarningFeedback[]
 }

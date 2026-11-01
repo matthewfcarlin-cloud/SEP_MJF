@@ -6,8 +6,12 @@ import { baselineScore, loadsFor } from './load'
 import { statusFor } from './status'
 import type { StatusResult } from './status'
 import { suggestionFor } from './suggestion'
-import { milestones, progressPercent } from './trend'
-import type { Milestone } from './trend'
+import { capacityProgress, milestones, progressChange, progressPercent } from './trend'
+import type { Milestone, ProgressChange } from './trend'
+import { buildPlan } from '../plan/build'
+import type { PlanView } from '../plan/build'
+import { personalLine, redFlag, warningFor } from '../warnings/line'
+import type { PersonalLine, Warning } from '../warnings/line'
 import type { Dataset, DayLoad, FlareDay, ManualActivity, PainLog, RomDay } from './types'
 import { weeksSince } from '../time/day'
 import { tapeDays } from '../tape/days'
@@ -30,6 +34,13 @@ export interface TodayView {
   readonly status: StatusResult
   readonly suggestion: string
   readonly progressPercent: number
+  /** Change over the last 7 days and the reason, for the line under the meter. */
+  readonly progressChange: ProgressChange
+  readonly plan: PlanView
+  readonly line: PersonalLine
+  readonly warning: Warning | undefined
+  /** A pain log today that should stop normal advice. */
+  readonly redFlag: PainLog | undefined
   readonly latestRom: RomDay | undefined
   readonly todayLoad: DayLoad
   readonly yesterdayLoad: DayLoad
@@ -81,11 +92,24 @@ export function deriveToday(data: Dataset, today: string, tape: readonly StoredR
   const timeline = buildTimeline(window, loads, flares, data, insights[0]?.id)
   const days = tapeDays(tape).filter((d) => d.date >= window[0]! && d.date <= today)
   const weeks = Math.max(0, weeksSince(data.profile.injuryDate, startOfDay(today, 12)))
+  const flareDates = new Set(flares.map((f) => f.date))
+  const weekAgo = addDays(today, -7)
+  const romWeekAgo = latestRomDay(data.romDays.filter((d) => d.date <= weekAgo))
+  const percentNow = progressPercent(latestRom, capacityProgress(loads, flareDates, today))
+  const percentWeekAgo = progressPercent(romWeekAgo, capacityProgress(loads, flareDates, weekAgo))
+  const romGain = latestRom && romWeekAgo ? latestRom.flexionDeg - romWeekAgo.flexionDeg + (romWeekAgo.extensionDeficitDeg - latestRom.extensionDeficitDeg) : 0
+  const line = personalLine(loads, flares, baseline, data.warningFeedback ?? [], today)
+  const dismissedToday = (data.warningFeedback ?? []).some((f) => f.date === today)
   return {
     date: today,
     status,
     suggestion: suggestionFor(status),
-    progressPercent: progressPercent(latestRom, weeks),
+    progressPercent: percentNow,
+    progressChange: progressChange(percentNow, percentWeekAgo, romGain, flares.filter((f) => f.date > weekAgo).length),
+    plan: buildPlan({ profile: data.profile, today, status: status.status, flares, marks: data.planMarks ?? [] }),
+    line,
+    warning: warningFor({ todayScore: todayLoad.score, line, signalOk: true, dismissedToday }),
+    redFlag: redFlag(data.painLogs, today),
     weeksSinceInjury: weeks,
     latestRom,
     todayLoad,

@@ -29,9 +29,14 @@ export const ROM_TARGETS = {
   startFlexionDeg: 90,
   fullFlexionDeg: 135,
   bikeFlexionDeg: 120,
-  /** A typical ACL comeback, for the timeline part of the progress bar. */
-  comebackWeeks: 36,
-  progressWeights: { extension: 0.35, flexion: 0.35, timeline: 0.3 },
+  /**
+   * Recovery % weights. Capacity is the load you handled without a flare-up the next
+   * morning, so the meter moves because of what you did, never because time passed.
+   */
+  progressWeights: { extension: 0.35, flexion: 0.35, capacity: 0.3 },
+  /** A tolerated day at this load score counts as full capacity (a hard practice is ~67, a hard game ~92). */
+  capacityTargetScore: 70,
+  capacityWindowDays: 7,
 } as const
 
 export const MANUAL_INSIGHTS = {
