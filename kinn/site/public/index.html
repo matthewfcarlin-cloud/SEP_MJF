@@ -2,160 +2,239 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>RECO · Trust your comeback.</title>
-<meta name="description" content="RECO is a smart tape and app that tracks your injured knee every day, shows your progress and what comes before your pain, and gives your PT the full picture between visits.">
+<meta name="description" content="RECO is a smart tape and app that tracks your injured knee every day, shows your progress and what comes before your pain, and gives your PT the full picture between visits. Join the waitlist.">
+<meta property="og:title" content="RECO · Trust your comeback.">
+<meta property="og:description" content="Smart kinesiology tape and a reusable coin that measure your knee every day. Join the waitlist.">
+<meta property="og:image" content="/img/v3/reco_hero.jpg">
 <meta name="theme-color" content="#F2F1EC">
 <link rel="icon" href="/brand/reco-mark-olive.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
-<link rel="stylesheet" href="/brand.css">
+<link rel="preload" href="/3d/reco.glb" as="fetch" crossorigin>
 <style>
-/* RECO home: Ceramic. One serif moment per section, mono for anything measured. */
-.wrap{max-width:var(--max);margin:0 auto}
-section{padding-block:clamp(72px,11vw,140px)}
-.label{font:500 11px/16px var(--font-mono);letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
-.label .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--live);margin-right:8px;vertical-align:1px}
-.serif-xl{font-family:var(--font-serif);font-weight:400;font-size:clamp(52px,9.4vw,124px);line-height:.95;letter-spacing:-.015em}
-.serif-l{font-family:var(--font-serif);font-weight:400;font-size:clamp(38px,5.6vw,72px);line-height:1;letter-spacing:-.01em}
-.serif-xl em,.serif-l em{font-style:italic;color:var(--text-secondary)}
-.lead{font-size:clamp(17px,1.5vw,20px);line-height:1.5;color:var(--text-secondary);max-width:34em}
-.btns{display:flex;flex-wrap:wrap;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;border:1px solid transparent;font:500 15px/1 var(--font-sans);text-decoration:none;cursor:pointer;transition:background .2s,transform .15s,border-color .2s}
+/* RECO home. Same scroll film as before (coin → twist → strip, fiber → knee, the knee bends), on the Ceramic brand.
+   Light ceramic stage, one product, Instrument Serif for the big lines, Geist Mono for anything measured. */
+:root{
+  --bg:#F2F1EC;--paper:#FBFAF7;--bone:#E8E5DC;--line:#E0DCD1;
+  --fg:#1C1E1A;--dim:#5C6058;--faint:#686B62;--olive:#2F3A2C;
+  --teal:#1F8A72;--teal-hi:#3DDBB8;--keep:#6F9E68;--steady:#C99A3A;--ease:#D4673F;
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;--serif:"Instrument Serif",Georgia,serif;
+  --out:cubic-bezier(.215,.61,.355,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.big{font-family:var(--serif);font-weight:400;letter-spacing:-.015em;line-height:.92;margin:0}
+.big em{font-style:italic;color:var(--dim)}
+.small{font-size:13px;color:var(--dim)}
+.caps{font:500 11px/16px var(--mono);letter-spacing:.9px;text-transform:uppercase;color:var(--faint)}
+.gut{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
 
-/* nav */
-.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
-.nav.scrolled{border-bottom-color:var(--border)}
-.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.brand{display:inline-flex;align-items:center;text-decoration:none}
-.brand img{height:22px;width:auto}
-.nav nav{display:flex;align-items:center;gap:28px}
-.nav nav a:not(.btn){font-size:14px;color:var(--text-secondary);text-decoration:none}
-.nav nav a:not(.btn):hover{color:var(--text)}
-.nav .btn{height:38px;padding:0 16px;font-size:14px}
-@media (max-width:760px){.nav nav a:not(.btn){display:none}}
+/* top bar */
+.top{position:fixed;z-index:30;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;height:64px;padding-top:env(safe-area-inset-top,0px);
+  background:color-mix(in srgb,var(--bg) 70%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.top.solid{background:color-mix(in srgb,var(--bg) 90%,transparent);border-bottom-color:var(--line)}
+.top .mark svg{height:20px;width:auto;display:block}
+.top nav{display:flex;align-items:center;gap:26px;white-space:nowrap}
+.top nav a{font-size:14px;color:var(--dim)}
+.top nav a:hover{color:var(--fg)}
+.top nav a.pill{background:var(--olive);color:#F2F1EC;padding:10px 16px;border-radius:999px}
+@media (max-width:640px){.top nav a:not(.pill){display:none}}
+.arc{stroke-dasharray:1;stroke-dashoffset:1;animation:arc .9s var(--out) .25s forwards}
+@keyframes arc{to{stroke-dashoffset:0}}
 
-/* hero */
-.hero{padding-top:clamp(40px,6vw,80px);padding-bottom:0}
-.hero .top{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:end}
-.hero h1{margin:18px 0 0}
-.hero .side{display:grid;gap:26px;padding-bottom:10px}
-.hero figure{margin:clamp(36px,5vw,64px) 0 0;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface-raised);aspect-ratio:16/9;position:relative}
-.hero figure img{width:100%;height:100%;object-fit:cover}
-.chip{position:absolute;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:14px;padding:10px 14px;font-size:13px}
-.chip b{font:500 18px/1 var(--font-mono);letter-spacing:-.5px}
-.chip.c1{left:4%;bottom:7%}.chip.c2{right:4%;top:7%}
-@media (max-width:860px){.hero .top{grid-template-columns:1fr}.chip.c2{display:none}}
+/* hero: interactive 3D from the real CAD. Cursor tilts the coin; scroll drops it, twists it 60° into the lock, pulls back to the strip */
+.hero{position:relative;height:340vh}
+.hero .pinbox{position:sticky;top:0;height:100vh;height:100svh;min-height:540px;overflow:hidden;background:radial-gradient(70% 60% at 50% 46%,#FBFAF7,var(--bg) 70%)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;cursor:grab}
+#gl:active{cursor:grabbing}
+.hero .poster{position:absolute;inset:0;display:grid;place-items:center;z-index:0}
+.hero .poster img{width:min(86vw,1100px);opacity:0;transition:opacity .6s}
+.hero.static .poster img{opacity:1}
+.hero .ghost{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);text-align:center;font:400 clamp(6rem,24vw,22rem)/1 var(--serif);color:transparent;-webkit-text-stroke:1px rgba(28,30,26,.08);pointer-events:none;z-index:0;white-space:nowrap;transition:opacity .8s}
+.hero .ghost.off{opacity:0}
+.hero .under{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:20px;pointer-events:none}
+.hero .lines{position:relative;min-height:5.2em;flex:1;max-width:420px}
+.hero .lines p{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(8px);transition:opacity .6s var(--out),transform .6s var(--out);font-size:15px;color:var(--dim)}
+.hero .lines p.on{opacity:1;transform:none}
+.hero .lines b{display:block;margin-top:6px;font:400 clamp(26px,2.6vw,36px)/1.05 var(--serif);color:var(--fg);letter-spacing:-.01em}
+.hero .under .cue{display:flex;align-items:center;gap:10px;transition:opacity .4s;font:500 11px/1 var(--mono);letter-spacing:.9px;text-transform:uppercase;color:var(--faint)}
+.hero .under .cue.off{opacity:0}
+.hero .under .cue i{width:1px;height:28px;background:linear-gradient(var(--fg),transparent);animation:drop 2s ease-in-out infinite;transform-origin:top}
+@keyframes drop{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+.hero .tick{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:12px;justify-items:end}
+.hero .tick span{font:500 11px/1 var(--mono);letter-spacing:.9px;text-transform:uppercase;color:#B9B6AC;transition:color .4s}
+.hero .tick span.on{color:var(--fg)}
+.hero .tick span.on::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal);margin-right:8px;vertical-align:1px}
+.hero .hint{position:absolute;z-index:2;left:50%;top:calc(84px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:500 11px/1 var(--mono);letter-spacing:.9px;text-transform:uppercase;color:var(--faint);transition:opacity .4s;pointer-events:none}
+.hero .hint.off{opacity:0}
+.hero .pinbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;z-index:1;pointer-events:none;background:linear-gradient(rgba(242,241,236,0),rgba(242,241,236,.92))}
+.flash{position:absolute;inset:0;z-index:1;background:radial-gradient(30% 30% at 50% 55%,rgba(61,219,184,.28),rgba(61,219,184,0));opacity:0;pointer-events:none}
+@media (max-width:560px){.hero .tick{display:none}}
+.hero.static{height:auto}.hero.static .pinbox{position:relative}
 
-/* stat band */
-.band{padding-block:clamp(56px,7vw,88px);border-bottom:1px solid var(--border)}
-.band .wrap{display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,5vw,80px);align-items:center}
-.band .num{font:500 clamp(56px,8vw,96px)/1 var(--font-mono);letter-spacing:-3px}
-.band p{font-size:clamp(17px,1.6vw,21px);line-height:1.45;max-width:30em}
-.band small{display:block;margin-top:12px;font-size:13px;color:var(--text-muted)}
-@media (max-width:640px){.band .wrap{grid-template-columns:1fr}}
+/* film: fiber to knee (rendered frames, scrubbed by scroll) */
+.film{position:relative;height:300vh}
+.film .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
+.film canvas,.film .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.film canvas{opacity:0;transition:opacity .6s}.film.live canvas{opacity:1}
+.film .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(242,241,236,.75),rgba(242,241,236,0) 26%,rgba(242,241,236,0) 68%,rgba(242,241,236,.9));pointer-events:none}
+.film .words{position:absolute;inset:0;z-index:2;display:grid;place-items:center;text-align:center;pointer-events:none}
+.film .words h2{grid-area:1/1;font-size:clamp(4rem,13vw,12rem);opacity:0;transform:translateY(24px) scale(.98);transition:opacity .8s,transform 1s cubic-bezier(.2,.8,.2,1),color .6s;filter:blur(6px)}
+.film .words h2.on{opacity:1;transform:none;filter:blur(0)}
+.film .words h2.light{color:#F2F1EC}
+.film .cap{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.film .meter{font:500 12px/1 var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
 
-/* product */
-.split{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
-.head{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:clamp(36px,5vw,64px)}
-@media (max-width:860px){.head{grid-template-columns:1fr;gap:18px}}
-.shot{margin:0;border-radius:var(--radius);overflow:hidden;background:var(--surface-raised);position:relative}
-.shot img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease-out)}
-.shot:hover img{transform:scale(1.025)}
-.shot figcaption{position:absolute;left:16px;bottom:14px;right:16px;display:flex;justify-content:space-between;gap:12px;font:500 11px/16px var(--font-mono);letter-spacing:.9px;text-transform:uppercase;color:#FBFAF7;text-shadow:0 1px 8px rgba(0,0,0,.35)}
-.shot.light figcaption{color:var(--text);text-shadow:none}
-.s-a{grid-column:span 7;aspect-ratio:16/10}.s-b{grid-column:span 5;aspect-ratio:auto}
-.s-c{grid-column:span 5;aspect-ratio:auto}.s-d{grid-column:span 7;aspect-ratio:16/10}
-@media (max-width:860px){.s-a,.s-b,.s-c,.s-d{grid-column:1/-1;aspect-ratio:16/10}}
-.specs{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);margin-top:clamp(28px,4vw,48px)}
-.specs div{padding:22px 20px 0 0}
-.specs b{display:block;font:500 15px/22px var(--font-sans);margin:8px 0 4px}
-.specs p{font-size:14px;line-height:21px;color:var(--text-secondary)}
-@media (max-width:860px){.specs{grid-template-columns:1fr 1fr;row-gap:12px}}
+/* statement */
+.statement{height:240vh;position:relative}
+.statement .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:36px;overflow:hidden}
+.statement .big{font-size:clamp(4rem,12.5vw,12rem);position:relative}
+.statement .big .ch{display:inline-block;will-change:opacity,filter,transform}
+.statement .big .w2{display:inline-block;white-space:nowrap;font-style:italic;letter-spacing:var(--ls,-.015em);transition:letter-spacing .08s linear}
+.statement.snap .big .w2{transition:letter-spacing .7s cubic-bezier(.2,1.6,.35,1)}
+.statement .lim{position:absolute;left:50%;bottom:-.06em;height:2px;width:var(--lw,0);transform:translateX(-50%);background:linear-gradient(90deg,transparent,#B9B6AC 12%,#B9B6AC 88%,transparent);transition:background .3s}
+.statement .lim span{position:absolute;right:0;top:12px;font:500 11px/1 var(--mono);letter-spacing:.9px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+.statement.snap .lim{background:linear-gradient(90deg,transparent,var(--teal) 12%,var(--teal) 88%,transparent)}
+.statement.snap .lim span{color:var(--teal)}
+.statement p{max-width:640px;color:var(--dim);font-size:clamp(15px,1.4vw,18px);line-height:1.55}
+.statement p b{color:var(--fg);font-weight:500}
+.statement .src{font-size:11px;color:var(--faint);max-width:560px}
+.statement .fade{opacity:var(--o,0);transform:translateY(calc((1 - var(--o,0)) * 18px))}
 
-/* how */
-.how{background:var(--surface);border-block:1px solid var(--border)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
-.step{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:26px;display:grid;gap:14px;align-content:start}
-.step h3{font:600 20px/26px var(--font-sans);letter-spacing:-.2px}
-.step p{color:var(--text-secondary);font-size:15px;line-height:23px}
-.step .viz{height:120px;border-radius:12px;background:var(--surface-raised);display:grid;place-items:center;overflow:hidden}
-@media (max-width:860px){.steps{grid-template-columns:1fr}}
+/* how: the knee bends with scroll; live reading + next-morning note */
+.flex{position:relative;height:420vh}
+.flex .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
+.flex canvas,.flex .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.flex canvas{opacity:0;transition:opacity .6s}.flex.live canvas{opacity:1}
+.flex .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(242,241,236,.7),rgba(242,241,236,0) 24%,rgba(242,241,236,0) 60%,rgba(242,241,236,.96));pointer-events:none}
+.flex .hud{position:absolute;inset:0;z-index:2;pointer-events:none}.flex .hud .box{position:relative;height:100%}
+.read{position:absolute;display:grid;gap:6px}
+.read b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
+.r-top{left:0;top:calc(96px + env(safe-area-inset-top,0px))}
+.r-top strong{font:500 clamp(3.4rem,7vw,6rem)/1 var(--mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums;transition:color .3s}
+.flex.over .r-top strong{color:var(--ease)}
+.gauge{width:min(240px,42vw);height:3px;border-radius:3px;background:var(--line);position:relative;margin-top:8px}
+.gauge i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--fg);width:0;transition:background .3s}
+.flex.over .gauge i{background:var(--ease)}
+.gauge em{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--teal);left:88.9%}
+.alert{position:absolute;right:0;top:calc(96px + env(safe-area-inset-top,0px));width:min(320px,62%);display:grid;gap:6px;padding:16px 18px;border-radius:18px;background:var(--paper);border:1px solid var(--line);box-shadow:0 20px 50px -20px rgba(28,30,26,.25);font-size:13.5px;line-height:1.4;color:var(--dim);opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.alert b{font-weight:600;font-size:16px;color:var(--fg);display:flex;align-items:center;gap:8px}
+.alert b::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--ease)}
+.flex.over .alert{opacity:1;transform:none;animation:buzz .45s linear}
+@keyframes buzz{0%,100%{translate:0}20%,60%{translate:-4px}40%,80%{translate:4px}}
+.steps{position:absolute;left:0;right:0;bottom:calc(32px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
+.step{--f:0;position:relative;padding-top:18px}
+.step::before,.step::after{content:"";position:absolute;left:0;top:0;height:2px;border-radius:2px}
+.step::before{right:0;background:var(--line)}
+.step::after{width:calc(var(--f)*100%);background:var(--fg)}
+.step .n{font:500 11px/1 var(--mono);letter-spacing:.9px;color:#B9B6AC}
+.step b{display:block;margin:8px 0 8px;font:600 clamp(17px,1.6vw,22px)/1.15 var(--sans);letter-spacing:-.01em;
+  background:linear-gradient(90deg,var(--fg) 0 calc(var(--f)*100%),#B9B6AC calc(var(--f)*100% + .01%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.step p{font-size:13.5px;line-height:1.5;color:var(--dim);opacity:calc(var(--f)*1.4 - .2);transform:translateY(calc((1 - var(--f))*10px));filter:blur(calc((1 - min(1,var(--f)*2))*4px))}
+.step.on .n{color:var(--fg)}
+@media (max-width:760px){
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .step{grid-area:1/1;opacity:0;transition:opacity .4s}
+  .step.cur{opacity:1}
+  .alert{top:auto;bottom:calc(160px + env(safe-area-inset-bottom,0px));width:100%}
+}
 
-/* app */
-.app .grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(32px,6vw,96px);align-items:center}
-.phone{justify-self:center;width:min(340px,82vw);aspect-ratio:390/844;border-radius:46px;padding:10px;background:#1C1E1A;box-shadow:0 40px 80px -30px rgba(28,30,26,.35),0 0 0 1px #2d3229 inset}
-.phone .scr{width:100%;height:100%;border-radius:37px;overflow:hidden;background:var(--bg)}
-.phone img{width:100%;height:100%;object-fit:cover;object-position:top}
-.feats{display:grid;gap:0;margin-top:34px;border-top:1px solid var(--border)}
-.feat{display:grid;grid-template-columns:110px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--border)}
-.feat b{display:block;font:600 16px/24px var(--font-sans);margin-bottom:4px}
-.feat p{font-size:15px;line-height:23px;color:var(--text-secondary)}
-.feat .plan{display:block;margin-top:8px;font-size:13px;color:var(--text-muted)}
-@media (max-width:860px){.app .grid{grid-template-columns:1fr}.feat{grid-template-columns:1fr;gap:6px}}
-
-/* status trio */
-.status-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.status-row span{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--border);font-size:13px;font-weight:500}
-.status-row i{width:9px;height:9px;border-radius:50%}
+/* the app */
+.learns{padding-block:120px 140px;display:grid;gap:56px}
+.learns .big{font-size:clamp(3rem,8.5vw,8rem)}
+.learns .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.learns .cols>div{display:grid;gap:10px;align-content:start;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:24px}
+.learns .cols b{font-weight:600;font-size:clamp(1.1rem,1.6vw,1.35rem);letter-spacing:-.01em}
+.learns .cols p{color:var(--dim);font-size:15px;max-width:30em}
+.learns .note{color:var(--faint);font-size:12px}
+.learns .links{display:flex;gap:12px;flex-wrap:wrap}
+.learns .more{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;border:1px solid var(--line);font-size:15px;font-weight:500;background:var(--paper);transition:border-color .2s}
+.learns .more:hover{border-color:var(--faint)}
+.learns .more.primary{background:var(--olive);color:#F2F1EC;border-color:var(--olive)}
+.plan{font-size:13px;color:var(--faint)}
+@media (max-width:860px){.learns .cols{grid-template-columns:minmax(0,1fr)}}
 
 /* join */
-.join{text-align:center}
-.join .serif-xl{max-width:16ch;margin:18px auto 22px}
-.join .lead{margin:0 auto 34px}
-.join .btns{justify-content:center}
-.join .count{margin-top:18px;font:500 12px/16px var(--font-mono);color:var(--text-muted);letter-spacing:.5px}
-.testers{max-width:640px;margin:44px auto 0;padding:20px 22px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);font-size:15px;line-height:23px;color:var(--text-secondary);text-align:left}
-.testers b{color:var(--text)}
+.join{min-height:100vh;display:grid;align-content:center;gap:56px;padding-block:120px;border-top:1px solid var(--line)}
+.join .big{font-size:clamp(3.6rem,11vw,10rem)}
+.join .row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start}
+.join aside{color:var(--dim);font-size:14px;max-width:380px;justify-self:end;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.join aside b{color:var(--fg);font-weight:600}
+@media (max-width:860px){.join .row{grid-template-columns:minmax(0,1fr)}.join aside{justify-self:start}}
+.cta{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;border-bottom:2px solid var(--fg);padding-bottom:28px;cursor:pointer}
+.cta .arrow{font:300 clamp(2.5rem,7vw,6rem)/1 var(--sans);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.cta:hover .arrow{transform:translateX(14px)}
+.cta .big{transition:color .4s}.cta:hover .big{color:var(--olive)}
 
-footer{border-top:1px solid var(--border);padding-block:36px 48px}
-footer .wrap{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:center;justify-content:space-between}
-footer nav{display:flex;flex-wrap:wrap;gap:22px}
-footer nav a{font-size:14px;color:var(--text-secondary);text-decoration:none}
-footer small{font-size:13px;color:var(--text-muted)}
+/* intake sheet */
+.intake{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--bg);color:var(--fg);overflow-y:auto}
+.intake::backdrop{background:var(--bg)}
+.intake[open]{animation:sheet .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes sheet{from{opacity:0;transform:translateY(24px)}}
+.intake .sheet{min-height:100%;display:grid;grid-template-rows:auto 1fr;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.intake .bar{display:flex;justify-content:space-between;align-items:center}
+.close{background:none;border:0;color:var(--dim);font:500 14px/1 var(--sans);cursor:pointer;padding:8px 0;display:flex;gap:10px;align-items:center}
+.intake form,.intake .done{align-self:center;width:min(100%,760px);margin:0 auto;display:grid;gap:30px;padding-block:48px}
+.intake .big{font-size:clamp(3rem,8vw,6.5rem)}
+.q{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:12px;row-gap:12px;border:0;margin:0;padding:0;min-width:0}
+.q .n{grid-row:1/3;font:500 12px/1 var(--mono);color:var(--faint);padding-top:4px}
+.q>label,.q legend{font-size:16px;font-weight:600;color:var(--fg);padding:0}
+.q legend{float:left;width:100%;margin-bottom:12px}
+.q .chips{grid-column:2}
+.field{display:flex;align-items:center;border-bottom:2px solid var(--line);transition:border-color .3s}
+.field:focus-within{border-color:var(--fg)}
+.field input{flex:1;min-width:0;width:0;background:transparent;border:0;color:var(--fg);font:400 clamp(1.4rem,3vw,2rem)/1.2 var(--sans);letter-spacing:-.02em;padding:12px 0}
+.field input::placeholder{color:#B9B6AC}
+.field input:focus{outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{position:relative}
+.chips input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.chips span{display:inline-block;font-size:14px;font-weight:500;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--fg);transition:all .2s}
+.chips input:checked+span{background:var(--olive);border-color:var(--olive);color:#F2F1EC}
+.chips input:focus-visible+span{outline:2px solid var(--teal);outline-offset:3px}
+select{background:var(--paper);border:1px solid var(--line);border-radius:12px;color:var(--fg);font:400 15px var(--sans);padding:12px 14px;max-width:100%}
+select:focus{outline:2px solid var(--teal)}
+.msg{min-height:1.4em;font-size:14px;color:var(--dim)}
+.msg.err{color:var(--ease)}
+.done .big{font-size:clamp(3rem,9vw,8rem)}
+.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.go{justify-self:start;background:var(--olive);color:#F2F1EC;border:0;border-radius:999px;font:500 15px/1 var(--sans);padding:17px 26px;cursor:pointer;display:inline-flex;gap:12px;align-items:center;transition:transform .2s}
+.go:active{transform:scale(.98)}
+.send{display:grid;gap:14px;padding-left:56px}
+.intake .done{gap:22px}
+@media (max-width:560px){.q{grid-template-columns:minmax(0,1fr)}.q .n{grid-row:auto}.q .chips{grid-column:auto}.send{padding-left:0}}
 
-/* logo arc + reveal motion (brand.md §9) */
-.arc{stroke-dasharray:1;stroke-dashoffset:1;animation:arc .9s var(--ease-out) .2s forwards}
-@keyframes arc{to{stroke-dashoffset:0}}
-.rv{opacity:1;transform:none;transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
+footer{display:grid;justify-items:center;gap:14px;padding-block:44px calc(36px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+footer nav{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
+footer nav a{font-size:14px;color:var(--dim)}
+footer .small{color:var(--faint);font-size:12px;text-align:center}
+footer .foot-brand svg{height:22px;width:auto;display:block}
+
+.rv{transition:opacity .6s var(--out),transform .6s var(--out)}
 .js .rv.pending{opacity:0;transform:translateY(8px)}
-@media (prefers-reduced-motion:reduce){.arc{animation:none;stroke-dashoffset:0}.js .rv.pending{opacity:1;transform:none}}
-
-/* waitlist sheet, restyled to Ceramic */
-dialog.intake{border:0;padding:0;margin:auto;width:min(760px,100% - 24px);max-height:calc(100dvh - 24px);border-radius:var(--radius-lg);background:var(--surface);color:var(--text);box-shadow:0 30px 80px rgba(28,30,26,.25)}
-dialog.intake::backdrop{background:rgba(28,30,26,.35);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.intake .sheet{padding:22px clamp(18px,4vw,40px) 34px}
-.intake .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.intake .caps{font:500 11px/16px var(--font-mono);letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
-.intake .close{background:none;border:0;color:var(--text-secondary);font:500 14px/1 var(--font-sans);cursor:pointer;padding:8px 0;display:flex;gap:8px}
-.intake form,.intake .done{display:grid;gap:26px;padding-top:10px}
-.intake .big{font-family:var(--font-serif);font-weight:400;font-size:clamp(40px,6vw,60px);line-height:1;letter-spacing:-.01em}
-.intake .q{display:grid;gap:10px;border:0;padding:0;margin:0;min-width:0}
-.intake .q > .n{font:500 11px/16px var(--font-mono);color:var(--text-muted)}
-.intake label,.intake legend{font:600 16px/22px var(--font-sans);padding:0}
-.intake .small{font-weight:400;color:var(--text-muted);font-size:13px}
-.intake input[type=email],.intake input[type=text],.intake select{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:400 16px var(--font-sans)}
-.intake input:focus-visible,.intake select:focus-visible{outline:2px solid var(--live);outline-offset:1px}
-.intake .chips{display:flex;flex-wrap:wrap;gap:8px}
-.intake .chips label{font:500 14px/1 var(--font-sans);cursor:pointer}
-.intake .chips input{position:absolute;opacity:0;pointer-events:none}
-.intake .chips span{display:inline-block;padding:11px 14px;border-radius:999px;border:1px solid var(--border);background:var(--bg);transition:background .15s,border-color .15s,color .15s}
-.intake .chips input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-.intake .chips input:focus-visible + span{outline:2px solid var(--live);outline-offset:2px}
-.intake .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.intake .go{justify-self:start;display:inline-flex;align-items:center;gap:10px;height:50px;padding:0 24px;border-radius:999px;border:0;background:var(--accent);color:var(--on-accent);font:500 15px/1 var(--font-sans);cursor:pointer}
-.intake .send{display:grid;gap:12px}
-.intake .msg{font-size:14px;color:var(--text-secondary)}.intake .msg.err{color:var(--ease)}
-.intake [hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero .under .cue i,.arc{animation:none}.arc{stroke-dashoffset:0}
+  .hero .lines p{transition:none}
+  .rv,.film .words h2,.statement .big .ch,.step,.alert{transition:none;animation:none}
+  .js .rv.pending{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
 
-<header class="nav gut" id="nav">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="RECO home">
-      <svg height="22" viewBox="0 0 3008 912" aria-hidden="true">
+<header class="top gut" id="topbar">
+  <a class="mark" href="#top" aria-label="RECO home"><svg viewBox="0 0 3008 912" aria-hidden="true">
 <g transform="translate(85.2,811.2) scale(1,-1)" fill="currentColor">
 <path transform="translate(0.0,0)" d="M80 0V710H377Q454 710 510.0 684.0Q566 658 597.0 610.0Q628 562 628 497Q628 448 607.0 410.0Q586 372 550.5 349.0Q515 326 472 321L467 331Q536 331 573.5 300.0Q611 269 616 205L634 0H502L487 186Q484 228 460.0 248.0Q436 268 380 268H210V0ZM210 382H369Q428 382 461.0 410.0Q494 438 494 489Q494 541 460.5 569.0Q427 597 363 597H210Z"/>
 <path transform="translate(683.0,0)" d="M80 0V710H558V597H210V412H546V300H210V113H566V0Z"/>
@@ -163,123 +242,87 @@ dialog.intake::backdrop{background:rgba(28,30,26,.35);-webkit-backdrop-filter:bl
 </g>
 <circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
 <path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#1F8A72" stroke-width="101.4" stroke-linecap="round"/>
-</svg>
-    </a>
-    <nav aria-label="Primary">
-      <a href="#product">The tape</a>
-      <a href="#how">How it works</a>
-      <a href="#app">The app</a>
-      <a href="/try/?tape=demo">Try the demo</a>
-      <a class="btn btn-primary" href="#join" data-join>Join waitlist</a>
-    </nav>
-  </div>
+</svg></a>
+  <nav aria-label="Main"><a href="#mission">Mission</a><a href="#how">How it works</a><a href="/try/?tape=demo">Try the app</a><a class="pill" href="#join" data-join>Join waitlist</a></nav>
 </header>
 
-<main id="top">
-  <section class="hero gut">
-    <div class="wrap">
-      <div class="top">
-        <div>
-          <span class="label rv"><span class="dot"></span>Smart tape for knee recovery</span>
-          <h1 class="serif-xl rv">Trust your<br><em>comeback.</em></h1>
-        </div>
-        <div class="side">
-          <p class="lead rv">RECO is a smart tape and app that tracks your injured knee every day, shows your progress and what comes before your pain, and gives your PT the full picture between visits.</p>
-          <div class="btns rv">
-            <a class="btn btn-primary" href="#join" data-join>Join the waitlist <span class="arr" aria-hidden="true">→</span></a>
-            <a class="btn btn-ghost" href="/try/?tape=demo">Try the app</a>
-          </div>
-        </div>
+<section class="hero" id="top" aria-label="The RECO coin turns in front of you, drops and twists into the tape's mount, then the view pulls back to show the whole strip">
+  <div class="pinbox">
+    <span class="ghost" id="ghost" aria-hidden="true">RECO</span>
+    <div class="poster" aria-hidden="true"><img src="/img/v3/reco_hero.jpg" alt=""></div>
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="flash" id="flash" aria-hidden="true"></div>
+    <span class="hint" id="hint">Move to turn the coin</span>
+    <div class="tick" aria-hidden="true"><span class="on">01 Coin</span><span>02 Twist</span><span>03 Strip</span></div>
+    <div class="under gut">
+      <div class="lines">
+        <p class="on" data-in="0" data-out=".3">Back to training, but not sure how hard to push the knee.<b>RECO measures your comeback.</b></p>
+        <p data-in=".3" data-out=".62">A small coin holds the sensor electronics. Press it when it hurts.<b>One coin, the whole comeback.</b></p>
+        <p data-in=".62" data-out="1.1">It twists into a soft kinesiology strip you wear all day.<b>Trust your comeback.</b></p>
       </div>
-      <figure class="rv">
-        <img src="/img/v3/reco_hero.jpg" alt="RECO tape: a charcoal kinesiology strip with an oval window for the kneecap, a thin sensor across it, and the round satin-silver coin locked in at the top." width="1600" height="900" fetchpriority="high">
-        <div class="chip c1"><span class="status status-keep" style="margin:0"></span><span>Keep going</span></div>
-        <div class="chip c2"><span class="label" style="margin:0">Deepest bend</span><b>124°</b></div>
-      </figure>
+      <span class="cue" id="heroCue"><i></i>Scroll</span>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="band gut">
-    <div class="wrap">
-      <div class="num rv">23–30%</div>
-      <p class="rv">About 23 to 30% of young athletes have a second ACL injury after returning to sport. Most of a comeback happens between PT visits, where nobody is measuring.<small>RECO is built for those days.</small></p>
-    </div>
-  </section>
+<section class="film" id="film" aria-label="Close-up of the woven tape and the sensor strip, pulling back to the whole strip">
+  <div class="pin">
+    <img class="poster" src="/vid3/v_001.webp" alt="" width="1080" height="608">
+    <canvas id="filmCanvas" aria-hidden="true"></canvas>
+    <div class="words"><h2 class="big on light" data-in="0" data-out=".45">From the <em>fiber</em></h2><h2 class="big" data-in=".45" data-out="1.01">To the <em>knee</em></h2></div>
+    <div class="cap gut"><p class="small">A bend sensor across the kneecap window, in soft cotton tape.</p><p class="meter" id="meter">Field of view · 6 mm</p></div>
+  </div>
+</section>
 
-  <section class="product gut" id="product">
-    <div class="wrap split">
-      <div class="head">
-        <div><span class="label rv">The tape</span><h2 class="serif-l rv" style="margin-top:14px">Athletic tape,<br>with a sensor inside.</h2></div>
-        <p class="lead rv">Soft cotton kinesiology tape with a thin bend sensor across the kneecap window. A reusable coin twists into the top and records every bend, all day. When the tape is done, the coin moves to the next strip.</p>
-      </div>
-      <figure class="shot s-a rv"><img src="/img/v3/reco_flex.jpg" alt="The tape wrapped over a knee-shaped form, bending with it." loading="lazy"><figcaption><span>Bends with you</span><span>Cotton · latex-free</span></figcaption></figure>
-      <figure class="shot s-b rv"><img src="/img/v3/reco_macro.jpg" alt="Close-up of the coin on the tape, with the sensor contacts leading in." loading="lazy"><figcaption><span>Sensor to coin</span></figcaption></figure>
-      <figure class="shot s-c rv"><img src="/img/v3/reco_twist.jpg" alt="The coin lifting out of its twist-lock mount on the tape." loading="lazy"><figcaption><span>60° twist-lock</span></figcaption></figure>
-      <figure class="shot s-d rv light"><img src="/img/v3/reco_hero.jpg" alt="" loading="lazy" style="object-position:50% 70%"><figcaption><span>Kneecap window</span><span>2 in strip</span></figcaption></figure>
-      <div class="specs">
-        <div class="rv"><span class="label">01 · Tape</span><b>Wear it all day</b><p>Applied like the KT tape you already know: anchor, strip, window over the kneecap.</p></div>
-        <div class="rv"><span class="label">02 · Sensor</span><b>Measures every bend</b><p>Straightening and deepest bend, through workouts, stairs and sleep.</p></div>
-        <div class="rv"><span class="label">03 · Coin</span><b>Reusable, twist to lock</b><p>Satin aluminium and soft-touch black. Press it when your knee hurts.</p></div>
-        <div class="rv"><span class="label">04 · Light</span><b>Status at a glance</b><p>The ring glows teal while streaming, then your status colour after a sync.</p></div>
-      </div>
-    </div>
-  </section>
+<section class="statement gut" id="mission">
+  <div class="stick">
+    <span class="caps fade" data-o=".0,.08">Mission</span>
+    <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
+    <p class="fade" data-o=".74,.86">Coming back from a knee injury means pushing a knee you don't fully trust yet. Hold back and the comeback drags on. Push too hard and you're back at the start. <b>About 23 to 30% of young athletes have a second ACL injury after returning to sport.</b> After the first few weeks a PT sees you once or twice a week at most. RECO is built for the days in between.</p>
+    <p class="src fade" data-o=".8,.92">Sources: Paterno et al. 2014; Wiggins et al. 2016. RECO is in development and is not a medical device.</p>
+  </div>
+</section>
 
-  <section class="how gut" id="how">
-    <div class="wrap">
-      <div class="head" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:clamp(36px,5vw,56px)">
-        <div><span class="label rv">How it works</span><h2 class="serif-l rv" style="margin-top:14px">Built for the days<br><em>your PT doesn't see.</em></h2></div>
-        <p class="lead rv">Three things, every day. RECO tracks and shows. Your PT makes the calls.</p>
+<section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
+  <div class="pin">
+    <img class="poster" src="/flex3/k_001.webp" alt="" width="1080" height="608">
+    <canvas id="flexCv" role="img" aria-label="The RECO strip on a knee as it bends from straight to a deep bend. The live reading climbs; past your usual, a next-morning note appears: Ease off today."></canvas>
+    <div class="hud gut"><div class="box">
+      <div class="read r-top">
+        <span class="caps">Knee bend · live from the tape</span>
+        <strong id="fDeg">0°</strong>
+        <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
+        <span class="small">Your usual · <b>120°</b> · deepest bend, last 7 days</span>
       </div>
-      <div class="steps">
-        <article class="step rv">
-          <div class="viz"><svg width="200" height="80" viewBox="0 0 200 80" aria-hidden="true"><path d="M10 60 C 50 60, 70 20, 100 20 S 150 60, 190 60" fill="none" stroke="var(--text)" stroke-opacity=".18" stroke-width="10" stroke-linecap="round"/><path class="arc" pathLength="1" d="M10 60 C 50 60, 70 20, 100 20 S 150 60, 190 60" fill="none" stroke="var(--live)" stroke-width="3" stroke-linecap="round"/></svg></div>
-          <span class="label">Wear</span><h3>Measured all day</h3>
-          <p>Your best straightening and deepest bend, against your other knee and your own trend.</p>
-        </article>
-        <article class="step rv">
-          <div class="viz"><svg width="80" height="80" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="30" fill="var(--surface)" stroke="var(--border)" stroke-width="2"/><circle cx="40" cy="40" r="16" fill="var(--text)"/><circle cx="40" cy="40" r="36" fill="none" stroke="var(--live)" stroke-width="2" stroke-opacity=".5"><animate attributeName="r" values="31;38;31" dur="2.4s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".6;0;.6" dur="2.4s" repeatCount="indefinite"/></circle></svg></div>
-          <span class="label">Tap</span><h3>One press when it hurts</h3>
-          <p>Press the coin or the app. Next morning RECO asks whether it settled, the same check PTs use.</p>
-        </article>
-        <article class="step rv">
-          <div class="viz"><div class="status-row" style="margin:0"><span><i style="background:var(--keep)"></i>Keep going</span></div></div>
-          <span class="label">Know</span><h3>Push or ease off</h3>
-          <p>A daily status with its reason in plain words, compared to your own usual, never a clinical threshold.</p>
-        </article>
+      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">RECO · next morning</span><b>Ease off today.</b><span>Yesterday went well above your usual, with a deepest bend of <span id="fPeak">121°</span>. Keep today light: walking, the bike and your PT mobility work.</span></div>
+      <div class="steps" id="steps">
+        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Soft as athletic tape. Under clothes, in class, at practice.</p></div>
+        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>See it get back to zero</b><p>Best straightening and deepest bend, every day, next to your other knee.</p></div>
+        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Tap when it hurts</b><p>Press the coin. Next morning, RECO asks whether it settled.</p></div>
+        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b><p>A daily read against your own usual, with the reason. Keep going, steady, or ease off.</p></div>
       </div>
-    </div>
-  </section>
+    </div></div>
+  </div>
+</section>
 
-  <section class="app gut" id="app">
-    <div class="wrap grid">
-      <div class="phone rv"><div class="scr"><img src="/img/v3/app_today.png" alt="RECO app Today screen: recovery dial at 70%, status Steady, with the reason in plain words."></div></div>
-      <div>
-        <span class="label rv">The app</span>
-        <h2 class="serif-l rv" style="margin-top:14px">Recovery,<br><em>measured.</em></h2>
-        <div class="feats">
-          <div class="feat rv"><span class="label">Progress</span><div><b>One honest number</b><p>Your recovery, shown as a range with how sure it is, built from your own tape readings.</p></div></div>
-          <div class="feat rv"><span class="label">Plan</span><div><b>A plan that adapts</b><p>Your week adjusts to how your knee actually responded.</p><span class="plan">Your plan, based on published rehab protocols. Your PT can change it.</span></div></div>
-          <div class="feat rv"><span class="label">Pain</span><div><b>What came before your pain</b><p>See what your knee did on the days before a flare-up. Not causes, just what happened first.</p></div></div>
-          <div class="feat rv"><span class="label">Warnings</span><div><b>Warning signs, from your history</b><p>A heads-up when your load climbs well past your own usual.</p></div></div>
-          <div class="feat rv"><span class="label">Report</span><div><b>Your PT gets the full picture</b><p>A short report to share before a visit, only when you choose.</p></div></div>
-        </div>
-        <div class="btns rv" style="margin-top:28px"><a class="btn btn-secondary" href="/try/?tape=demo">Try the app in your browser <span class="arr" aria-hidden="true">→</span></a></div>
-      </div>
-    </div>
-  </section>
+<section class="learns gut" id="learns">
+  <h2 class="big rv">Built for the days<br><em>your PT doesn't see.</em></h2>
+  <div class="cols">
+    <div class="rv"><span class="caps">01 · Progress</span><b>Back to zero</b><p>Your best straightening and deepest bend, measured all day and shown against your other knee and your own trend.</p></div>
+    <div class="rv"><span class="caps">02 · Pain</span><b>What came before your pain</b><p>Press the coin when it hurts. See what your knee did on the days before a flare-up. Not causes, just what happened first.</p></div>
+    <div class="rv"><span class="caps">03 · Your PT</span><b>The full picture</b><p>A short report to share before a visit, when you choose. Your plan, based on published rehab protocols. Your PT can change it.</p></div>
+  </div>
+  <div class="links rv"><a class="more primary" href="/try/?tape=demo">Try the app in your browser <span aria-hidden="true">→</span></a><a class="more" href="/progress/">See how the app works <span aria-hidden="true">→</span></a></div>
+  <p class="note rv">RECO tracks and shows; your PT makes the calls. RECO is in development and is not a medical device.</p>
+</section>
 
-  <section class="join gut" id="join">
-    <div class="wrap">
-      <span class="label rv"><span class="dot"></span>In development</span>
-      <h2 class="serif-xl rv">Be first to try it.</h2>
-      <p class="lead rv">Free. A few quick questions. We only write when there's something to try.</p>
-      <div class="btns rv"><a class="btn btn-primary" href="#join" data-join>Join the waitlist <span class="arr" aria-hidden="true">→</span></a></div>
-      <p class="count" id="count"></p>
-      <div class="testers rv"><b>Early testers wanted.</b> Club, college and rec-league athletes coming back from an ACL or meniscus injury, and the PTs and athletic trainers who work with them.</div>
-    </div>
-  </section>
-</main>
+<section class="join gut" id="join">
+  <a class="cta rv" href="#join" data-join><span class="big">Join the<br><em>waitlist</em></span><span class="arrow" aria-hidden="true">→</span></a>
+  <div class="row">
+    <p class="small rv">Free. A few quick questions. We only write when there's something to try. <span id="count"></span></p>
+    <aside class="rv"><b>Early testers wanted.</b> Club, college and rec-league athletes coming back from an ACL or meniscus injury, and the PTs and athletic trainers who work with them.</aside>
+  </div>
+</section>
 
 <dialog class="intake" id="intake" aria-labelledby="intakeTitle">
   <div class="sheet gut">
@@ -346,8 +389,7 @@ dialog.intake::backdrop{background:rgba(28,30,26,.35);-webkit-backdrop-filter:bl
 </dialog>
 
 <footer class="gut">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="RECO home"><svg height="18" viewBox="0 0 3008 912" aria-hidden="true">
+  <a href="#top" aria-label="RECO home" class="foot-brand"><svg viewBox="0 0 3008 912" aria-hidden="true">
 <g transform="translate(85.2,811.2) scale(1,-1)" fill="currentColor">
 <path transform="translate(0.0,0)" d="M80 0V710H377Q454 710 510.0 684.0Q566 658 597.0 610.0Q628 562 628 497Q628 448 607.0 410.0Q586 372 550.5 349.0Q515 326 472 321L467 331Q536 331 573.5 300.0Q611 269 616 205L634 0H502L487 186Q484 228 460.0 248.0Q436 268 380 268H210V0ZM210 382H369Q428 382 461.0 410.0Q494 438 494 489Q494 541 460.5 569.0Q427 597 363 597H210Z"/>
 <path transform="translate(683.0,0)" d="M80 0V710H558V597H210V412H546V300H210V113H566V0Z"/>
@@ -356,24 +398,240 @@ dialog.intake::backdrop{background:rgba(28,30,26,.35);-webkit-backdrop-filter:bl
 <circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
 <path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#1F8A72" stroke-width="101.4" stroke-linecap="round"/>
 </svg></a>
-    <nav aria-label="Footer"><a href="#product">The tape</a><a href="#how">How it works</a><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join waitlist</a></nav>
-    <small>© 2026 RECO. In development. Not a medical device. RECO tracks and shows; your PT makes the calls.</small>
-  </div>
+  <nav aria-label="Footer"><a href="#mission">Mission</a><a href="#how">How it works</a><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join waitlist</a></nav>
+  <p class="small">© 2026 RECO. In development. Not a medical device.</p>
 </footer>
 
+<script src="/vendor/three.min.js"></script>
+<script src="/vendor/GLTFLoader.js"></script>
+<script src="/vendor/RoomEnvironment.js"></script>
 <script>
 document.documentElement.classList.add('js');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const nav = document.getElementById('nav');
-addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 8), {passive: true});
-/* cards fade up 8px with a 60ms stagger (brand.md §9) */
-if ('IntersectionObserver' in window && !reduce) {
-  const io = new IntersectionObserver(es => {
-    let k = 0;
-    es.forEach(e => { if (e.isIntersecting) { const el = e.target; setTimeout(() => el.classList.remove('pending'), 60 * k++); io.unobserve(el); } });
-  }, {rootMargin: '0px 0px -8% 0px'});
-  document.querySelectorAll('.rv').forEach(el => { el.classList.add('pending'); io.observe(el); });
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const topbar = document.getElementById('topbar');
+addEventListener('scroll', () => topbar.classList.toggle('solid', scrollY > 40), {passive: true});
+
+/* ---------- hero: the real Kinn Coin v3 + reco tape v2 CAD, live in WebGL ---------- */
+(function hero() {
+  const sec = document.getElementById('top'), canvas = document.getElementById('gl');
+  const lines = [...sec.querySelectorAll('.lines [data-in]')], ticks = [...sec.querySelectorAll('.tick span')];
+  const cue = document.getElementById('heroCue'), ghost = document.getElementById('ghost'), flashEl = document.getElementById('flash'), hint = document.getElementById('hint');
+  const fallback = () => { sec.classList.add('static'); lines.forEach((l, i) => l.classList.toggle('on', i === 2)); hint.classList.add('off'); };
+  if (!window.THREE || !THREE.GLTFLoader || !THREE.RoomEnvironment) return fallback();
+  let r; try { r = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true}); } catch (e) { return fallback(); }
+  if (!r.getContext()) return fallback();
+  r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.outputEncoding = THREE.sRGBEncoding;
+  r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0;
+  r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+  r.physicallyCorrectLights = true;
+  THREE.ColorManagement.legacyMode = false;
+  const scene = new THREE.Scene();
+
+  const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+
+  const key = new THREE.DirectionalLight(0xfff4e8, 2.2); key.position.set(-4, 9, 5); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0004;
+  Object.assign(key.shadow.camera, {left: -8, right: 8, top: 8, bottom: -8, near: 1, far: 30});
+  scene.add(key, new THREE.HemisphereLight(0xffffff, 0xd6d2c6, 0.9));
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({opacity: 0.16}));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.004; ground.receiveShadow = true; scene.add(ground);
+
+  // woven cotton normal map, drawn once (plain weave, slightly irregular threads)
+  const weave = (() => {
+    const n = 256, c = document.createElement('canvas'); c.width = c.height = n; const g = c.getContext('2d'), h = new Float32Array(n * n);
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      const u = x / n * 2, v = y / n * 2, cu = Math.floor(u), cv = Math.floor(v), over = (cu + cv) % 2;
+      const pu = Math.sin(Math.PI * (u - cu)), pv = Math.sin(Math.PI * (v - cv));
+      h[y * n + x] = Math.max(pu * (over ? 1 : .6), pv * (over ? .6 : 1)) + (Math.random() - .5) * .25;
+    }
+    const im = g.createImageData(n, n);
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      const i = y * n + x, dx = h[y * n + (x + 1) % n] - h[y * n + (x + n - 1) % n], dy = h[((y + 1) % n) * n + x] - h[((y + n - 1) % n) * n + x];
+      const nx = -dx * 1.4, ny = -dy * 1.4, l = Math.hypot(nx, ny, 1);
+      im.data[i * 4] = (nx / l * .5 + .5) * 255; im.data[i * 4 + 1] = (ny / l * .5 + .5) * 255; im.data[i * 4 + 2] = (1 / l * .5 + .5) * 255; im.data[i * 4 + 3] = 255;
+    }
+    g.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 1.3, 1 / 1.4); t.anisotropy = 8; return t;
+  })();
+
+  const MAT = {
+    'Case satin': new THREE.MeshPhysicalMaterial({color: 0xd6d7d9, metalness: 1, roughness: 0.4, envMapIntensity: 0.95}),
+    'Shoulder satin': new THREE.MeshPhysicalMaterial({color: 0xd9dadc, metalness: 1, roughness: 0.38, envMapIntensity: 0.95}),
+    'Dial ring brushed': new THREE.MeshPhysicalMaterial({color: 0xeeeeef, metalness: 1, roughness: 0.16}),
+    'Mark arc': new THREE.MeshPhysicalMaterial({color: 0xeeeeef, metalness: 1, roughness: 0.22}),
+    'Mark track': new THREE.MeshStandardMaterial({color: 0x45474a, roughness: 0.5}),
+    'Dial matte': new THREE.MeshStandardMaterial({color: 0x161817, roughness: 0.66, envMapIntensity: 0.45}),
+    'Band matte': new THREE.MeshStandardMaterial({color: 0x1b1d1c, roughness: 0.62}),
+    'Underside': new THREE.MeshStandardMaterial({color: 0x1a1c1b, roughness: 0.7}),
+    'Mount': new THREE.MeshStandardMaterial({color: 0x222423, roughness: 0.62}),
+    'Gold': new THREE.MeshStandardMaterial({color: 0xe8c27a, metalness: 1, roughness: 0.25}),
+    'KT tape': new THREE.MeshPhysicalMaterial({color: 0x2a2b2c, roughness: 0.96, sheen: 1, sheenRoughness: 0.6, sheenColor: new THREE.Color(0x6a6a68), normalMap: weave, normalScale: new THREE.Vector2(0.55, 0.55), specularIntensity: 0.15}),
+    'Sensor film': new THREE.MeshPhysicalMaterial({color: 0x101112, roughness: 0.4, clearcoat: 0.4, clearcoatRoughness: 0.3}),
+    'Sensor tail': new THREE.MeshStandardMaterial({color: 0xd6d5d0, roughness: 0.5}),
+    'Teal glow': new THREE.MeshBasicMaterial({color: new THREE.Color(0x3ddbb8)}),
+  };
+  ['Dial matte', 'Mark track', 'Mark arc', 'Sensor tail', 'Sensor film'].forEach(k => MAT[k].side = THREE.DoubleSide);
+  const ringMat = MAT['Teal glow'];
+  const pins = new THREE.MeshStandardMaterial({color: 0xc9cacc, metalness: 1, roughness: 0.25});
+
+  const S = 40;                 // scene units per metre (coin ≈ 0.9 units)
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.01, 200);
+  let portrait = false;
+  function size() { const w = canvas.clientWidth, h = canvas.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; portrait = h > w; cam.fov = portrait ? 44 : 30; cam.updateProjectionMatrix(); }
+
+  let coin = null, D = new THREE.Vector3(), ready = false;
+  new THREE.GLTFLoader().load('/3d/reco.glb', g => {
+    const root = g.scene; root.scale.setScalar(S); scene.add(root);
+    root.traverse(o => {
+      if (!o.isMesh) return;
+      const m = MAT[o.material.name] || (o.name.startsWith('Pin') ? pins : null); if (m) o.material = m;
+      o.castShadow = o.material !== ringMat; o.receiveShadow = false;
+    });
+    ['Tape', 'Cross_anchor', 'Mount', 'Mount_floor', 'Sensor', 'Sensor_tail'].forEach(n => { const o = root.getObjectByName(n); if (o) o.receiveShadow = true; });
+    coin = root.getObjectByName('Coin');
+    root.updateMatrixWorld(true); coin.getWorldPosition(D);
+    // keep the coin in world space so it can fly free of the tape
+    scene.attach(coin); coin.rotation.order = 'YXZ';
+    ready = true; size();
+  }, undefined, fallback);
+
+  const seg = (p, a, b) => cl((p - a) / (b - a)), ss = t => t * t * (3 - 2 * t), easeIn = t => t * t * t, lerp = (a, b, t) => a + (b - a) * t, v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+  const LOCK = 0.6;             // scroll point where the twist clicks home
+  let target = 0, prog = 0, mx = 0, my = 0, tx = 0, ty = 0, vis = true, snapT = -1, was = false, drag = null, spin = 0, spinV = 0, moved = false;
+  addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; if (drag !== null) { spinV = (e.clientX - drag) * 0.012; spin += spinV; drag = e.clientX; } if (!moved && Math.hypot(tx, ty) > .05) { moved = true; hint.classList.add('off'); } }, {passive: true});
+  canvas.addEventListener('pointerdown', e => { drag = e.clientX; canvas.setPointerCapture(e.pointerId); });
+  addEventListener('pointerup', () => { drag = null; });
+  const read = () => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; target = cl(-b.top / Math.max(1, span)); };
+  addEventListener('scroll', read, {passive: true}); addEventListener('resize', size);
+  new IntersectionObserver(es => vis = es[0].isIntersecting).observe(sec);
+  size(); read(); prog = target;
+
+  const P = new THREE.Vector3(), T = new THREE.Vector3(), t0 = performance.now();
+  (function loop(now) {
+    requestAnimationFrame(loop); if (!vis || !ready) return;
+    const t = (now - t0) / 1000;
+    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0003) prog = target;
+    mx += (tx - mx) * 0.06; my += (ty - my) * 0.06;
+    if (drag === null) { spinV *= 0.94; spin += spinV; spin *= (1 - seg(prog, 0.2, 0.45)); }
+    const p = reduce ? Math.max(prog, 1) : prog, far = portrait ? 1.7 : 1;
+
+    // coin: faces you and follows the cursor → lies flat → drops onto the mount turned 60° → twists home
+    const hover = D.clone().add(v3(0, 2.4, 0.6));
+    const a1 = ss(seg(p, 0.16, 0.40));
+    const fall = ss(seg(p, 0.38, 0.5));
+    const twist = ss(seg(p, 0.5, LOCK));
+    const locked = p >= LOCK;
+    const bob = locked ? 0 : Math.sin(t * 1.1) * 0.035 * (1 - a1);
+    const above = D.clone().add(v3(0, 0.12, 0));
+    const hp = hover.clone().lerp(above.clone().add(v3(0, 0.9, 0)), a1);
+    coin.position.copy(hp.lerp(above, fall)); coin.position.y += bob - 0.12 * twist;
+    coin.rotation.x = lerp(Math.PI / 2 - 0.22, 0, a1) + my * 0.4 * (1 - a1);
+    coin.rotation.z = (1 - a1) * (Math.sin(t * 0.6) * 0.08 - mx * 0.5);
+    coin.rotation.y = lerp(Math.sin(t * 0.45) * 0.3 + mx * 0.9 + spin, 0, a1) + lerp(0, -Math.PI / 3, a1) * (1 - twist);
+
+    // the lock: LED ring flashes teal, a soft pulse
+    if (locked && !was) { snapT = now; was = true; } if (!locked && was) { was = false; snapT = -1; }
+    const since = snapT < 0 ? 99 : (now - snapT) / 1000, burst = Math.exp(-since * 3.5);
+    ringMat.color.setRGB(0.24, 0.86, 0.72).multiplyScalar(locked ? 1 + 2.5 * burst : 0.35 + 0.15 * Math.sin(t * 2));
+    flashEl.style.opacity = locked ? (0.9 * burst).toFixed(3) : 0;
+    const shake = locked ? 0.01 * Math.exp(-since * 9) * Math.sin(since * 60) : 0;
+
+    // camera: face to face → above the mount → the whole strip
+    const pull = ss(seg(p, LOCK + 0.04, 1));
+    const camA = hover.clone().add(v3(0, 0.05, 3.4 * far));
+    const camB = D.clone().add(v3(1.5, 3.4 * far, 3.3 * far));
+    const camC = portrait ? v3(1.6, 26, 12) : v3(12.5, 12.5, 4.5);
+    const tgA = hover, tgB = D, tgC = portrait ? v3(0, 0, 0.2) : v3(0, -0.6, 0.0);
+    const k1 = ss(seg(p, 0.14, 0.5));
+    P.copy(camA).lerp(camB, k1); T.copy(tgA).lerp(tgB, k1);
+    P.lerp(camC, pull); T.lerp(tgC, pull);
+    P.x += mx * 0.6 * pull + shake; P.y += -my * 0.4 * pull + shake;
+    cam.position.copy(P); cam.lookAt(T);
+    r.render(scene, cam);
+
+    lines.forEach(l => l.classList.toggle('on', p >= +l.dataset.in && p < +l.dataset.out));
+    const phase = p < 0.38 ? 0 : p < LOCK + 0.04 ? 1 : 2;
+    ticks.forEach((s, i) => s.classList.toggle('on', i === phase));
+    cue.classList.toggle('off', p > 0.03); ghost.classList.toggle('off', p > 0.2); if (p > 0.1) hint.classList.add('off');
+  })(t0);
+})();
+
+/* ---------- frame scrubbers (film + flex share one loader) ---------- */
+function scrubber(sec, cv, base, ext, N, firstFrames) {
+  const ctx = cv.getContext('2d'), frames = []; let started = false, shown = -1;
+  const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); shown = -1; };
+  addEventListener('resize', fit); fit();
+  const ready = im => im && im.complete && im.naturalWidth;
+  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
+  const load = () => { const order = []; for (let k = 8; k >= 1; k >>= 1) for (let i = 0; i < N; i += k) if (!order.includes(i)) order.push(i);
+    order.forEach(i => { const im = new Image(); if (!i) im.onload = () => { sec.classList.add('live'); shown = -1; }; im.src = base + String(i + 1).padStart(3, '0') + ext; frames[i] = im; }); };
+  new IntersectionObserver(es => { if (es[0].isIntersecting && !started) { started = true; load(); } }, {rootMargin: '150% 0px'}).observe(sec);
+  return f => { if (f !== shown && started) { let k = f; while (k > 0 && !ready(frames[k])) k--; if (draw(k)) shown = k === f ? f : -1; } };
 }
+const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; return cl(-b.top / Math.max(1, span)); };
+
+/* ---------- film: scroll scrubs fiber → strip ---------- */
+(function film() {
+  const sec = document.getElementById('film'), words = [...sec.querySelectorAll('[data-in]')], meter = document.getElementById('meter');
+  const N = 90, show = scrubber(sec, document.getElementById('filmCanvas'), '/vid3/v_', '.webp', N);
+  let target = 0, prog = 0; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
+  (function tick() {
+    requestAnimationFrame(tick);
+    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0004) prog = target;
+    const u = Math.min(1, prog / 0.92); show(Math.round(u * (N - 1)));
+    words.forEach(w => w.classList.toggle('on', prog >= +w.dataset.in && prog < +w.dataset.out));
+    const fov = 6 * Math.pow(318 / 6, Math.pow(u, 1.15));   // same zoom curve the render used
+    meter.textContent = 'Field of view · ' + (fov < 100 ? fov.toFixed(fov < 10 ? 1 : 0) : Math.round(fov)) + ' mm';
+  })();
+})();
+
+/* ---------- statement: letters fill, "comeback." stretches past your usual and snaps back ---------- */
+(function lit() {
+  const sec = document.getElementById('mission'), h = document.getElementById('lit');
+  const w2 = h.querySelector('.w2'), lim = h.querySelector('.lim'), deg = document.getElementById('limDeg');
+  const fades = [...sec.querySelectorAll('.fade')].map(el => [el, ...el.dataset.o.split(',').map(Number)]);
+  const chars = [];
+  h.querySelectorAll('.w1,.w2').forEach(w => { const t = w.textContent; w.textContent = ''; for (const c of t) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? ' ' : c; w.appendChild(s); chars.push(s); } });
+  const N = chars.length, FILL_END = .5, STR_A = .5, STR_B = .7; let snapped = false;
+  const upd = () => {
+    const p = reduce ? 1 : progress(sec);
+    chars.forEach((c, i) => { const k = cl((p / FILL_END) * (N + 4) - i, 0, 4) / 4; c.style.opacity = (.14 + .86 * k).toFixed(3); c.style.filter = k < 1 ? `blur(${((1 - k) * 10).toFixed(1)}px)` : 'none'; c.style.transform = `translateY(${((1 - k) * .22).toFixed(3)}em)`; });
+    const st = cl((p - STR_A) / (STR_B - STR_A)), snap = p > STR_B;
+    if (snap !== snapped) { snapped = snap; sec.classList.toggle('snap', snap); }
+    w2.style.setProperty('--ls', snap ? '-.015em' : (-.015 + st * (innerWidth < 700 ? .05 : .16)).toFixed(3) + 'em');
+    lim.style.setProperty('--lw', (cl((p - .42) / .12) * 100).toFixed(1) + '%');
+    deg.textContent = (snap ? 120 : Math.round(st * 119)) + '°' + (snap ? ' · your usual' : '');
+    fades.forEach(([el, a, b]) => el.style.setProperty('--o', cl((p - a) / (b - a)).toFixed(3)));
+  };
+  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', upd); upd();
+})();
+
+/* ---------- flex: scroll bends the knee; the reading is the same angle the frame was rendered at ---------- */
+(function flex() {
+  const sec = document.getElementById('how'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), peak = document.getElementById('fPeak');
+  const steps = [...sec.querySelectorAll('.step')];
+  const N = 96, LIMIT = 120, MAXD = 135, show = scrubber(sec, document.getElementById('flexCv'), '/flex3/k_', '.webp', N);
+  let target = 0, prog = 0, wasOver = false; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
+  (function tick() {
+    requestAnimationFrame(tick);
+    prog += (target - prog) * (reduce ? 1 : 0.12); if (Math.abs(target - prog) < 0.0003) prog = target;
+    const f = Math.round(Math.min(1, prog / 0.86) * (N - 1)); show(f);
+    const d = f / (N - 1) * MAXD, over = d >= LIMIT;
+    deg.textContent = Math.round(d) + '°'; bar.style.width = (d / MAXD * 100) + '%';
+    if (over) peak.textContent = Math.max(121, Math.round(d)) + '°';
+    if (over !== wasOver) { sec.classList.toggle('over', over); wasOver = over; }
+    let cur = 0;
+    steps.forEach((s, i) => { const a = +s.dataset.a, b = +s.dataset.b, v = cl((prog - a) / (b - a)); s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
+    steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
+  })();
+})();
+
+/* ---------- reveal (cards fade up 8px, 60ms stagger) ---------- */
+if ('IntersectionObserver' in window && !reduce) {
+  const io = new IntersectionObserver(es => { let k = 0; es.forEach(e => { if (e.isIntersecting) { const el = e.target; setTimeout(() => el.classList.remove('pending'), 60 * k++); io.unobserve(el); } }); }, {rootMargin: '0px 0px -10% 0px'});
+  document.querySelectorAll('.rv').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } });
+}
+
 /* ---------- waitlist intake (opens on "Join") ---------- */
 const dlg = document.getElementById('intake'), form = document.getElementById('form'), msg = document.getElementById('msg'), patientRows = [...form.querySelectorAll('[data-patient]')];
 const SOURCE = (new URLSearchParams(location.search).get('src') || 'site').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || 'site';
@@ -402,7 +660,8 @@ form.addEventListener('submit', async e => {
         dlg.querySelector('.done .go').focus();
   } catch (err) { msg.className = 'msg err'; msg.textContent = err.message === 'Failed to fetch' ? "Couldn't reach the server. Check your connection and try again." : err.message; }
 });
-fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) document.getElementById('count').textContent = `${j.count.toLocaleString()} already on the list`; }).catch(() => {});
+fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) document.getElementById('count').textContent = `${j.count.toLocaleString()} already on the list.`; }).catch(() => {});
+fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) document.getElementById('count').textContent = `${j.count.toLocaleString()} already on the list.`; }).catch(() => {});
 </script>
 </body>
 </html>

@@ -166,6 +166,6 @@ Rules that every string obeys (tested in `packages/core/test/copy`):
 
 - **App icon:** `reco-mark-olive.svg` on the olive tile.
 - **Splash:** ceramic page with the olive wordmark centred.
-- **Coin:** ceramic-white top, the ring LED in teal when streaming and in the status colour after a sync.
+- **Coin:** satin silver aluminium case and shoulder, matte black dial and band with the satin RECO O-mark, the ring LED in teal when streaming and in the status colour after a sync. Twist-locks 60° into a matte black mount on the tape.
 - **Tape label and packaging:** sand or sage field, ink wordmark, mono spec line.
 - **PT report:** paper background, ink wordmark top left, mono data, status dots, the disclaimer in the footer.
