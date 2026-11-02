@@ -11,17 +11,23 @@
 <meta name="theme-color" content="#F2F1EC">
 <link rel="icon" href="/brand/reco-mark-olive.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="preload" href="/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/3d/reco.glb" as="fetch" crossorigin>
 <style>
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:swap;src:url(/fonts/barlow-condensed-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/barlow-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-latin-600-normal.woff2) format("woff2")}
 /* RECO home. Same scroll film as before (coin → twist → strip, fiber → knee, the knee bends), on the Ceramic brand.
    Light ceramic stage, one product, Instrument Serif for the big lines, Geist Mono for anything measured. */
 :root{
   --bg:#F2F1EC;--paper:#FBFAF7;--bone:#E8E5DC;--line:#E0DCD1;
-  --fg:#1C1E1A;--dim:#5C6058;--faint:#686B62;--olive:#2F3A2C;
+  --fg:#1C1E1A;--dim:#3F433C;--faint:#565A51;--olive:#2F3A2C;
   --teal:#1F8A72;--teal-hi:#3DDBB8;--keep:#6F9E68;--steady:#C99A3A;--ease:#D4673F;
-  --sans:"Geist","Helvetica Neue",Arial,sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace;--serif:"Instrument Serif",Georgia,serif;
+  --sans:"Barlow","Helvetica Neue",Arial,sans-serif;--mono:"Barlow Condensed","Arial Narrow",sans-serif;--serif:"Barlow Condensed","Arial Narrow",sans-serif;
   --out:cubic-bezier(.215,.61,.355,1);
   color-scheme:light;
 }
@@ -33,10 +39,10 @@ img{max-width:100%;display:block}
 p{margin:0}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-.big{font-family:var(--serif);font-weight:400;letter-spacing:-.015em;line-height:.92;margin:0}
-.big em{font-style:italic;color:var(--dim)}
+.big{font-family:var(--serif);font-weight:700;text-transform:uppercase;letter-spacing:-.005em;line-height:.86;margin:0}
+.big em{font-style:normal;color:var(--teal)}
 .small{font-size:13px;color:var(--dim)}
-.caps{font:500 11px/16px var(--mono);letter-spacing:.9px;text-transform:uppercase;color:var(--faint)}
+.caps{font:600 13px/16px var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--faint)}
 .gut{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
 
 /* top bar */
@@ -60,22 +66,22 @@ a{color:inherit;text-decoration:none}
 .hero .poster{position:absolute;inset:0;display:grid;place-items:center;z-index:0}
 .hero .poster img{width:min(86vw,1100px);opacity:0;transition:opacity .6s}
 .hero.static .poster img{opacity:1}
-.hero .ghost{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);text-align:center;font:400 clamp(6rem,24vw,22rem)/1 var(--serif);color:transparent;-webkit-text-stroke:1px rgba(28,30,26,.08);pointer-events:none;z-index:0;white-space:nowrap;transition:opacity .8s}
+.hero .ghost{position:absolute;left:0;right:0;top:46%;transform:translateY(-50%);text-align:center;font:800 clamp(9rem,38vw,36rem)/.8 var(--serif);letter-spacing:-.01em;color:rgba(28,30,26,.045);-webkit-text-stroke:1.5px rgba(28,30,26,.16);pointer-events:none;z-index:0;white-space:nowrap;transition:opacity .8s}
 .hero .ghost.off{opacity:0}
 .hero .under{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:20px;pointer-events:none}
-.hero .lines{position:relative;min-height:5.2em;flex:1;max-width:420px}
+.hero .lines{position:relative;min-height:2.2em;flex:1;max-width:620px}
 .hero .lines p{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(8px);transition:opacity .6s var(--out),transform .6s var(--out);font-size:15px;color:var(--dim)}
 .hero .lines p.on{opacity:1;transform:none}
-.hero .lines b{display:block;margin-top:6px;font:400 clamp(26px,2.6vw,36px)/1.05 var(--serif);color:var(--fg);letter-spacing:-.01em}
-.hero .under .cue{display:flex;align-items:center;gap:10px;transition:opacity .4s;font:500 11px/1 var(--mono);letter-spacing:.9px;text-transform:uppercase;color:var(--faint)}
+.hero .lines b{display:block;font:700 clamp(36px,4.4vw,64px)/.9 var(--serif);text-transform:uppercase;color:var(--fg)}
+.hero .under .cue{display:flex;align-items:center;gap:10px;transition:opacity .4s;font:600 13px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--faint)}
 .hero .under .cue.off{opacity:0}
 .hero .under .cue i{width:1px;height:28px;background:linear-gradient(var(--fg),transparent);animation:drop 2s ease-in-out infinite;transform-origin:top}
 @keyframes drop{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
 .hero .tick{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:12px;justify-items:end}
-.hero .tick span{font:500 11px/1 var(--mono);letter-spacing:.9px;text-transform:uppercase;color:#B9B6AC;transition:color .4s}
+.hero .tick span{font:600 13px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:#9A978E;transition:color .4s}
 .hero .tick span.on{color:var(--fg)}
 .hero .tick span.on::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal);margin-right:8px;vertical-align:1px}
-.hero .hint{position:absolute;z-index:2;left:50%;top:calc(84px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:500 11px/1 var(--mono);letter-spacing:.9px;text-transform:uppercase;color:var(--faint);transition:opacity .4s;pointer-events:none}
+.hero .hint{position:absolute;z-index:2;left:50%;top:calc(84px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:600 13px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);transition:opacity .4s;pointer-events:none}
 .hero .hint.off{opacity:0}
 .hero .pinbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;z-index:1;pointer-events:none;background:linear-gradient(rgba(242,241,236,0),rgba(242,241,236,.92))}
 .flash{position:absolute;inset:0;z-index:1;background:radial-gradient(30% 30% at 50% 55%,rgba(61,219,184,.28),rgba(61,219,184,0));opacity:0;pointer-events:none}
@@ -93,20 +99,20 @@ a{color:inherit;text-decoration:none}
 .film .words h2.on{opacity:1;transform:none;filter:blur(0)}
 .film .words h2.light{color:#F2F1EC}
 .film .cap{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
-.film .meter{font:500 12px/1 var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.film .meter{font:600 15px/1 var(--mono);letter-spacing:1px;color:var(--fg);font-variant-numeric:tabular-nums}
 
 /* statement */
 .statement{height:240vh;position:relative}
 .statement .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:36px;overflow:hidden}
 .statement .big{font-size:clamp(4rem,12.5vw,12rem);position:relative}
 .statement .big .ch{display:inline-block;will-change:opacity,filter,transform}
-.statement .big .w2{display:inline-block;white-space:nowrap;font-style:italic;letter-spacing:var(--ls,-.015em);transition:letter-spacing .08s linear}
+.statement .big .w2{display:inline-block;white-space:nowrap;color:var(--teal);letter-spacing:var(--ls,-.015em);transition:letter-spacing .08s linear}
 .statement.snap .big .w2{transition:letter-spacing .7s cubic-bezier(.2,1.6,.35,1)}
 .statement .lim{position:absolute;left:50%;bottom:-.06em;height:2px;width:var(--lw,0);transform:translateX(-50%);background:linear-gradient(90deg,transparent,#B9B6AC 12%,#B9B6AC 88%,transparent);transition:background .3s}
-.statement .lim span{position:absolute;right:0;top:12px;font:500 11px/1 var(--mono);letter-spacing:.9px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+.statement .lim span{position:absolute;right:0;top:12px;font:600 13px/1 var(--mono);letter-spacing:1.6px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
 .statement.snap .lim{background:linear-gradient(90deg,transparent,var(--teal) 12%,var(--teal) 88%,transparent)}
 .statement.snap .lim span{color:var(--teal)}
-.statement p{max-width:640px;color:var(--dim);font-size:clamp(15px,1.4vw,18px);line-height:1.55}
+.statement p{max-width:640px;color:var(--dim);font-size:clamp(17px,1.6vw,22px);line-height:1.4}
 .statement p b{color:var(--fg);font-weight:500}
 .statement .src{font-size:11px;color:var(--faint);max-width:560px}
 .statement .fade{opacity:var(--o,0);transform:translateY(calc((1 - var(--o,0)) * 18px))}
@@ -137,9 +143,9 @@ a{color:inherit;text-decoration:none}
 .step::before,.step::after{content:"";position:absolute;left:0;top:0;height:2px;border-radius:2px}
 .step::before{right:0;background:var(--line)}
 .step::after{width:calc(var(--f)*100%);background:var(--fg)}
-.step .n{font:500 11px/1 var(--mono);letter-spacing:.9px;color:#B9B6AC}
-.step b{display:block;margin:8px 0 8px;font:600 clamp(17px,1.6vw,22px)/1.15 var(--sans);letter-spacing:-.01em;
-  background:linear-gradient(90deg,var(--fg) 0 calc(var(--f)*100%),#B9B6AC calc(var(--f)*100% + .01%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.step .n{font:600 13px/1 var(--mono);letter-spacing:1.6px;color:#8E8B82}
+.step b{display:block;margin:8px 0 0;font:700 clamp(22px,2.2vw,32px)/1 var(--serif);text-transform:uppercase;letter-spacing:.01em;
+  background:linear-gradient(90deg,var(--fg) 0 calc(var(--f)*100%),#A9A69C calc(var(--f)*100% + .01%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .step p{font-size:13.5px;line-height:1.5;color:var(--dim);opacity:calc(var(--f)*1.4 - .2);transform:translateY(calc((1 - var(--f))*10px));filter:blur(calc((1 - min(1,var(--f)*2))*4px))}
 .step.on .n{color:var(--fg)}
 @media (max-width:760px){
@@ -154,7 +160,7 @@ a{color:inherit;text-decoration:none}
 .learns .big{font-size:clamp(3rem,8.5vw,8rem)}
 .learns .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .learns .cols>div{display:grid;gap:10px;align-content:start;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:24px}
-.learns .cols b{font-weight:600;font-size:clamp(1.1rem,1.6vw,1.35rem);letter-spacing:-.01em}
+.learns .cols b{font:700 clamp(26px,2.6vw,36px)/.95 var(--serif);text-transform:uppercase}
 .learns .cols p{color:var(--dim);font-size:15px;max-width:30em}
 .learns .note{color:var(--faint);font-size:12px}
 .learns .links{display:flex;gap:12px;flex-wrap:wrap}
@@ -256,9 +262,9 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
     <div class="tick" aria-hidden="true"><span class="on">01 Coin</span><span>02 Twist</span><span>03 Strip</span></div>
     <div class="under gut">
       <div class="lines">
-        <p class="on" data-in="0" data-out=".3">Back to training, but not sure how hard to push the knee.<b>RECO measures your comeback.</b></p>
-        <p data-in=".3" data-out=".62">A small coin holds the sensor electronics. Press it when it hurts.<b>One coin, the whole comeback.</b></p>
-        <p data-in=".62" data-out="1.1">It twists into a soft kinesiology strip you wear all day.<b>Trust your comeback.</b></p>
+        <p class="on" data-in="0" data-out=".3"><b>Measure your<br>comeback.</b></p>
+        <p data-in=".3" data-out=".62"><b>One coin.<br>Twist to lock.</b></p>
+        <p data-in=".62" data-out="1.1"><b>Wear it<br>all day.</b></p>
       </div>
       <span class="cue" id="heroCue"><i></i>Scroll</span>
     </div>
@@ -270,7 +276,7 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
     <img class="poster" src="/vid3/v_001.webp" alt="" width="1080" height="608">
     <canvas id="filmCanvas" aria-hidden="true"></canvas>
     <div class="words"><h2 class="big on light" data-in="0" data-out=".45">From the <em>fiber</em></h2><h2 class="big" data-in=".45" data-out="1.01">To the <em>knee</em></h2></div>
-    <div class="cap gut"><p class="small">A bend sensor across the kneecap window, in soft cotton tape.</p><p class="meter" id="meter">Field of view · 6 mm</p></div>
+    <div class="cap gut"><span></span><p class="meter" id="meter">Field of view · 6 mm</p></div>
   </div>
 </section>
 
@@ -278,28 +284,21 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
   <div class="stick">
     <span class="caps fade" data-o=".0,.08">Mission</span>
     <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
-    <p class="fade" data-o=".74,.86">Coming back from a knee injury means pushing a knee you don't fully trust yet. Hold back and the comeback drags on. Push too hard and you're back at the start. <b>About 23 to 30% of young athletes have a second ACL injury after returning to sport.</b> After the first few weeks a PT sees you once or twice a week at most. RECO is built for the days in between.</p>
-    <p class="src fade" data-o=".8,.92">Sources: Paterno et al. 2014; Wiggins et al. 2016. RECO is in development and is not a medical device.</p>
+    <p class="fade" data-o=".74,.86"><b>About 23 to 30% of young athletes have a second ACL injury after returning to sport.</b></p>
+    <p class="src fade" data-o=".8,.92">Paterno et al. 2014; Wiggins et al. 2016</p>
   </div>
 </section>
 
 <section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
   <div class="pin">
     <img class="poster" src="/flex3/k_001.webp" alt="" width="1080" height="608">
-    <canvas id="flexCv" role="img" aria-label="The RECO strip on a knee as it bends from straight to a deep bend. The live reading climbs; past your usual, a next-morning note appears: Ease off today."></canvas>
+    <canvas id="flexCv" role="img" aria-label="The RECO strip on a mannequin knee as it bends from straight to a deep bend."></canvas>
     <div class="hud gut"><div class="box">
-      <div class="read r-top">
-        <span class="caps">Knee bend · live from the tape</span>
-        <strong id="fDeg">0°</strong>
-        <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
-        <span class="small">Your usual · <b>120°</b> · deepest bend, last 7 days</span>
-      </div>
-      <div class="alert" id="fAlert" aria-hidden="true"><span class="caps">RECO · next morning</span><b>Ease off today.</b><span>Yesterday went well above your usual, with a deepest bend of <span id="fPeak">121°</span>. Keep today light: walking, the bike and your PT mobility work.</span></div>
       <div class="steps" id="steps">
-        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b><p>Soft as athletic tape. Under clothes, in class, at practice.</p></div>
-        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>See it get back to zero</b><p>Best straightening and deepest bend, every day, next to your other knee.</p></div>
-        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Tap when it hurts</b><p>Press the coin. Next morning, RECO asks whether it settled.</p></div>
-        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b><p>A daily read against your own usual, with the reason. Keep going, steady, or ease off.</p></div>
+        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b></div>
+        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>See it get back to zero</b></div>
+        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Tap when it hurts</b></div>
+        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b></div>
       </div>
     </div></div>
   </div>
@@ -308,19 +307,19 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 <section class="learns gut" id="learns">
   <h2 class="big rv">Built for the days<br><em>your PT doesn't see.</em></h2>
   <div class="cols">
-    <div class="rv"><span class="caps">01 · Progress</span><b>Back to zero</b><p>Your best straightening and deepest bend, measured all day and shown against your other knee and your own trend.</p></div>
-    <div class="rv"><span class="caps">02 · Pain</span><b>What came before your pain</b><p>Press the coin when it hurts. See what your knee did on the days before a flare-up. Not causes, just what happened first.</p></div>
-    <div class="rv"><span class="caps">03 · Your PT</span><b>The full picture</b><p>A short report to share before a visit, when you choose. Your plan, based on published rehab protocols. Your PT can change it.</p></div>
+    <div class="rv"><span class="caps">01 · Progress</span><b>Back to zero</b><p>Every bend, every day.</p></div>
+    <div class="rv"><span class="caps">02 · Pain</span><b>What came before your pain</b><p>Press the coin when it hurts.</p></div>
+    <div class="rv"><span class="caps">03 · Your PT</span><b>The full picture</b><p>A report for your PT, when you choose.</p></div>
   </div>
   <div class="links rv"><a class="more primary" href="/try/?tape=demo">Try the app in your browser <span aria-hidden="true">→</span></a><a class="more" href="/progress/">See how the app works <span aria-hidden="true">→</span></a></div>
-  <p class="note rv">RECO tracks and shows; your PT makes the calls. RECO is in development and is not a medical device.</p>
+  <p class="note rv">In development. Not a medical device.</p>
 </section>
 
 <section class="join gut" id="join">
   <a class="cta rv" href="#join" data-join><span class="big">Join the<br><em>waitlist</em></span><span class="arrow" aria-hidden="true">→</span></a>
   <div class="row">
-    <p class="small rv">Free. A few quick questions. We only write when there's something to try. <span id="count"></span></p>
-    <aside class="rv"><b>Early testers wanted.</b> Club, college and rec-league athletes coming back from an ACL or meniscus injury, and the PTs and athletic trainers who work with them.</aside>
+    <p class="small rv">Free. We only write when there's something to try. <span id="count"></span></p>
+    <aside class="rv"><b>Early testers wanted.</b> Athletes coming back from an ACL or meniscus injury, and their PTs.</aside>
   </div>
 </section>
 
@@ -608,7 +607,7 @@ const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offs
 
 /* ---------- flex: scroll bends the knee; the reading is the same angle the frame was rendered at ---------- */
 (function flex() {
-  const sec = document.getElementById('how'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), peak = document.getElementById('fPeak');
+  const sec = document.getElementById('how');
   const steps = [...sec.querySelectorAll('.step')];
   const N = 96, LIMIT = 120, MAXD = 135, show = scrubber(sec, document.getElementById('flexCv'), '/flex3/k_', '.webp', N);
   let target = 0, prog = 0, wasOver = false; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
@@ -616,10 +615,6 @@ const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offs
     requestAnimationFrame(tick);
     prog += (target - prog) * (reduce ? 1 : 0.12); if (Math.abs(target - prog) < 0.0003) prog = target;
     const f = Math.round(Math.min(1, prog / 0.86) * (N - 1)); show(f);
-    const d = f / (N - 1) * MAXD, over = d >= LIMIT;
-    deg.textContent = Math.round(d) + '°'; bar.style.width = (d / MAXD * 100) + '%';
-    if (over) peak.textContent = Math.max(121, Math.round(d)) + '°';
-    if (over !== wasOver) { sec.classList.toggle('over', over); wasOver = over; }
     let cur = 0;
     steps.forEach((s, i) => { const a = +s.dataset.a, b = +s.dataset.b, v = cl((prog - a) / (b - a)); s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
     steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
