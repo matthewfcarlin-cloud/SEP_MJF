@@ -175,6 +175,8 @@ a{color:inherit;text-decoration:none}
 /* join */
 .join{min-height:100vh;display:grid;align-content:center;gap:56px;padding-block:120px;border-top:1px solid var(--line)}
 .join .big{font-size:clamp(3.6rem,11vw,10rem)}
+.bendin{display:inline-block;perspective:900px}
+.bendin .ch{display:inline-block;transform-origin:50% 100%;will-change:transform,filter,opacity}
 .join .row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start}
 .join aside{color:var(--dim);font-size:14px;max-width:380px;justify-self:end;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
 .join aside b{color:var(--fg);font-weight:600}
@@ -284,9 +286,8 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 <section class="statement gut" id="mission">
   <div class="stick">
     <span class="caps fade" data-o=".0,.08">Mission</span>
-    <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span><i class="lim" aria-hidden="true"><span id="limDeg">0°</span></i></h2>
-    <p class="fade" data-o=".74,.86"><b>About 23 to 30% of young athletes have a second ACL injury after returning to sport.</b></p>
-    <p class="src fade" data-o=".8,.92">Paterno et al. 2014; Wiggins et al. 2016</p>
+    <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span></h2>
+    <p class="fade" data-o=".74,.86"><b>Recovery is hard.</b> We're here to help you through every day of it.</p>
   </div>
 </section>
 
@@ -323,7 +324,7 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 </section>
 
 <section class="join gut" id="join">
-  <a class="cta rv" href="#join" data-join><span class="big">Join the<br><em>waitlist</em></span><span class="arrow" aria-hidden="true">→</span></a>
+  <a class="cta" href="#join" data-join aria-label="Join the waitlist"><span class="big bendin" id="bendin" aria-hidden="true"><span class="ln">Join the</span><br><span class="ln"><em>waitlist</em></span></span><span class="arrow" aria-hidden="true">→</span></a>
   <div class="row">
     <p class="small rv">Free. We only write when there's something to try. <span id="count"></span></p>
     <aside class="rv"><b>Early testers wanted.</b> Athletes coming back from an ACL or meniscus injury, and their PTs.</aside>
@@ -470,7 +471,7 @@ const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offs
 /* ---------- statement: letters fill, "comeback." stretches past your usual and snaps back ---------- */
 (function lit() {
   const sec = document.getElementById('mission'), h = document.getElementById('lit');
-  const w2 = h.querySelector('.w2'), lim = h.querySelector('.lim'), deg = document.getElementById('limDeg');
+  const w2 = h.querySelector('.w2');
   const fades = [...sec.querySelectorAll('.fade')].map(el => [el, ...el.dataset.o.split(',').map(Number)]);
   const chars = [];
   h.querySelectorAll('.w1,.w2').forEach(w => { const t = w.textContent; w.textContent = ''; for (const c of t) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? ' ' : c; w.appendChild(s); chars.push(s); } });
@@ -481,8 +482,6 @@ const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offs
     const st = cl((p - STR_A) / (STR_B - STR_A)), snap = p > STR_B;
     if (snap !== snapped) { snapped = snap; sec.classList.toggle('snap', snap); }
     w2.style.setProperty('--ls', snap ? '-.015em' : (-.015 + st * (innerWidth < 700 ? .05 : .16)).toFixed(3) + 'em');
-    lim.style.setProperty('--lw', (cl((p - .42) / .12) * 100).toFixed(1) + '%');
-    deg.textContent = (snap ? 120 : Math.round(st * 119)) + '°' + (snap ? ' · your usual' : '');
     fades.forEach(([el, a, b]) => el.style.setProperty('--o', cl((p - a) / (b - a)).toFixed(3)));
   };
   addEventListener('scroll', upd, {passive: true}); addEventListener('resize', upd); upd();
@@ -512,6 +511,42 @@ if ('IntersectionObserver' in window && !reduce) {
   const io = new IntersectionObserver(es => { let k = 0; es.forEach(e => { if (e.isIntersecting) { const el = e.target; setTimeout(() => el.classList.remove('pending'), 60 * k++); io.unobserve(el); } }); }, {rootMargin: '0px 0px -10% 0px'});
   document.querySelectorAll('.rv').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } });
 }
+
+/* ---------- join: the headline starts bent round a knee, edges blurred, and straightens as you scroll in ---------- */
+(function bendIn() {
+  const el = document.getElementById('bendin'); if (!el) return;
+  const chars = [];
+  el.querySelectorAll('.ln').forEach((ln, li) => {
+    const walk = node => [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) { const f = document.createDocumentFragment(); for (const c of n.textContent) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? '\u00a0' : c; f.appendChild(s); chars.push({s, li}); } n.replaceWith(f); }
+      else walk(n);
+    });
+    walk(ln);
+  });
+  let geo = [];
+  const measure = () => {
+    chars.forEach(c => c.s.style.transform = c.s.style.filter = c.s.style.opacity = '');
+    const lines = {}; chars.forEach(c => { const r = c.s.getBoundingClientRect(); c.cx = r.left + r.width / 2; (lines[c.li] = lines[c.li] || []).push(c); });
+    geo = chars.map(c => { const L = lines[c.li], a = L[0].s.getBoundingClientRect().left, b = L[L.length - 1].s.getBoundingClientRect().right, m = (a + b) / 2, h = (b - a) / 2;
+      return {s: c.s, x: (c.cx - m) / h, w: h}; });
+  };
+  const sec = document.getElementById('join');
+  const upd = () => {
+    const r = el.getBoundingClientRect(), H = innerHeight, c = r.top + r.height / 2;
+    const k = reduce ? 1 : cl((H * 0.95 - c) / (H * 0.4));          // short scroll: headline centre from 95% to 55% of the screen
+    const e = 1 - Math.pow(1 - k, 3), bend = 1 - e;
+    geo.forEach(({s, x, w}) => {
+      const ax = Math.abs(x), ang = x * 34 * bend;                  // each side curls back as if wrapped over a knee
+      const lift = ax * ax * w * 0.22 * bend;
+      s.style.transform = bend < 0.001 ? '' : `translateY(${lift.toFixed(1)}px) rotateY(${(-ang).toFixed(2)}deg) rotateZ(${(x * 9 * bend).toFixed(2)}deg)`;
+      s.style.filter = bend < 0.001 ? '' : `blur(${(Math.pow(ax, 1.6) * 9 * bend).toFixed(2)}px)`;
+      s.style.opacity = (1 - Math.pow(ax, 2) * 0.75 * bend).toFixed(3);
+    });
+  };
+  const all = () => { measure(); upd(); };
+  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', all);
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(all); all();
+})();
 
 /* ---------- waitlist intake (opens on "Join") ---------- */
 const dlg = document.getElementById('intake'), form = document.getElementById('form'), msg = document.getElementById('msg'), patientRows = [...form.querySelectorAll('[data-patient]')];
