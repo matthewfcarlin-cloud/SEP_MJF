@@ -93,6 +93,7 @@ a{color:inherit;text-decoration:none}
 .film .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
 .film canvas,.film .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .film canvas{opacity:0;transition:opacity .6s}.film.live canvas{opacity:1}
+.film .poster{transition:opacity .6s}.film.live .poster{opacity:0}
 .film .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(242,241,236,.75),rgba(242,241,236,0) 26%,rgba(242,241,236,0) 68%,rgba(242,241,236,.9));pointer-events:none}
 .film .words{position:absolute;inset:0;z-index:2;display:grid;place-items:center;text-align:center;pointer-events:none}
 .film .words h2{grid-area:1/1;font-size:clamp(4rem,13vw,12rem);opacity:0;transform:translateY(24px) scale(.98);transition:opacity .8s,transform 1s cubic-bezier(.2,.8,.2,1),color .6s;filter:blur(6px)}
@@ -122,6 +123,7 @@ a{color:inherit;text-decoration:none}
 .flex .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
 .flex canvas,.flex .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .flex canvas{opacity:0;transition:opacity .6s}.flex.live canvas{opacity:1}
+.flex .poster{transition:opacity .6s}.flex.live .poster{opacity:0}
 .flex .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(242,241,236,.7),rgba(242,241,236,0) 24%,rgba(242,241,236,0) 60%,rgba(242,241,236,.96));pointer-events:none}
 .flex .hud{position:absolute;inset:0;z-index:2;pointer-events:none}.flex .hud .box{position:relative;height:100%}
 .read{position:absolute;display:grid;gap:6px}
