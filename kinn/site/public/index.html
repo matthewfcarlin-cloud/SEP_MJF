@@ -295,6 +295,12 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
     <img class="poster" src="/flex7/k_001.webp" alt="" width="1440" height="810">
     <canvas id="flexCv" role="img" aria-label="The RECO strip and puck bending from straight to a deep knee bend."></canvas>
     <div class="hud gut"><div class="box">
+      <div class="read r-top">
+        <span class="caps">Knee bend · live from the tape</span>
+        <strong id="fDeg">0°</strong>
+        <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
+        <span class="small">Your usual · <b>120°</b></span>
+      </div>
       <div class="steps" id="steps">
         <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b></div>
         <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>See it get back to zero</b></div>
@@ -484,14 +490,17 @@ const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offs
 
 /* ---------- flex: scroll bends the knee; the reading is the same angle the frame was rendered at ---------- */
 (function flex() {
-  const sec = document.getElementById('how');
+  const sec = document.getElementById('how'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar');
   const steps = [...sec.querySelectorAll('.step')];
-  const N = 96, LIMIT = 120, MAXD = 135, show = scrubber(sec, document.getElementById('flexCv'), '/flex7/k_', '.webp', N);
+  const N = 96, LIMIT = 120, MAXD = 135, BEND = 130, show = scrubber(sec, document.getElementById('flexCv'), '/flex7/k_', '.webp', N);
   let target = 0, prog = 0, wasOver = false; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
   (function tick() {
     requestAnimationFrame(tick);
     prog += (target - prog) * (reduce ? 1 : 0.12); if (Math.abs(target - prog) < 0.0003) prog = target;
     const f = Math.round(Math.min(1, prog / 0.86) * (N - 1)); show(f);
+    const u = f / (N - 1), d = BEND * u * u * (3 - 2 * u), over = d >= LIMIT;   // same eased angle the frame was rendered at
+    deg.textContent = Math.round(d) + '°'; bar.style.width = (d / MAXD * 100) + '%';
+    if (over !== wasOver) { sec.classList.toggle('over', over); wasOver = over; }
     let cur = 0;
     steps.forEach((s, i) => { const a = +s.dataset.a, b = +s.dataset.b, v = cl((prog - a) / (b - a)); s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
     steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
