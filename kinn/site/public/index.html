@@ -12,7 +12,7 @@
 <link rel="icon" href="/brand/reco-mark-olive.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
 <link rel="preload" href="/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/3d/reco.glb" as="fetch" crossorigin>
+<link rel="preload" href="/hero7/h_001.webp" as="image">
 <style>
 @font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
@@ -58,14 +58,14 @@ a{color:inherit;text-decoration:none}
 .arc{stroke-dasharray:1;stroke-dashoffset:1;animation:arc .9s var(--out) .25s forwards}
 @keyframes arc{to{stroke-dashoffset:0}}
 
-/* hero: interactive 3D from the real CAD. Cursor tilts the coin; scroll drops it, twists it 60° into the lock, pulls back to the strip */
+/* hero: path-traced RECO v7 frames (Blender, from the Fusion CAD). Scroll floats the puck, drops it, twists it 60° into the lock, pulls back to the strip */
 .hero{position:relative;height:340vh}
 .hero .pinbox{position:sticky;top:0;height:100vh;height:100svh;min-height:540px;overflow:hidden;background:radial-gradient(70% 60% at 50% 46%,#FBFAF7,var(--bg) 70%)}
-#gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;cursor:grab}
-#gl:active{cursor:grabbing}
+#heroCv{position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);display:block;z-index:1;opacity:0;transition:opacity .6s;will-change:transform}
+.hero.live #heroCv{opacity:1}
 .hero .poster{position:absolute;inset:0;display:grid;place-items:center;z-index:0}
-.hero .poster img{width:min(86vw,1100px);opacity:0;transition:opacity .6s}
-.hero.static .poster img{opacity:1}
+.hero .poster img{width:100%;height:100%;object-fit:cover;opacity:1;transition:opacity .6s}
+.hero.live .poster img{opacity:0}
 .hero .ghost{position:absolute;left:0;right:0;top:46%;transform:translateY(-50%);text-align:center;font:800 clamp(9rem,38vw,36rem)/.8 var(--serif);letter-spacing:-.01em;color:rgba(28,30,26,.045);-webkit-text-stroke:1.5px rgba(28,30,26,.16);pointer-events:none;z-index:0;white-space:nowrap;transition:opacity .8s}
 .hero .ghost.off{opacity:0}
 .hero .under{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:20px;pointer-events:none}
@@ -255,10 +255,9 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 <section class="hero" id="top" aria-label="The RECO coin turns in front of you, drops and twists into the tape's mount, then the view pulls back to show the whole strip">
   <div class="pinbox">
     <span class="ghost" id="ghost" aria-hidden="true">RECO</span>
-    <div class="poster" aria-hidden="true"><img src="/img/v3/reco_hero.jpg" alt=""></div>
-    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="poster" aria-hidden="true"><img src="/hero7/h_001.webp" alt="" width="1440" height="810"></div>
+    <canvas id="heroCv" aria-hidden="true"></canvas>
     <div class="flash" id="flash" aria-hidden="true"></div>
-    <span class="hint" id="hint">Move to turn the coin</span>
     <div class="tick" aria-hidden="true"><span class="on">01 Coin</span><span>02 Twist</span><span>03 Strip</span></div>
     <div class="under gut">
       <div class="lines">
@@ -273,7 +272,7 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 
 <section class="film" id="film" aria-label="Close-up of the woven tape and the sensor strip, pulling back to the whole strip">
   <div class="pin">
-    <img class="poster" src="/vid3/v_001.webp" alt="" width="1080" height="608">
+    <img class="poster" src="/film7/v_001.webp" alt="" width="1440" height="810">
     <canvas id="filmCanvas" aria-hidden="true"></canvas>
     <div class="words"><h2 class="big on light" data-in="0" data-out=".45">From the <em>fiber</em></h2><h2 class="big" data-in=".45" data-out="1.01">To the <em>knee</em></h2></div>
     <div class="cap gut"><span></span><p class="meter" id="meter">Field of view · 6 mm</p></div>
@@ -291,8 +290,8 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 
 <section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
   <div class="pin">
-    <img class="poster" src="/flex3/k_001.webp" alt="" width="1080" height="608">
-    <canvas id="flexCv" role="img" aria-label="The RECO strip on a knee as it bends from straight to a deep bend."></canvas>
+    <img class="poster" src="/flex7/k_001.webp" alt="" width="1440" height="810">
+    <canvas id="flexCv" role="img" aria-label="The RECO strip and puck bending from straight to a deep knee bend."></canvas>
     <div class="hud gut"><div class="box">
       <div class="steps" id="steps">
         <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b></div>
@@ -401,9 +400,6 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
   <p class="small">© 2026 RECO. In development. Not a medical device.</p>
 </footer>
 
-<script src="/vendor/three.min.js"></script>
-<script src="/vendor/GLTFLoader.js"></script>
-<script src="/vendor/RoomEnvironment.js"></script>
 <script>
 document.documentElement.classList.add('js');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -411,157 +407,13 @@ const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const topbar = document.getElementById('topbar');
 addEventListener('scroll', () => topbar.classList.toggle('solid', scrollY > 40), {passive: true});
 
-/* ---------- hero: the real Kinn Coin v3 + reco tape v2 CAD, live in WebGL ---------- */
-(function hero() {
-  const sec = document.getElementById('top'), canvas = document.getElementById('gl');
-  const lines = [...sec.querySelectorAll('.lines [data-in]')], ticks = [...sec.querySelectorAll('.tick span')];
-  const cue = document.getElementById('heroCue'), ghost = document.getElementById('ghost'), flashEl = document.getElementById('flash'), hint = document.getElementById('hint');
-  const fallback = () => { sec.classList.add('static'); lines.forEach((l, i) => l.classList.toggle('on', i === 2)); hint.classList.add('off'); };
-  if (!window.THREE || !THREE.GLTFLoader || !THREE.RoomEnvironment) return fallback();
-  let r; try { r = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true}); } catch (e) { return fallback(); }
-  if (!r.getContext()) return fallback();
-  r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.outputEncoding = THREE.sRGBEncoding;
-  r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0;
-  r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
-  r.physicallyCorrectLights = true;
-  THREE.ColorManagement.legacyMode = false;
-  const scene = new THREE.Scene();
-
-  const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-
-  const key = new THREE.DirectionalLight(0xfff4e8, 2.2); key.position.set(-4, 9, 5); key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0004;
-  Object.assign(key.shadow.camera, {left: -8, right: 8, top: 8, bottom: -8, near: 1, far: 30});
-  scene.add(key, new THREE.HemisphereLight(0xffffff, 0xd6d2c6, 0.9));
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({opacity: 0.16}));
-  ground.rotation.x = -Math.PI / 2; ground.position.y = -0.004; ground.receiveShadow = true; scene.add(ground);
-
-  // woven cotton normal map, drawn once (plain weave, slightly irregular threads)
-  const weave = (() => {
-    const n = 256, c = document.createElement('canvas'); c.width = c.height = n; const g = c.getContext('2d'), h = new Float32Array(n * n);
-    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-      const u = x / n * 2, v = y / n * 2, cu = Math.floor(u), cv = Math.floor(v), over = (cu + cv) % 2;
-      const pu = Math.sin(Math.PI * (u - cu)), pv = Math.sin(Math.PI * (v - cv));
-      h[y * n + x] = Math.max(pu * (over ? 1 : .6), pv * (over ? .6 : 1)) + (Math.random() - .5) * .25;
-    }
-    const im = g.createImageData(n, n);
-    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
-      const i = y * n + x, dx = h[y * n + (x + 1) % n] - h[y * n + (x + n - 1) % n], dy = h[((y + 1) % n) * n + x] - h[((y + n - 1) % n) * n + x];
-      const nx = -dx * 1.4, ny = -dy * 1.4, l = Math.hypot(nx, ny, 1);
-      im.data[i * 4] = (nx / l * .5 + .5) * 255; im.data[i * 4 + 1] = (ny / l * .5 + .5) * 255; im.data[i * 4 + 2] = (1 / l * .5 + .5) * 255; im.data[i * 4 + 3] = 255;
-    }
-    g.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 1.3, 1 / 1.4); t.anisotropy = 8; return t;
-  })();
-
-  const MAT = {
-    'Case satin': new THREE.MeshPhysicalMaterial({color: 0xd6d7d9, metalness: 1, roughness: 0.4, envMapIntensity: 0.95}),
-    'Shoulder satin': new THREE.MeshPhysicalMaterial({color: 0xd9dadc, metalness: 1, roughness: 0.38, envMapIntensity: 0.95}),
-    'Dial ring brushed': new THREE.MeshPhysicalMaterial({color: 0xeeeeef, metalness: 1, roughness: 0.16}),
-    'Mark arc': new THREE.MeshPhysicalMaterial({color: 0xeeeeef, metalness: 1, roughness: 0.22}),
-    'Mark track': new THREE.MeshStandardMaterial({color: 0x45474a, roughness: 0.5}),
-    'Dial matte': new THREE.MeshStandardMaterial({color: 0x161817, roughness: 0.66, envMapIntensity: 0.45}),
-    'Band matte': new THREE.MeshStandardMaterial({color: 0x1b1d1c, roughness: 0.62}),
-    'Underside': new THREE.MeshStandardMaterial({color: 0x1a1c1b, roughness: 0.7}),
-    'Mount': new THREE.MeshStandardMaterial({color: 0x222423, roughness: 0.62}),
-    'Gold': new THREE.MeshStandardMaterial({color: 0xe8c27a, metalness: 1, roughness: 0.25}),
-    'KT tape': new THREE.MeshPhysicalMaterial({color: 0x2a2b2c, roughness: 0.96, sheen: 1, sheenRoughness: 0.6, sheenColor: new THREE.Color(0x6a6a68), normalMap: weave, normalScale: new THREE.Vector2(0.55, 0.55), specularIntensity: 0.15}),
-    'Sensor film': new THREE.MeshPhysicalMaterial({color: 0x101112, roughness: 0.4, clearcoat: 0.4, clearcoatRoughness: 0.3}),
-    'Sensor tail': new THREE.MeshStandardMaterial({color: 0xd6d5d0, roughness: 0.5}),
-    'Teal glow': new THREE.MeshBasicMaterial({color: new THREE.Color(0x3ddbb8)}),
-  };
-  ['Dial matte', 'Mark track', 'Mark arc', 'Sensor tail', 'Sensor film'].forEach(k => MAT[k].side = THREE.DoubleSide);
-  const ringMat = MAT['Teal glow'];
-  const pins = new THREE.MeshStandardMaterial({color: 0xc9cacc, metalness: 1, roughness: 0.25});
-
-  const S = 40;                 // scene units per metre (coin ≈ 0.9 units)
-  const cam = new THREE.PerspectiveCamera(30, 1, 0.01, 200);
-  let portrait = false;
-  function size() { const w = canvas.clientWidth, h = canvas.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; portrait = h > w; cam.fov = portrait ? 44 : 30; cam.updateProjectionMatrix(); }
-
-  let coin = null, D = new THREE.Vector3(), ready = false;
-  new THREE.GLTFLoader().load('/3d/reco.glb', g => {
-    const root = g.scene; root.scale.setScalar(S); scene.add(root);
-    root.traverse(o => {
-      if (!o.isMesh) return;
-      const m = MAT[o.material.name] || (o.name.startsWith('Pin') ? pins : null); if (m) o.material = m;
-      o.castShadow = o.material !== ringMat; o.receiveShadow = false;
-    });
-    ['Tape', 'Cross_anchor', 'Mount', 'Mount_floor', 'Sensor', 'Sensor_tail'].forEach(n => { const o = root.getObjectByName(n); if (o) o.receiveShadow = true; });
-    coin = root.getObjectByName('Coin');
-    root.updateMatrixWorld(true); coin.getWorldPosition(D);
-    // keep the coin in world space so it can fly free of the tape
-    scene.attach(coin); coin.rotation.order = 'YXZ';
-    ready = true; size();
-  }, undefined, fallback);
-
-  const seg = (p, a, b) => cl((p - a) / (b - a)), ss = t => t * t * (3 - 2 * t), easeIn = t => t * t * t, lerp = (a, b, t) => a + (b - a) * t, v3 = (x, y, z) => new THREE.Vector3(x, y, z);
-  const LOCK = 0.6;             // scroll point where the twist clicks home
-  let target = 0, prog = 0, mx = 0, my = 0, tx = 0, ty = 0, vis = true, snapT = -1, was = false, drag = null, spin = 0, spinV = 0, moved = false;
-  addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; if (drag !== null) { spinV = (e.clientX - drag) * 0.012; spin += spinV; drag = e.clientX; } if (!moved && Math.hypot(tx, ty) > .05) { moved = true; hint.classList.add('off'); } }, {passive: true});
-  canvas.addEventListener('pointerdown', e => { drag = e.clientX; canvas.setPointerCapture(e.pointerId); });
-  addEventListener('pointerup', () => { drag = null; });
-  const read = () => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; target = cl(-b.top / Math.max(1, span)); };
-  addEventListener('scroll', read, {passive: true}); addEventListener('resize', size);
-  new IntersectionObserver(es => vis = es[0].isIntersecting).observe(sec);
-  size(); read(); prog = target;
-
-  const P = new THREE.Vector3(), T = new THREE.Vector3(), t0 = performance.now();
-  (function loop(now) {
-    requestAnimationFrame(loop); if (!vis || !ready) return;
-    const t = (now - t0) / 1000;
-    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0003) prog = target;
-    mx += (tx - mx) * 0.06; my += (ty - my) * 0.06;
-    if (drag === null) { spinV *= 0.94; spin += spinV; spin *= (1 - seg(prog, 0.2, 0.45)); }
-    const p = reduce ? Math.max(prog, 1) : prog, far = portrait ? 1.7 : 1;
-
-    // coin: faces you and follows the cursor → lies flat → drops onto the mount turned 60° → twists home
-    const hover = D.clone().add(v3(0, 2.4, 0.6));
-    const a1 = ss(seg(p, 0.16, 0.40));
-    const fall = ss(seg(p, 0.38, 0.5));
-    const twist = ss(seg(p, 0.5, LOCK));
-    const locked = p >= LOCK;
-    const bob = locked ? 0 : Math.sin(t * 1.1) * 0.035 * (1 - a1);
-    const above = D.clone().add(v3(0, 0.12, 0));
-    const hp = hover.clone().lerp(above.clone().add(v3(0, 0.9, 0)), a1);
-    coin.position.copy(hp.lerp(above, fall)); coin.position.y += bob - 0.12 * twist;
-    coin.rotation.x = lerp(Math.PI / 2 - 0.22, 0, a1) + my * 0.4 * (1 - a1);
-    coin.rotation.z = (1 - a1) * (Math.sin(t * 0.6) * 0.08 - mx * 0.5);
-    coin.rotation.y = lerp(Math.sin(t * 0.45) * 0.3 + mx * 0.9 + spin, 0, a1) + lerp(0, -Math.PI / 3, a1) * (1 - twist);
-
-    // the lock: LED ring flashes teal, a soft pulse
-    if (locked && !was) { snapT = now; was = true; } if (!locked && was) { was = false; snapT = -1; }
-    const since = snapT < 0 ? 99 : (now - snapT) / 1000, burst = Math.exp(-since * 3.5);
-    ringMat.color.setRGB(0.24, 0.86, 0.72).multiplyScalar(locked ? 1 + 2.5 * burst : 0.35 + 0.15 * Math.sin(t * 2));
-    flashEl.style.opacity = locked ? (0.9 * burst).toFixed(3) : 0;
-    const shake = locked ? 0.01 * Math.exp(-since * 9) * Math.sin(since * 60) : 0;
-
-    // camera: face to face → above the mount → the whole strip
-    const pull = ss(seg(p, LOCK + 0.04, 1));
-    const camA = hover.clone().add(v3(0, 0.05, 3.4 * far));
-    const camB = D.clone().add(v3(1.5, 3.4 * far, 3.3 * far));
-    const camC = portrait ? v3(1.6, 26, 12) : v3(12.5, 12.5, 4.5);
-    const tgA = hover, tgB = D, tgC = portrait ? v3(0, 0, 0.2) : v3(0, -0.6, 0.0);
-    const k1 = ss(seg(p, 0.14, 0.5));
-    P.copy(camA).lerp(camB, k1); T.copy(tgA).lerp(tgB, k1);
-    P.lerp(camC, pull); T.lerp(tgC, pull);
-    P.x += mx * 0.6 * pull + shake; P.y += -my * 0.4 * pull + shake;
-    cam.position.copy(P); cam.lookAt(T);
-    r.render(scene, cam);
-
-    lines.forEach(l => l.classList.toggle('on', p >= +l.dataset.in && p < +l.dataset.out));
-    const phase = p < 0.38 ? 0 : p < LOCK + 0.04 ? 1 : 2;
-    ticks.forEach((s, i) => s.classList.toggle('on', i === phase));
-    cue.classList.toggle('off', p > 0.03); ghost.classList.toggle('off', p > 0.2); if (p > 0.1) hint.classList.add('off');
-  })(t0);
-})();
-
 /* ---------- frame scrubbers (film + flex share one loader) ---------- */
 function scrubber(sec, cv, base, ext, N, firstFrames) {
   const ctx = cv.getContext('2d'), frames = []; let started = false, shown = -1;
   const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); shown = -1; };
   addEventListener('resize', fit); fit();
   const ready = im => im && im.complete && im.naturalWidth;
-  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
+  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.clearRect(0, 0, W, H); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
   const load = () => { const order = []; for (let k = 8; k >= 1; k >>= 1) for (let i = 0; i < N; i += k) if (!order.includes(i)) order.push(i);
     order.forEach(i => { const im = new Image(); if (!i) im.onload = () => { sec.classList.add('live'); shown = -1; }; im.src = base + String(i + 1).padStart(3, '0') + ext; frames[i] = im; }); };
   new IntersectionObserver(es => { if (es[0].isIntersecting && !started) { started = true; load(); } }, {rootMargin: '150% 0px'}).observe(sec);
@@ -569,17 +421,40 @@ function scrubber(sec, cv, base, ext, N, firstFrames) {
 }
 const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; return cl(-b.top / Math.max(1, span)); };
 
+/* ---------- hero: RECO v7 frames. Float + turn → drop + 60° twist (lock at .6) → pull back to the strip ---------- */
+(function hero() {
+  const sec = document.getElementById('top'), cv = document.getElementById('heroCv');
+  const lines = [...sec.querySelectorAll('.lines [data-in]')], ticks = [...sec.querySelectorAll('.tick span')];
+  const cue = document.getElementById('heroCue'), ghost = document.getElementById('ghost'), flashEl = document.getElementById('flash');
+  const N = 120, LOCK = 0.6, show = scrubber(sec, cv, '/hero7/h_', '.webp', N);
+  let target = 0, prog = 0, mx = 0, my = 0, tx = 0, ty = 0, was = false, snapT = -1;
+  addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, {passive: true});
+  const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read(); prog = target;
+  (function tick(now) {
+    requestAnimationFrame(tick);
+    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0003) prog = target;
+    const p = reduce ? 1 : prog; show(Math.round(p * (N - 1)));
+    mx += (tx - mx) * 0.05; my += (ty - my) * 0.05;                       // a little depth under the cursor
+    const k = reduce ? 0 : 1 - p * 0.6; cv.style.transform = `translate3d(${(-mx * 14 * k).toFixed(1)}px,${(-my * 10 * k).toFixed(1)}px,0)`;
+    const locked = p >= LOCK; if (locked && !was) { snapT = now; was = true; } if (!locked && was) { was = false; snapT = -1; }
+    const since = snapT < 0 ? 99 : (now - snapT) / 1000; flashEl.style.opacity = locked && !reduce ? (0.9 * Math.exp(-since * 3.5)).toFixed(3) : 0;
+    lines.forEach(l => l.classList.toggle('on', p >= +l.dataset.in && p < +l.dataset.out));
+    const phase = p < 0.36 ? 0 : p < LOCK + 0.04 ? 1 : 2; ticks.forEach((s, i) => s.classList.toggle('on', i === phase));
+    cue.classList.toggle('off', p > 0.03); ghost.classList.toggle('off', p > 0.3);
+  })(performance.now());
+})();
+
 /* ---------- film: scroll scrubs fiber → strip ---------- */
 (function film() {
   const sec = document.getElementById('film'), words = [...sec.querySelectorAll('[data-in]')], meter = document.getElementById('meter');
-  const N = 90, show = scrubber(sec, document.getElementById('filmCanvas'), '/vid3/v_', '.webp', N);
+  const N = 90, show = scrubber(sec, document.getElementById('filmCanvas'), '/film7/v_', '.webp', N);
   let target = 0, prog = 0; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
   (function tick() {
     requestAnimationFrame(tick);
     prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0004) prog = target;
     const u = Math.min(1, prog / 0.92); show(Math.round(u * (N - 1)));
     words.forEach(w => w.classList.toggle('on', prog >= +w.dataset.in && prog < +w.dataset.out));
-    const fov = 6 * Math.pow(318 / 6, Math.pow(u, 1.15));   // same zoom curve the render used
+    const fov = 7.2 * Math.pow(266 / 7.2, Math.pow(u, 1.2));   // same zoom curve the render used
     meter.textContent = 'Field of view · ' + (fov < 100 ? fov.toFixed(fov < 10 ? 1 : 0) : Math.round(fov)) + ' mm';
   })();
 })();
@@ -609,7 +484,7 @@ const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offs
 (function flex() {
   const sec = document.getElementById('how');
   const steps = [...sec.querySelectorAll('.step')];
-  const N = 96, LIMIT = 120, MAXD = 135, show = scrubber(sec, document.getElementById('flexCv'), '/flex3/k_', '.webp', N);
+  const N = 96, LIMIT = 120, MAXD = 135, show = scrubber(sec, document.getElementById('flexCv'), '/flex7/k_', '.webp', N);
   let target = 0, prog = 0, wasOver = false; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
   (function tick() {
     requestAnimationFrame(tick);
