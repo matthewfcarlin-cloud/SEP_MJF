@@ -28,10 +28,10 @@ function scrubber(sec, cv, base, ext, N, scaleFor) {
   const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); shown = -1; };
   addEventListener('resize', fit); fit();
   const ready = im => im && im.complete && im.naturalWidth;
-  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = scaleFor ? scaleFor(W, H, im.naturalWidth, im.naturalHeight) : Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.clearRect(0, 0, W, H); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
+  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = scaleFor ? scaleFor(W, H, im.naturalWidth, im.naturalHeight, i) : Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.clearRect(0, 0, W, H); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
   const conn = navigator.connection || {}, stride = innerWidth < 760 || conn.saveData ? 2 : 1;   // phones and data-saver load every second frame
   const load = () => { const order = []; for (let k = 8; k >= stride; k >>= 1) for (let i = 0; i < N; i += k) if (!order.includes(i)) order.push(i);
-    frameQueue.add(sec, order.map(i => () => { const im = new Image(); frames[i] = im; if (!i) im.addEventListener('load', () => { sec.classList.add('live'); shown = -1; }); return [im, base + String(i + 1).padStart(3, '0') + ext]; })); };
+    frameQueue.add(sec, order.map(i => () => { const im = new Image(); frames[i] = im; if (!i) im.addEventListener('load', () => { sec.classList.add('live'); shown = -1; }); return [im, typeof base === 'function' ? base(i) : base + String(i + 1).padStart(3, '0') + ext]; })); };
   new IntersectionObserver(es => { if (es[0].isIntersecting && !started) { started = true; load(); } }, {rootMargin: '150% 0px'}).observe(sec);
   return f => { if (f !== shown && started) { let k = f; while (k > 0 && !ready(frames[k])) k--; if (draw(k)) shown = k === f ? f : -1; } };
 }

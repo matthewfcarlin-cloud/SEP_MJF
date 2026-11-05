@@ -2,7 +2,7 @@
 
   /Applications/Blender.app/Contents/MacOS/Blender -b -P reco_worn.py -- <mode> <outdir> [pct] [samples] [f0] [f1] [nf]
 
-modes
+modes (the last four chain into one film on the page: bend, link_press, press, link_phone, phone, link_away, link_legs, turn)
   test    one frame of each shot, for checking fit and light
   on      tape smooths onto the knee from the kneecap outward, puck twists in, ring lights
   bend    side-on knee bend, 0 to 130 degrees (same eased angle the page reads out)
@@ -10,6 +10,10 @@ modes
   press   close on the puck: it clicks down and the ring answers
   turn    both legs standing, the camera walks round them (portrait frames)
   phone   a phone turns in the dark, showing the real app screens (v7/app_*.png)
+  link_press  from the end of bend: the knee straightens and the camera flies down to the first frame of press
+  link_phone  from the end of press: into the coin's black face, then the app screen lights out of that black and pulls back to the first frame of phone (first 24 frames are the coin)
+  link_away   from the end of phone: it turns edge-on and goes out
+  link_legs   from black: the ring first, then the legs, ending on the first frame of turn
   still   the wide worn stills
 
 Frames are transparent and the leg fades out at both ends, so they sit on any page colour.
@@ -740,14 +744,38 @@ def cam_on(t=1.0):
     camera(a.lerp(b, e), (0, 0.03, 0.03), 56, 11, focus=(0.02, 0.06, 0.05))
 
 
-def cam_bend(u):
+def bend_view(u):
     e = ease(u)
-    camera((0.74 + 0.20 * e, -0.05, 0.60 + 0.06 * e), (0, -0.02 + 0.03 * e, -0.015 - 0.095 * e), 66, 16, focus=(0.05, 0.0, 0.03))
+    return (0.74 + 0.20 * e, -0.05, 0.60 + 0.06 * e), (0, -0.02 + 0.03 * e, -0.015 - 0.095 * e), 66, 16, (0.05, 0.0, 0.03)
+
+
+def press_view():
+    p = Vector(PUCK_POS) * MM
+    t = p + Vector((0, -0.012, 0))
+    return p + Vector((0.075, -0.075, 0.105)), t, 70, 5.6, t
+
+
+def coin_view():
+    """Nose against the middle of the coin's black face, looking straight down at it."""
+    n = Vector(PUCK_N).normalized()
+    f = Vector(PUCK_POS) * MM + n * (7.62 * MM)
+    return f + n * 0.007, f, 70, 11, f
+
+
+def cam_bend(u):
+    camera(*bend_view(u))
 
 
 def cam_press():
-    p = Vector(PUCK_POS) * MM
-    camera(p + Vector((0.075, -0.075, 0.105)), p + Vector((0, -0.012, 0)), 70, 5.6)
+    camera(*press_view())
+
+
+def fly(a, b, e):
+    """Between two views. The distance changes evenly in ratio, so a long push doesn't all land at the end."""
+    ta, tb, da, db = Vector(a[1]), Vector(b[1]), Vector(a[0]) - Vector(a[1]), Vector(b[0]) - Vector(b[1])
+    t = ta.lerp(tb, e)
+    d = da.normalized().lerp(db.normalized(), e).normalized() * da.length ** (1 - e) * db.length ** e
+    camera(t + d, t, a[2] + (b[2] - a[2]) * e, a[3] ** (1 - e) * b[3] ** e, Vector(a[4]).lerp(Vector(b[4]), e))
 
 
 def cam_turn(u):
@@ -866,6 +894,10 @@ def phone_pose(root, u):
     roll(CAM_ROLL)
 
 
+def screen_glow(s):
+    bpy.data.materials["App screen"].node_tree.nodes["Emission"].inputs["Strength"].default_value = s
+
+
 def portrait():
     scn.render.resolution_x, scn.render.resolution_y = 1200, 1500
     other.hide_render = False
@@ -924,6 +956,69 @@ elif MODE == "turn":
     for f in range(F0, F1):
         cam_turn(f / (NF - 1))
         shot(os.path.join(OUT, f"t_{f + 1:03d}.png"))
+elif MODE == "link_press":
+    PULSE.outputs[0].default_value = 999
+    for f in range(F0, F1):
+        u = f / (NF - 1)
+        e = ease((u - 0.1) / 0.9)
+        worn(math.radians(130 * (1 - ease(u / 0.7))))
+        fly(bend_view(1), press_view(), e)
+        LAMP_K = 0.05 + (0.008 - 0.05) * e
+        ring_glow(4.0 - 3.0 * e)
+        shot(os.path.join(OUT, f"a_{f + 1:03d}.png"))
+elif MODE == "link_phone":
+    COIN_N = 24
+    LAMP_K = 0.008
+    PULSE.outputs[0].default_value = -150
+    root = None
+    for f in range(F0, F1):
+        if f < COIN_N:
+            u = f / (COIN_N - 1)
+            worn(0.0)
+            fly(press_view(), coin_view(), ease(u))
+            ring_glow(4.2 * (1 - ease(u / 0.75)))
+            k = 1 - ease((u - 0.3) / 0.65)
+            lights(k)
+            bg.inputs["Strength"].default_value = 0.012 * k
+        else:
+            if root is None:
+                root, tex, screens = phone_scene()
+                tex.image = screens[0]
+            u = (f - COIN_N) / (NF - COIN_N - 1)
+            e = ease(u)
+            phone_pose(root, 0.0)
+            rx, ry, rz = root.rotation_euler
+            root.rotation_euler = (rx * e, ry * e, rz * e)
+            y = PHONE_Y * (1 - e)
+            camera((0, y, 0.095 ** (1 - e) * 0.56 ** e), (0, y, 0), 60, 8, focus=(0, PHONE_Y, 0.004))
+            screen_glow(1.25 * ease(u / 0.5))
+            lights(0.0, top=0.25 * e, back=0.5 * e, under=0.0, fill=0.0)
+            bg.inputs["Strength"].default_value = 0.012 * e
+        shot(os.path.join(OUT, f"c_{f + 1:03d}.png"))
+elif MODE == "link_away":
+    root, tex, screens = phone_scene()
+    tex.image = screens[2]
+    for f in range(F0, F1):
+        u = f / (NF - 1)
+        phone_pose(root, 1.0)
+        rx, ry, rz = root.rotation_euler
+        root.rotation_euler = (rx, ry + math.radians(64) * ease(u), rz)
+        screen_glow(1.25 * (1 - ease((u - 0.2) / 0.7)))
+        k = 1 - ease(u)
+        lights(0.0, top=0.25 * k, back=0.5 * k, under=0.0, fill=0.0)
+        bg.inputs["Strength"].default_value = 0.012 * k
+        shot(os.path.join(OUT, f"e_{f + 1:03d}.png"))
+elif MODE == "link_legs":
+    portrait(); worn(0.0)
+    for f in range(F0, F1):
+        u = f / (NF - 1)
+        ring_glow(4.0 * ease(u / 0.35))
+        k = ease((u - 0.2) / 0.8)
+        lights(k)
+        bg.inputs["Strength"].default_value = 0.012 * k
+        cam_turn(0.0)
+        cam.location = cam.location * (1.22 - 0.22 * ease(u))
+        shot(os.path.join(OUT, f"g_{f + 1:03d}.png"))
 elif MODE == "still":
     ring_glow(4.0)
     worn(0.0); cam_press(); shot(os.path.join(OUT, "worn_puck.png"))
