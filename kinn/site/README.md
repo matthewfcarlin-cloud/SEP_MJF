@@ -78,7 +78,9 @@ Without `DATABASE_URL`, signups go to `data/waitlist.json`. That's for local tes
 - `public/learn/`: the built "How Kinn learns" page (source in `../learn/`)
 - `public/progress/`: the “How it works” page: a recorded demo (`video/reco-demo.{mp4,webm}`, cut with ffmpeg from a simulator recording) and a pinned walkthrough over `img/app-*.webp`, simulator screenshots of the iOS app in `../app/apps/mobile`
 - `public/try/`: the app itself, built for the web with `npx expo export --platform web` from `../app/apps/mobile` (base path `/try`). Rebuild it after app changes and copy the output here. On the web the tape tag on Today opens `/tape`, which pairs a RECO tape over Web Bluetooth (Chrome/Edge) or runs the simulated tape.
-- `public/index.html`: the page
+- `public/index.html`, `home.css`, `home.js`, `flow.css`, `flow.js`: the home page. `flow.*` is one pinned film on one canvas: the coin (`hero7/`), the fibers (`film7/`), the tape rolling on (`flow/wrap/`), then the leg revealed around it from `flow/hero.webp` and `flow/tape.webp`. To change its pacing, edit the `vh` spans in `flow.js`. `home.*` holds the waitlist and form.
+- `public/flow/`: frames and stills for that film. `flow/wrap/` is rendered by `../blender/reco_flow.py`, then its first and last frames are warped onto the fiber film's last frame and the hero photo's tape.
+- `public/knee-recovery/`: a separate knee recovery guide. It links to the main site. The main site does not link to it, on purpose.
 - `public/vid/`: 97 frames of the Higgsfield pull-back, scrubbed by scroll
 - `public/spin/`: 144 frames of the 360 turntable render
 - `public/img/`: still renders

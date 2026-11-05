@@ -1,0 +1,31 @@
+/* RECO home: one pinned film. The page holds still and scrolling only moves the film forward. */
+.flow{position:relative;height:1000vh;background:var(--bg)}
+.flow .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
+#flowCv{position:absolute;inset:0;width:100%;height:100%}
+.veil{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;background:linear-gradient(rgba(13,17,17,0) 46%,rgba(13,17,17,.86) 82%)}
+.words{position:absolute;inset:0;pointer-events:none;z-index:2}
+.w{position:absolute;left:max(22px,env(safe-area-inset-left,0px));right:max(22px,env(safe-area-inset-right,0px));opacity:0;transform:translateY(10px);transition:opacity .6s var(--out),transform .6s var(--out)}
+.w.on{opacity:1;transform:none}
+.w h1,.w h2{margin:0;font-weight:420;letter-spacing:-.022em;line-height:1.02;color:var(--fg);text-wrap:balance}
+.w em{font-style:normal;color:var(--mint)}
+.low{bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.low h1,.low h2{font-size:clamp(2.6rem,6.4vw,6rem)}
+.mid{top:50%;transform:translateY(calc(-50% + 10px));text-align:center}
+.mid.on{transform:translateY(-50%)}
+.mid h2{font-size:clamp(3rem,10.5vw,10rem);text-shadow:0 2px 40px rgba(0,0,0,.35)}
+.side{top:50%;transform:translateY(calc(-50% + 10px));max-width:46vw}
+.side.on{transform:translateY(-50%)}
+.side .huge{font-size:clamp(3.4rem,8.2vw,8rem);line-height:1}
+.side p{margin-top:24px;font-size:clamp(1rem,1.5vw,1.3rem);line-height:1.4;color:rgba(242,241,236,.8)}
+.eyebrow{display:block;margin-bottom:22px;font:400 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.72)}
+.cue{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right,0px));bottom:calc(40px + env(safe-area-inset-bottom,0px));font:400 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.6);transition:opacity .4s}
+.cue i{display:inline-block;width:1px;height:14px;margin-right:10px;vertical-align:-3px;background:currentColor}
+@media (max-width:760px){
+  .side{top:auto;bottom:calc(40px + env(safe-area-inset-bottom,0px));max-width:none;transform:translateY(10px)}
+  .side.on{transform:none}
+  .side .huge{font-size:clamp(2.8rem,14vw,4.4rem)}
+  .eyebrow{margin-bottom:12px}
+  .side p{margin-top:12px}
+  .mid h2{font-size:clamp(2.8rem,14vw,4.6rem)}
+}
+@media (prefers-reduced-motion:reduce){.w,.veil,.cue{transition:none}}
