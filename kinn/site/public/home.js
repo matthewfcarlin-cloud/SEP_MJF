@@ -3,48 +3,6 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 
 
-/* ---------- reveal (cards fade up 8px, 60ms stagger) ---------- */
-if ('IntersectionObserver' in window && !reduce) {
-  const io = new IntersectionObserver(es => { let k = 0; es.forEach(e => { if (e.isIntersecting) { const el = e.target; setTimeout(() => el.classList.remove('pending'), 60 * k++); io.unobserve(el); } }); }, {rootMargin: '0px 0px -10% 0px'});
-  document.querySelectorAll('.rv').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } });
-}
-
-/* ---------- join: the headline starts bent round a knee, edges blurred, and straightens as you scroll in ---------- */
-(function bendIn() {
-  const el = document.getElementById('bendin'); if (!el) return;
-  const chars = [];
-  el.querySelectorAll('.ln').forEach((ln, li) => {
-    const walk = node => [...node.childNodes].forEach(n => {
-      if (n.nodeType === 3) { const f = document.createDocumentFragment(); for (const c of n.textContent) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? '\u00a0' : c; f.appendChild(s); chars.push({s, li}); } n.replaceWith(f); }
-      else walk(n);
-    });
-    walk(ln);
-  });
-  let geo = [];
-  const measure = () => {
-    chars.forEach(c => c.s.style.transform = c.s.style.filter = c.s.style.opacity = '');
-    const lines = {}; chars.forEach(c => { const r = c.s.getBoundingClientRect(); c.cx = r.left + r.width / 2; (lines[c.li] = lines[c.li] || []).push(c); });
-    geo = chars.map(c => { const L = lines[c.li], a = L[0].s.getBoundingClientRect().left, b = L[L.length - 1].s.getBoundingClientRect().right, m = (a + b) / 2, h = (b - a) / 2;
-      return {s: c.s, x: (c.cx - m) / h, w: h}; });
-  };
-  const sec = document.getElementById('join');
-  const upd = () => {
-    const r = el.getBoundingClientRect(), H = innerHeight, c = r.top + r.height / 2;
-    const k = reduce ? 1 : cl((H * 0.95 - c) / (H * 0.4));          // short scroll: headline centre from 95% to 55% of the screen
-    const e = 1 - Math.pow(1 - k, 3), bend = 1 - e;
-    geo.forEach(({s, x, w}) => {
-      const ax = Math.abs(x), ang = x * 34 * bend;                  // each side curls back as if wrapped over a knee
-      const lift = ax * ax * w * 0.22 * bend;
-      s.style.transform = bend < 0.001 ? '' : `translateY(${lift.toFixed(1)}px) rotateY(${(-ang).toFixed(2)}deg) rotateZ(${(x * 9 * bend).toFixed(2)}deg)`;
-      s.style.filter = bend < 0.001 ? '' : `blur(${(Math.pow(ax, 1.6) * 9 * bend).toFixed(2)}px)`;
-      s.style.opacity = (1 - Math.pow(ax, 2) * 0.75 * bend).toFixed(3);
-    });
-  };
-  const all = () => { measure(); upd(); };
-  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', all);
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(all); all();
-})();
-
 /* ---------- waitlist intake (opens on "Join") ---------- */
 const dlg = document.getElementById('intake'), form = document.getElementById('form'), msg = document.getElementById('msg'), patientRows = [...form.querySelectorAll('[data-patient]')];
 const SOURCE = (new URLSearchParams(location.search).get('src') || 'site').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || 'site';

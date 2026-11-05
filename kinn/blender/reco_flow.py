@@ -1,5 +1,12 @@
 """The how-it-works film, shot on an empty stage: only the tape and coin, on a transparent ground, so the page can
-lay them over the hero photograph. Exec'd by reco_worn.py (mode flow); RECO_SHOT picks the shot, RECO_CAMS the solved cameras."""
+lay them over the hero photograph. Exec'd by reco_worn.py (mode flow).
+
+  RECO_SHOT=wrap  Blender -b -P reco_worn.py -- flow flow/wrap  100 48 0 60 60
+  RECO_SHOT=bend  Blender -b -P reco_worn.py -- flow flow/bend  100 48 0 84 84
+  RECO_SHOT=phone Blender -b -P reco_worn.py -- flow flow/phone 100 32 0 48 48
+
+Then, from flow/: python3 post.py ../../site/public and python3 post2.py ../../site/public, which warp the first and
+last frames onto the fiber film's end and the hero photo's tape, and write webp. cams.json holds the solved cameras."""
 import json as J
 SEATED = 70.0                                    # degrees: the knee in the hero photograph
 leg.hide_render = True; other.hide_render = True
@@ -24,10 +31,24 @@ def matte_tape():
     n = nt.nodes.new("ShaderNodeTexNoise"); n.inputs["Scale"].default_value = 9.0; n.inputs["Detail"].default_value = 7; L(tc.outputs["UV"], n.inputs["Vector"])
     bp = nt.nodes.new("ShaderNodeBump"); bp.inputs["Strength"].default_value = 0.3; bp.inputs["Distance"].default_value = 0.00012
     L(n.outputs["Fac"], bp.inputs["Height"]); L(bp.outputs["Normal"], b.inputs["Normal"])
-    return m
+    # a teal pulse along the wires: 'mm' uv x is the distance along the tape
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ"); L(tc.outputs["UV"], sep.inputs["Vector"])
+    pos = nt.nodes.new("ShaderNodeValue"); pos.outputs[0].default_value = 999
+    def op(o, x, y=None, v=None):
+        q = nt.nodes.new("ShaderNodeMath"); q.operation = o; L(x, q.inputs[0])
+        if y is not None: L(y, q.inputs[1])
+        if v is not None: q.inputs[1].default_value = v
+        return q.outputs[0]
+    dd = op("DIVIDE", op("SUBTRACT", sep.outputs["X"], pos.outputs[0]), None, 16.0)
+    g = op("EXPONENT", op("MULTIPLY", op("MULTIPLY", dd, dd), None, -1.0))
+    wire = op("POWER", op("MAXIMUM", op("SUBTRACT", im.outputs["Color"], None, 0.12), None, 0.0), None, 0.7)
+    L(op("MULTIPLY", op("MULTIPLY", g, wire), None, 9.0), b.inputs["Emission Strength"])
+    b.inputs["Emission Color"].default_value = (*srgb(TEAL), 1)
+    return m, pos
 
 
-tape.data.materials[0] = matte_tape()
+_mt, PULSE_M = matte_tape()
+tape.data.materials[0] = _mt
 tape.modifiers["Wires under the knit"].strength = 1.25 * MM
 mount.data.materials[0] = tape.data.materials[0]
 
@@ -96,7 +117,7 @@ if SHOT == "dump":
     out["coin"] = (M_.translation + (M_.to_3x3() @ Vector((0, 0, 7.6 * MM)))).to_tuple()
     J.dump(out, open(os.environ["RECO_OUT"], "w")); print("DUMPED", flush=True)
 else:
-    cams = J.load(open(os.environ["RECO_CAMS"]))
+    cams = J.load(open(os.environ.get("RECO_CAMS", os.path.join(os.path.dirname(D), "flow", "cams.json"))))
     def set_cam(c):
         fw, up = Vector(c["fwd"]).normalized(), Vector(c["up"]).normalized(); rt = fw.cross(up).normalized(); up2 = rt.cross(fw)
         cam.matrix_world = Matrix((rt, up2, -fw)).transposed().to_4x4(); cam.location = Vector(c["cam"]); cd.lens = c["lens"]
@@ -134,3 +155,53 @@ else:
             mix_cam(cams["start"], cams["end"], ease(u))
             tone(ease(u))
             shot(os.path.join(OUT, f"a_{f + 1:03d}.png"))
+    SIDE = {"cam": [0.92, -0.62, 0.62], "lens": 100.0}
+    _tg = Vector((0.0, 0.10, 0.0)); _f = (_tg - Vector(SIDE["cam"])).normalized(); _r = _f.cross(Vector((0, 0, 1))).normalized()
+    SIDE["fwd"] = list(_f); SIDE["up"] = list(_r.cross(_f))
+
+    def bend_deg(u):
+        """Seated, straightens almost fully, bends deep, eases back. flow.js reads out the same numbers."""
+        if u < 0.4: return 70 + (8 - 70) * ease(u / 0.4)
+        if u < 0.82: return 8 + (125 - 8) * ease((u - 0.4) / 0.42)
+        return 125 + (90 - 125) * ease((u - 0.82) / 0.18)
+
+    if SHOT == "bend":
+        tone(1.0)
+        for f in range(F0, F1):
+            u = f / (NF - 1)
+            phi = math.radians(bend_deg(u))
+            worn(phi)
+            set_verts(tape, bend(T_ON, phi)); set_verts(mount, bend(M_ON, phi))
+            mix_cam(cams["end"], SIDE, ease(u / 0.28))
+            # signal runs to the coin while the knee moves
+            PULSE_M.outputs[0].default_value = -140 + ((u * 3.0) % 1.0) * 250 if u > 0.1 else 999
+            shot(os.path.join(OUT, f"b_{f + 1:03d}.png"))
+        if F1 == NF:
+            M_ = puck.matrix_world; bpy.context.view_layer.update()
+            from bpy_extras.object_utils import world_to_camera_view as w2c
+            q = w2c(scn, cam, M_.translation + M_.to_3x3() @ Vector((0, 0, 5 * MM)))
+            J.dump([q.x * 1536, (1 - q.y) * 1024], open(os.path.join(OUT, "coin_end.json"), "w"))
+    elif SHOT == "phone":
+        for o_ in (seat, puck, tape, mount): pass
+        root, tex, screens = phone_scene()
+        cd.dof.use_dof = False
+        nt_ = bpy.data.materials["App screen"].node_tree
+        em_ = nt_.nodes["Emission"]
+        tex2 = nt_.nodes.new("ShaderNodeTexImage"); tex2.interpolation = "Cubic"; tex2.image = bpy.data.images.load(os.path.join(D, "app_plan.png"))
+        tex.image = screens[0]
+        mx_ = nt_.nodes.new("ShaderNodeMix"); mx_.data_type = "RGBA"
+        uvn = nt_.nodes.new("ShaderNodeUVMap"); nt_.links.new(uvn.outputs["UV"], tex2.inputs["Vector"])
+        nt_.links.new(tex.outputs["Color"], mx_.inputs[6]); nt_.links.new(tex2.outputs["Color"], mx_.inputs[7]); nt_.links.new(mx_.outputs[2], em_.inputs["Color"])
+        cam.rotation_mode = "XYZ"
+        for f in range(F0, F1):
+            u = f / (NF - 1)
+            up_ = ease(u / 0.3)                      # rises out of the dark
+            root.location = (0.06, -0.15 * (1 - up_) - 0.001, -0.02 * (1 - up_))
+            root.rotation_euler = (math.radians(-6 - 14 * (1 - up_)), math.radians(-30 + 22 * up_ + 4 * ease(u)), math.radians(4 - 2 * up_))
+            camera((0, 0, 0.42), (0, 0, 0), 60, 8)
+            cd.dof.use_dof = False
+            em_.inputs["Strength"].default_value = 1.2 * ease(u / 0.22)
+            mx_.inputs[0].default_value = ease((u - 0.56) / 0.12)
+            lights(0.0, top=0.25 * up_, back=0.5 * up_, under=0.0, fill=0.0)
+            KEY.data.energy = 0; SOFT.data.energy = 1.2 * up_; bg.inputs["Strength"].default_value = 0.012
+            shot(os.path.join(OUT, f"p_{f + 1:03d}.png"))
