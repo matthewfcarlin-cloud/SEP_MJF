@@ -78,7 +78,9 @@ Without `DATABASE_URL`, signups go to `data/waitlist.json`. That's for local tes
 - `public/learn/`: the built "How Kinn learns" page (source in `../learn/`)
 - `public/progress/`: the “How it works” page: a recorded demo (`video/reco-demo.{mp4,webm}`, cut with ffmpeg from a simulator recording) and a pinned walkthrough over `img/app-*.webp`, simulator screenshots of the iOS app in `../app/apps/mobile`
 - `public/try/`: the app itself, built for the web with `npx expo export --platform web` from `../app/apps/mobile` (base path `/try`). Rebuild it after app changes and copy the output here. On the web the tape tag on Today opens `/tape`, which pairs a RECO tape over Web Bluetooth (Chrome/Edge) or runs the simulated tape.
-- `public/index.html`: the page
+- `public/index.html`, `home.css`, `home.js`, `story.css`, `story.js`: the home page. `home.*` holds the intro films, mission, waitlist and form. `story.*` holds the films after the intro: the problem, the tape going on, the bend, the coin press, the app on a phone, both legs standing.
+- `public/worn/`: frames for those films, rendered in Blender by `../blender/reco_worn.py` (v7 tape and puck on a MakeHuman CC0 leg). Transparent webp on a black page.
+- `public/knee-recovery/`: a separate knee recovery guide. It links to the main site. The main site does not link to it, on purpose.
 - `public/vid/`: 97 frames of the Higgsfield pull-back, scrubbed by scroll
 - `public/spin/`: 144 frames of the 360 turntable render
 - `public/img/`: still renders
