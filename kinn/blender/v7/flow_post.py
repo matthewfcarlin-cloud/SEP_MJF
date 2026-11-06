@@ -1,5 +1,6 @@
 """Rendered joins -> site. Their photo end is warped onto the hero photo's tape. Usage: flow_post.py RENDERS PUBLIC"""
 import json, os, sys, glob, numpy as np
+from multiprocessing.pool import ThreadPool
 from PIL import Image
 from scipy.interpolate import RBFInterpolator
 from scipy.ndimage import map_coordinates
@@ -21,9 +22,14 @@ def run(name, pre, out, weight):
     print(out, len(fs), tot // 1024, 'KB')
 run('wrap', 'a', 'wrap', lambda i, n: max(0, (i - (n - 16)) / 15))
 run('unwrap', 'c', 'unwrap', lambda i, n: max(0, 1 - i / 12))
+PAGE_BG = (13, 18, 18, 255)   # the site's --bg. Flattened on it, a frame looks the same as a transparent one and is about a quarter of the size
+def still(args):
+    g, o = args; im = Image.open(g).convert('RGBA')
+    Image.alpha_composite(Image.new('RGBA', im.size, PAGE_BG), im).convert('RGB').save(o, 'WEBP', quality=88, method=6)
+    return os.path.getsize(o)
 def stills(name, out):
-    os.makedirs(f'{PUB}/flow/{out}', exist_ok=True); tot = 0
-    for g in sorted(glob.glob(f'{SRC}/{name}/*.png')):
-        o = f'{PUB}/flow/{out}/{os.path.basename(g)[:-4]}.webp'; Image.open(g).convert('RGBA').save(o, 'WEBP', quality=84, alpha_quality=88, method=4); tot += os.path.getsize(o)
+    os.makedirs(f'{PUB}/flow/{out}', exist_ok=True)
+    jobs = [(g, f'{PUB}/flow/{out}/{os.path.basename(g)[:-4]}.webp') for g in sorted(glob.glob(f'{SRC}/{name}/*.png'))]
+    with ThreadPool(8) as pool: tot = sum(pool.map(still, jobs))
     print(out, tot // 1024, 'KB')
 stills('hi/cursor', 'coin'); stills('hi/intro', 'intro'); stills('hi/flex', 'flex')

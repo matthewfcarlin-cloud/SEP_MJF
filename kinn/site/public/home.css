@@ -1,6 +1,6 @@
 /* RECO home: rendered objects on black, thin type, few words. Teal belongs to the device. */
 :root{
-  --bg:#0d1111;--paper:#0D0E0C;--bone:#191B17;--line:rgba(242,241,236,.14);
+  --bg:#0d1212;--paper:#0D0E0C;--bone:#191B17;--line:rgba(242,241,236,.14);
   --fg:#F2F1EC;--dim:rgba(242,241,236,.62);--faint:rgba(242,241,236,.42);--olive:#F2F1EC;
   --teal:#3DDBB8;--teal-hi:#3DDBB8;--keep:#8CBC84;--steady:#DCAE55;--ease:#E3805A;
   --sans:"DM Sans","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--serif:"DM Sans","Helvetica Neue",Arial,sans-serif;--mint:#a9d7c6;

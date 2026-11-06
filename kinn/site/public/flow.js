@@ -11,7 +11,8 @@
   const BEND_FLAT_Z = .46, BEND_FLAT_PX = 654, BEND_Z = .72, BEND_PX = 853, BEND_PY = 420;
   const TAPE_BOX = [609, 1093, 176, 727];                             // the tape at the end of the bend film, on the stage
   const BEND = 130, GAUGE_MAX = 135;
-  const BG = '#0d1111';
+  const SCROLL_EASE_MS = 120, CURSOR_EASE_MS = 220, MAX_STEP_MS = 64;
+  const BG = '#0d1212';
   const sec = document.getElementById('top'), cv = document.getElementById('flowCv'), ctx = cv.getContext('2d');
   const off = document.createElement('canvas'), octx = off.getContext('2d');
   const veil = sec.querySelector('.veil'), cue = document.getElementById('cue'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), degWrap = document.getElementById('fDegWrap');
@@ -20,7 +21,7 @@
 
   /* the film strips */
   /* bump this whenever frames are replaced under the same names, so no browser keeps showing the old ones */
-  const V = 'v=6';
+  const V = 'v=7';
   const SEQS = {hero: ['/flow/intro/h_', 120], film: ['/film7/v_', 90], wrap: ['/flow/wrap/a_', 70], unwrap: ['/flow/unwrap/c_', 40], flex: ['/flow/flex/k_', 96]};
   const frames = {}, all = [], seqStart = {}; let count = 0;
   for (const [k, [base, n]] of Object.entries(SEQS)) { frames[k] = []; seqStart[k] = count; count += n; for (let i = 0; i < n; i++) { const o = {src: base + String(i + 1).padStart(3, '0') + '.webp?' + V, k, i}; frames[k].push(o); all.push(o); } }
@@ -32,29 +33,55 @@
   const mark = s => { const [n, t] = s.split(' '); return from[n][0] + parseFloat(t) * from[n][1]; };   // 'shot t'
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
 
-  /* loading: nearest to where the reader is goes first. Phones and data-saver take every second frame */
+  /* loading. Every shot gets a rough pass first, every 8th frame, so whatever the reader scrolls to is already there.
+     Then the frames nearest the reader fill in. Phones and data-saver skip every second frame */
+  const ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6, BLEND_GAP = 2, BLENDED = new Set(['wrap', 'unwrap', 'flex']);
   const conn = navigator.connection || {}, stride = innerWidth < 760 || conn.saveData ? 2 : 1;
+  const isRough = o => o.i % ROUGH === 0 || o.i === SEQS[o.k][1] - 1;
   let pending = all.filter(o => o.i % stride === 0 || o.i === SEQS[o.k][1] - 1), active = 0, cur = 0, dirty = true;
-  const pump = () => {
-    while (active < 8 && pending.length) {
-      let best = 0, bd = 1e9; pending.forEach((o, j) => { const d = Math.abs(seqStart[o.k] + o.i - cur); if (d < bd) { bd = d; best = j; } });
-      const o = pending.splice(best, 1)[0], im = new Image(); active++;
-      const done = () => { active--; pump(); dirty = true; };
-      im.onload = () => { o.img = im; done(); }; im.onerror = done; im.src = o.src;
+  function load(o) {
+    const im = new Image(); active++;
+    const done = () => { active--; dirty = true; pump(); };
+    im.onload = () => im.decode().catch(() => {}).then(() => { o.img = im; done(); });
+    im.onerror = () => {
+      o.tries = (o.tries || 0) + 1;
+      if (o.tries <= RETRIES) setTimeout(() => { pending = [...pending, o]; pump(); }, RETRY_MS * o.tries);
+      done();
+    };
+    im.src = o.src;
+  }
+  function pump() {
+    while (active < SLOTS && pending.length) {
+      let best = 0, bd = Infinity;
+      pending.forEach((o, j) => { const d = Math.abs(seqStart[o.k] + o.i - cur) / (isRough(o) ? ROUGH_PULL : 1); if (d < bd) { bd = d; best = j; } });
+      load(pending.splice(best, 1)[0]);
     }
-  };
+    if (!pending.some(isRough)) loadCoin();
+  }
   const still = src => { const im = new Image(); im.onload = () => { dirty = true; }; im.src = src; return im; };
   const photo = still('/flow/hero.webp?' + V), cutout = still('/flow/tape.webp?' + V);
   const ready = im => im && im.complete && im.naturalWidth;
-  const nearest = (k, i) => { const f = frames[k]; for (let d = 0; d < f.length; d++) { if (f[i - d] && f[i - d].img) return f[i - d].img; if (f[i + d] && f[i + d].img) return f[i + d].img; } return null; };
+  /* the loaded frames either side of a moment. Slow shots dissolve from frame to frame so their motion is continuous.
+     The coin and fibers move too far per frame, so they stay on one sharp frame: a blend would show the logo doubled */
+  function around(k, x) {
+    const f = frames[k], last = f.length - 1, at = cl(x, 0, last); let a = Math.floor(at), b = Math.ceil(at);
+    while (a > 0 && !f[a].img) a--;
+    while (b < last && !f[b].img) b++;
+    const lo = f[a].img, hi = f[b].img;
+    if (!lo || !hi || a === b) return {lo: lo || hi, hi: null, mix: 0};
+    const mix = (at - a) / (b - a);
+    return BLENDED.has(k) && b - a <= BLEND_GAP ? {lo, hi, mix} : {lo: mix < .5 ? lo : hi, hi: null, mix: 0};
+  }
 
   /* the coin follows the cursor: the first frame of the intro, rendered turned to many angles. Only for a real pointer */
   const COLS = 9, ROWS = 5, canHover = matchMedia('(hover:hover) and (pointer:fine)').matches && !reduce;
   const turned = []; let tx = 0, ty = 0, mx = 0, my = 0;
-  if (canHover) {
+  function loadCoin() {   // after the rough pass, so it never holds up the film
+    if (!canHover || turned.length) return;
     for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) turned.push(still(`/flow/coin/c_${j}_${i}.webp?${V}`));
-    addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, {passive: true});
   }
+  const coinReady = () => turned.length > 0 && turned.every(ready);
+  if (canHover) addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, {passive: true});
 
   /* the stage on this screen */
   let W = 0, H = 0, S = 1, OY = 0, DPR = 1, shiftX = 0, shiftY = 0;
@@ -64,23 +91,30 @@
     const x0 = ox + (px - px * zoom) * S + shiftX, y0 = OY + (py + (y - py) * zoom) * S + shiftY;   // zoom about a point on the stage
     c.drawImage(im, x0, y0, STAGE_W * zoom * S, h * zoom * S);
   }
-  const film = (k, i, ox, a = 1, zoom = 1, px, py) => { const im = nearest(k, i); if (!im) return; ctx.globalAlpha = a; place(ctx, im, ox, FILM_TOP, FILM_H, zoom, px, py); ctx.globalAlpha = 1; };
-  const full = (k, i, ox, a = 1, zoom = 1, px, py) => { const im = nearest(k, i); if (!im) return; ctx.globalAlpha = a; place(ctx, im, ox, 0, STAGE_H, zoom, px, py); ctx.globalAlpha = 1; };
+  function show(k, x, ox, y, h, a, zoom, px, py) {
+    const {lo, hi, mix} = around(k, x); if (!lo) return;
+    ctx.globalAlpha = a; place(ctx, lo, ox, y, h, zoom, px, py);
+    if (hi && mix > 0) { ctx.globalAlpha = a * mix; place(ctx, hi, ox, y, h, zoom, px, py); }
+    ctx.globalAlpha = 1;
+  }
+  const film = (k, x, ox, a = 1, zoom = 1, px, py) => show(k, x, ox, FILM_TOP, FILM_H, a, zoom, px, py);
+  const full = (k, x, ox, a = 1, zoom = 1, px, py) => show(k, x, ox, 0, STAGE_H, a, zoom, px, py);
   /* the 16:9 film frames are shorter than the stage: fade their top and bottom into the page so they never show an edge */
   function hem(a = 1) {
     if (a <= 0) return;
     const yT = OY + FILM_TOP * S, yB = OY + (FILM_TOP + FILM_H) * S, h = 150 * S;
     ctx.globalAlpha = a;
-    let g = ctx.createLinearGradient(0, yB - h, 0, yB); g.addColorStop(0, 'rgba(13,17,17,0)'); g.addColorStop(1, BG); ctx.fillStyle = g; ctx.fillRect(0, yB - h, W, h);
+    let g = ctx.createLinearGradient(0, yB - h, 0, yB); g.addColorStop(0, 'rgba(13,18,18,0)'); g.addColorStop(1, BG); ctx.fillStyle = g; ctx.fillRect(0, yB - h, W, h);
     ctx.fillStyle = BG; ctx.fillRect(0, yB - 1, W, H - yB + 1);
-    g = ctx.createLinearGradient(0, yT, 0, yT + h); g.addColorStop(0, BG); g.addColorStop(1, 'rgba(13,17,17,0)'); ctx.fillStyle = g; ctx.fillRect(0, yT, W, h);
+    g = ctx.createLinearGradient(0, yT, 0, yT + h); g.addColorStop(0, BG); g.addColorStop(1, 'rgba(13,18,18,0)'); ctx.fillStyle = g; ctx.fillRect(0, yT, W, h);
     ctx.fillStyle = BG; ctx.fillRect(0, 0, W, yT + 1);
     ctx.globalAlpha = 1;
   }
   /* the turned coin, blended between the nearest angles */
   function coinTurn(ox, a) {
     const fx = cl(mx + .5) * (COLS - 1), fy = cl(my + .5) * (ROWS - 1), i0 = Math.floor(fx), j0 = Math.floor(fy), i1 = Math.min(COLS - 1, i0 + 1), j1 = Math.min(ROWS - 1, j0 + 1);
-    const at = (i, j) => turned[j * COLS + i], base = at(i0, j0); if (!ready(base)) return false;
+    if (!coinReady()) return false;
+    const at = (i, j) => turned[j * COLS + i], base = at(i0, j0);
     const put = (im, al) => { if (!ready(im) || al <= 0) return; ctx.globalAlpha = a * al; place(ctx, im, ox, FILM_TOP, FILM_H); };
     const crisp = x => smooth((x - .3) / .4);   // mostly one sharp frame, blending only near the change
     put(base, 1); put(at(i1, j0), crisp(fx - i0)); put(at(i0, j1), crisp(fy - j0)); ctx.globalAlpha = 1; return true;
@@ -115,7 +149,7 @@
     const x0 = cx - bcx * z * S, y0 = cy - (bcy - FILM_TOP) * z * S;
     return {x0, y0, w: STAGE_W * z * S, h: FILM_H * z * S, coin: [x0 + COIN_END[0] * z * S, y0 + (COIN_END[1] - FILM_TOP) * z * S]};
   }
-  function drawBeside(r) { const im = nearest('flex', 95); if (im) ctx.drawImage(im, r.x0, r.y0, r.w, r.h); }
+  function drawBeside(r) { const {lo} = around('flex', 95); if (lo) ctx.drawImage(lo, r.x0, r.y0, r.w, r.h); }
   const coinNarrow = [BEND_PX + (COIN_END[0] - BEND_PX) * BEND_Z, BEND_PY + (COIN_END[1] - BEND_PY) * BEND_Z];
   function curve(s, x0, y0, x1, y1) {
     const m = 1 - s, cx1 = x0 + (x1 - x0) * .45, cy1 = y0 + 40 * S, cx2 = x0 + (x1 - x0) * .55, cy2 = y1;
@@ -157,8 +191,8 @@
       case 'hero': {
         /* a little depth under the cursor, and the coin itself turning at the very start */
         if (canHover) { const k = 1 - t * .6; shiftX = -mx * 14 * k * DPR; shiftY = -my * 10 * k * DPR; }
-        if (canHover && t < .05 && coinTurn(ox, 1)) { if (t > 0) film('hero', Math.round(t * 119), ox, smooth(t / .05)); }
-        else film('hero', Math.round(t * 119), ox);
+        if (canHover && t < .05 && coinTurn(ox, 1)) { if (t > 0) film('hero', t * 119, ox, smooth(t / .05)); }
+        else film('hero', t * 119, ox);
         shiftX = shiftY = 0; hem(); cur = seqStart.hero + t * 119; break;
       }
       case 'dive': {
@@ -170,16 +204,16 @@
         hem(smooth((t - .4) / .45));
         cur = seqStart.film; break;
       }
-      case 'film': film('film', Math.round(t * 89), ox, 1, 1 + .3 * (1 - smooth(t / .3))); hem(); cur = seqStart.film + t * 89; break;
-      case 'wrap': full('wrap', Math.round(t * 69), ox); cur = seqStart.wrap + t * 69; break;
+      case 'film': film('film', t * 89, ox, 1, 1 + .3 * (1 - smooth(t / .3))); hem(); cur = seqStart.film + t * 89; break;
+      case 'wrap': full('wrap', t * 69, ox); cur = seqStart.wrap + t * 69; break;
       case 'settle':
         full('wrap', 69, ox, 1 - smooth(t)); if (ready(cutout)) { ctx.globalAlpha = smooth(t); place(ctx, cutout, ox, 0, STAGE_H); ctx.globalAlpha = 1; } break;
       case 'reveal': lit(smooth(t), ox); glow(Math.sin(Math.min(1, t * 1.4) * Math.PI), ox); break;
       case 'hold': if (ready(photo)) place(ctx, photo, ox, 0, STAGE_H); break;
       case 'fade': lit(1 - smooth(t), ox); break;
       case 'unsettle': if (ready(cutout)) { ctx.globalAlpha = 1 - smooth(t); place(ctx, cutout, ox, 0, STAGE_H); ctx.globalAlpha = 1; } full('unwrap', 0, ox, smooth(t)); cur = seqStart.unwrap; break;
-      case 'unwrap': { const z = n ? 1 + (BEND_FLAT_Z - 1) * smooth(t) : 1; full('unwrap', Math.round(t * 39), ox, 1, z, BEND_FLAT_PX, BEND_PY); cur = seqStart.unwrap + t * 39; break; }
-      case 'bend': { const v = bendView(t); film('flex', Math.round(t * 95), ox, 1, n ? v.z : 1, v.px, BEND_PY); cur = seqStart.flex + t * 95; break; }
+      case 'unwrap': { const z = n ? 1 + (BEND_FLAT_Z - 1) * smooth(t) : 1; full('unwrap', t * 39, ox, 1, z, BEND_FLAT_PX, BEND_PY); cur = seqStart.unwrap + t * 39; break; }
+      case 'bend': { const v = bendView(t); film('flex', t * 95, ox, 1, n ? v.z : 1, v.px, BEND_PY); cur = seqStart.flex + t * 95; break; }
       case 'signal': {
         phoneRise = .9 * (1 - smooth((t - .1) / .75)); phoneA = smooth((t - .08) / .3);
         if (n) { film('flex', 95, ox, 1, BEND_Z, BEND_PX, BEND_PY); link(smooth((t - .3) / .55), 1, ox, [ox + coinNarrow[0] * S, OY + coinNarrow[1] * S]); }
@@ -199,7 +233,7 @@
     words.forEach(w => w.el.classList.toggle('on', pos >= w.a && pos < w.b));
     const reading = pos >= mark('unwrap .85') && pos < mark('signal .2');
     degWrap.classList.toggle('on', reading);
-    if (reading) { const d = name === 'bend' ? BEND * smooth(Math.round(t * 95) / 95) : name === 'unwrap' ? 0 : BEND; deg.textContent = Math.round(d) + '°'; bar.style.width = (d / GAUGE_MAX * 100) + '%'; }
+    if (reading) { const d = name === 'bend' ? BEND * smooth(t) : name === 'unwrap' ? 0 : BEND; deg.textContent = Math.round(d) + '°'; bar.style.width = (d / GAUGE_MAX * 100) + '%'; }
     veil.style.opacity = n && pos >= mark('reveal .5') && pos < mark('fade .3') ? 1 : 0;
     cue.style.opacity = pos > 25 ? 0 : 1;
   }
@@ -208,11 +242,15 @@
   const read = () => { const b = sec.getBoundingClientRect(); target = cl(-b.top / Math.max(1, sec.offsetHeight - innerHeight)); };
   addEventListener('scroll', read, {passive: true}); addEventListener('resize', () => { fit(); read(); });
   fit(); read(); p = target; pump();
-  (function tick() {
+  /* easing by time, not by frame, so a 120 Hz screen feels the same as a 60 Hz one */
+  let then = performance.now();
+  function tick(now) {
     requestAnimationFrame(tick);
-    p += (target - p) * (reduce ? 1 : 0.12); if (Math.abs(target - p) < 0.00002) p = target;
-    if (canHover) { const dx = tx - mx, dy = ty - my; if (Math.abs(dx) + Math.abs(dy) > .0005 && p * SPAN < from.dive[0]) { mx += dx * .07; my += dy * .07; dirty = true; } }
+    const dt = Math.min(MAX_STEP_MS, now - then), ease = ms => 1 - Math.exp(-dt / ms); then = now;
+    p += (target - p) * (reduce ? 1 : ease(SCROLL_EASE_MS)); if (Math.abs(target - p) < 0.00002) p = target;
+    if (canHover && coinReady()) { const dx = tx - mx, dy = ty - my; if (Math.abs(dx) + Math.abs(dy) > .0005 && p * SPAN < from.dive[0]) { mx += dx * ease(CURSOR_EASE_MS); my += dy * ease(CURSOR_EASE_MS); dirty = true; } }
     if (p === shown && !dirty) return;
     shown = p; dirty = false; draw(p * SPAN); pump();
-  })();
+  }
+  requestAnimationFrame(tick);
 })();
