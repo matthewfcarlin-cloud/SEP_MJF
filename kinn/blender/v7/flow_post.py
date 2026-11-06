@@ -32,4 +32,4 @@ def stills(name, out):
     jobs = [(g, f'{PUB}/flow/{out}/{os.path.basename(g)[:-4]}.webp') for g in sorted(glob.glob(f'{SRC}/{name}/*.png'))]
     with ThreadPool(8) as pool: tot = sum(pool.map(still, jobs))
     print(out, tot // 1024, 'KB')
-stills('hi/cursor', 'coin'); stills('hi/intro', 'intro'); stills('hi/flex', 'flex')
+stills('hi/cursor2', 'coin'); stills('hi/intro', 'intro'); stills('hi/flex', 'flex')

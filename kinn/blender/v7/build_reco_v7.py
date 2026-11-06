@@ -501,18 +501,39 @@ if MODE in ("stills", "hero", "renders", "cursor"):
         locked(); cam_at((-0.045, 0.060, 0.060), (0, 0.104, 0.004), 85, 7, 12); shot(os.path.join(OUT, "r5_puck_detail.png"))
     elif MODE == "cursor":
         # the floating coin of the intro's first frame, turned to face wherever the cursor is
-        YS, XS = (-12, -9, -6, -3, 0, 3, 6, 9, 12), (-6, -3, 0, 3, 6)
+        YS, XS = tuple(range(-21, 22, 3)), tuple(range(-9, 10, 3))
         hero_pose(0.0)
         base = puck.matrix_world.copy()
         place_puck(puck, seat, (0, 0, 1), (0, 1, 0), lift=26, yaw=0, tilt=0); B0 = puck.matrix_world.copy(); T0 = B0.translation.copy()
         n = 0
+        poses_only = os.environ.get("RECO_POSES")   # no renders: writes flow/coin/poses.json, where the coin sits in each frame, for lining frames up on the site
+        faces = []
+        def face_on_screen():
+            from bpy_extras.object_utils import world_to_camera_view as w2c
+            bpy.context.view_layer.update()
+            pts = [puck.matrix_world @ Vector((x * MM, y * MM, 7.6 * MM)) for x, y in ((0, 0), (17, 0), (-17, 0), (0, 17), (0, -17))] + [puck.matrix_world @ Vector((0, 0, 0))]
+            return [(c.x * 1536, (1 - c.y) * 864) for c in (w2c(scn, scn.camera, p) for p in pts)]
         for j, dx in enumerate(XS):
             for i, dy in enumerate(YS):
-                if F0 <= n < F1:
-                    R_ = Matrix.Rotation(math.radians(22 + dx), 4, 'X') @ Matrix.Rotation(math.radians(dy), 4, 'Y') @ Matrix.Rotation(math.radians(-15), 4, 'Z')
-                    M_ = B0 @ R_; M_.translation = T0; puck.matrix_world = M_
+                R_ = Matrix.Rotation(math.radians(22 + dx), 4, 'X') @ Matrix.Rotation(math.radians(dy), 4, 'Y') @ Matrix.Rotation(math.radians(-15), 4, 'Z')
+                M_ = B0 @ R_; M_.translation = T0
+                if poses_only:
+                    puck.matrix_world = M_; faces.append(face_on_screen())
+                elif F0 <= n < F1 and not os.path.exists(os.path.join(OUT, f"c_{j}_{i}.png")):
+                    puck.matrix_world = M_
                     bpy.context.view_layer.update(); shot(os.path.join(OUT, f"c_{j}_{i}.png"))
                 n += 1
+        if poses_only:
+            import numpy as np
+            F = np.array(faces); home = F[len(XS) // 2 * len(YS) + len(YS) // 2]
+            A = np.c_[home[:5], np.ones(5)]
+            poses = []
+            for pts in F:
+                X = np.linalg.lstsq(A, pts[:5], rcond=None)[0]
+                poses.append([round(float(v), 4) for v in (X[0, 0], X[0, 1], X[1, 0], X[1, 1], X[2, 0], X[2, 1])])
+            c = home[0]; a = (home[1] - home[2]) / 2; b = (home[3] - home[4]) / 2
+            coin = {"top": [round(float(v), 2) for v in c], "a": [round(float(v), 2) for v in a], "b": [round(float(v), 2) for v in b], "base": [round(float(v), 2) for v in home[5]]}
+            json.dump({"poses": poses, "coin": coin}, open(poses_only, "w"), separators=(",", ":"))
     else:
         for f in range(F0, F1):
             hero_pose(f / (NF - 1)); shot(os.path.join(OUT, f"h_{f + 1:03d}.png"))
