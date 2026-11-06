@@ -12,9 +12,9 @@
   const TAPE_BOX = [609, 1093, 176, 727];                             // the tape at the end of the bend film, on the stage
   const BEND = 130, GAUGE_MAX = 135;
   const SCROLL_EASE_MS = 120, CURSOR_EASE_MS = 220, MAX_STEP_MS = 64;
-  /* one scroll gesture: what counts as a new one, and how far it has to go */
-  const WHEEL_TRIGGER = 12, WHEEL_GAP_MS = 140, WHEEL_SURGE = 2, WHEEL_SURGE_MIN = 20, TOUCH_TRIGGER = 24;
-  const WAIT_FOR_FRAMES_MS = 1500, MIN_CHAPTER_MS = 300;
+  /* a trackpad keeps sending events after a flick. A pause or a clear surge means a new gesture */
+  const WHEEL_GAP_MS = 140, WHEEL_SURGE = 2, WHEEL_SURGE_MIN = 20, RECENT_INPUT_MS = 250, MAX_TAIL_MS = 500;
+  const WAIT_FOR_FRAMES_MS = 1500, MIN_AUTO_MS = 300, AUTO_ENTER_VH = .5;
   const BG = '#0d1212';
   const sec = document.getElementById('top'), cv = document.getElementById('flowCv'), ctx = cv.getContext('2d');
   const off = document.createElement('canvas'), octx = off.getContext('2d');
@@ -34,16 +34,15 @@
   const from = {}; let SPAN = 0; for (const [n, vh] of shots) { from[n] = [SPAN, vh]; SPAN += vh; }
   sec.style.height = SPAN + 100 + 'vh';
   const mark = s => { const [n, t] = s.split(' '); return from[n][0] + parseFloat(t) * from[n][1]; };   // 'shot t'
-  /* the film plays in chapters. One scroll plays to the next stop at its own steady speed, and more scrolling is ignored until it lands.
-     Each stop rests on a caption. ms = how long the chapter arriving at that stop plays */
-  const STOPS = [['hero 0', 0], ['hero .58', 2600], ['hero 1', 2000], ['film .2', 2000], ['film 1', 2400], ['hold .5', 4500], ['bend .07', 2400], ['bend 1', 3000], ['signal .95', 2400], ['phone .25', 1000], ['phone .6', 1400], ['join 1', 1600]].map(([s, ms]) => ({pos: mark(s), ms}));
+  /* most of the film follows the scroll. These transitions between pages play by themselves once the reader scrolls into them, and scrolling is locked until they land */
+  const AUTO = [['hero .34', 'hero .58', 1500], ['hero .62', 'hero 1', 1700], ['dive 0', 'film .12', 1800], ['wrap 0', 'settle 1', 2800], ['unsettle 0', 'unwrap 1', 1800], ['signal 0', 'signal .95', 2400]].map(([a, b, ms]) => ({a: mark(a), b: mark(b), ms}));
   const FILMED = {hero: 'hero', film: 'film', wrap: 'wrap', unwrap: 'unwrap', bend: 'flex'};
-  let play = null, landedAt = -Infinity;
+  let play = null, locked = false, landedAt = -Infinity, landedTime = 0, lastPos = 0, lastInput = -Infinity;
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
 
   /* loading. Every shot gets a rough pass first, every 8th frame, so whatever the reader scrolls to is already there.
      Then the frames nearest the reader fill in. Phones and data-saver skip every second frame */
-  const BEHIND_COST = 3, ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6, BLEND_GAP = 2, BLENDED = new Set(['wrap', 'unwrap', 'flex']);
+  const BEHIND_COST = 3, ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6, BLEND_GAP = 2, BLENDED = new Set(['film', 'wrap', 'unwrap', 'flex']);
   const conn = navigator.connection || {}, stride = innerWidth < 760 || conn.saveData ? 2 : 1;
   const isRough = o => o.i % ROUGH === 0 || o.i === SEQS[o.k][1] - 1;
   let pending = all.filter(o => o.i % stride === 0 || o.i === SEQS[o.k][1] - 1), active = 0, cur = 0, dirty = true;
@@ -69,8 +68,8 @@
   const still = src => { const im = new Image(); im.onload = () => { dirty = true; }; im.src = src; return im; };
   const photo = still('/flow/hero.webp?' + V), cutout = still('/flow/tape.webp?' + V);
   const ready = im => im && im.complete && im.naturalWidth;
-  /* the loaded frames either side of a moment. While a chapter plays, frames dissolve into each other so the motion is continuous.
-     At rest the coin and fibers sit on one sharp frame: they move too far per frame, and a held blend would show the logo doubled */
+  /* the loaded frames either side of a moment. Frames dissolve into each other so the motion is continuous.
+     Under the scroll the coin stays on one sharp frame: it moves too far per frame, and a held blend would show the logo doubled */
   function around(k, x) {
     const f = frames[k], last = f.length - 1, at = cl(x, 0, last); let a = Math.floor(at), b = Math.ceil(at);
     while (a > 0 && !f[a].img) a--;
@@ -248,13 +247,19 @@
   }
 
   let target = 0, p = 0, shown = -1;
-  const read = () => { if (play || Math.abs(scrollY - landedAt) <= 1) return; const b = sec.getBoundingClientRect(); target = cl(-b.top / Math.max(1, sec.offsetHeight - innerHeight)); };
+  const measure = () => cl(-sec.getBoundingClientRect().top / Math.max(1, sec.offsetHeight - innerHeight));
+  function read() {
+    if (play || locked) return;
+    if (Math.abs(scrollY - landedAt) <= 1) return;   // the browser rounds the landing: stay exactly on it
+    landedAt = -Infinity; target = measure();
+    if (!reduce) enterAuto(target * SPAN);
+    lastPos = target * SPAN;
+  }
   addEventListener('scroll', read, {passive: true}); addEventListener('resize', () => { fit(); read(); });
-  fit(); read(); p = target; pump();
+  fit(); target = p = measure(); lastPos = p * SPAN; pump();
 
-  /* chapters */
-  const filmEnd = () => sec.offsetTop + sec.offsetHeight - innerHeight;
-  function chapterLoaded(a, b) {
+  /* the transitions that play by themselves */
+  function framesLoaded(a, b) {
     const lo = Math.min(a, b), hi = Math.max(a, b);
     return shots.every(([name]) => {
       const k = FILMED[name]; if (!k) return true;
@@ -264,67 +269,42 @@
       return true;
     });
   }
-  function startChapter(dir) {
-    if (play) return;
-    const pos = p * SPAN, EPS = .25;
-    const i = dir > 0 ? STOPS.findIndex(s => s.pos > pos + EPS) : STOPS.map(s => s.pos < pos - EPS).lastIndexOf(true);
-    if (i < 0) return;
-    const arriving = dir > 0 ? STOPS[i] : STOPS[i + 1], span = arriving.pos - STOPS[dir > 0 ? i - 1 : i].pos;
-    play = {from: pos, to: STOPS[i].pos, ms: Math.max(MIN_CHAPTER_MS, arriving.ms * Math.abs(STOPS[i].pos - pos) / span), t: 0, waited: 0};
-    pump();
+  /* overflow, not preventDefault: browsers stop letting a page cancel a gesture once it has started scrolling */
+  const lockScroll = on => { locked = on; document.documentElement.style.overflow = on ? 'hidden' : ''; };
+  function enterAuto(pos) {
+    const dir = pos >= lastPos ? 1 : -1, recent = performance.now() - lastInput < RECENT_INPUT_MS;
+    const inside = z => pos > z.a + AUTO_ENTER_VH && pos < z.b - AUTO_ENTER_VH;
+    const jumped = z => recent && (dir > 0 ? lastPos <= z.a + AUTO_ENTER_VH && pos >= z.b - AUTO_ENTER_VH : lastPos >= z.b - AUTO_ENTER_VH && pos <= z.a + AUTO_ENTER_VH);
+    const zone = (dir > 0 ? AUTO : [...AUTO].reverse()).find(z => inside(z) || jumped(z));
+    if (!zone) return;
+    const start = p * SPAN, end = dir > 0 ? zone.b : zone.a;
+    play = {from: start, to: end, ms: Math.max(MIN_AUTO_MS, zone.ms * Math.abs(end - start) / (zone.b - zone.a)), t: 0, waited: 0};
+    lockScroll(true); pump();
   }
   function advance(dt) {
-    if (play.t === 0 && play.waited < WAIT_FOR_FRAMES_MS && !chapterLoaded(play.from, play.to)) { play.waited += dt; return; }
+    if (play.t === 0 && play.waited < WAIT_FOR_FRAMES_MS && !framesLoaded(play.from, play.to)) { play.waited += dt; return; }
     play.t = Math.min(play.ms, play.t + dt);
-    const pos = play.from + (play.to - play.from) * smooth(play.t / play.ms);
-    p = pos / SPAN;
+    p = (play.from + (play.to - play.from) * smooth(play.t / play.ms)) / SPAN;
     if (play.t < play.ms) return;
-    target = p; play = null; dirty = true;
+    lastPos = play.to; target = p; play = null; dirty = true;
     scrollTo({top: sec.offsetTop + p * (sec.offsetHeight - innerHeight), behavior: 'instant'});
-    landedAt = scrollY;   // the browser rounds this: stay exactly on the stop
+    landedAt = scrollY; landedTime = performance.now();
   }
-  /* true while this scroll belongs to the film, not the footer below it */
-  const captures = d => { const y = scrollY, end = filmEnd(); return d > 0 ? y < end - 1 : y > 0 && y <= end + 1; };
-  const dialogOpen = () => { const dlg = document.getElementById('intake'); return dlg && dlg.open; };
-  function listenForChapters() {
-    /* a trackpad keeps sending events for a second or two after a flick. A gesture only counts as new after a pause or a clear surge, so that tail can't start the next chapter */
-    let lastWheel = -Infinity, lastSize = 0, sum = 0, fired = false;
-    addEventListener('wheel', e => {
-      if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      const size = Math.abs(e.deltaY), isNew = e.timeStamp - lastWheel > WHEEL_GAP_MS || (size > WHEEL_SURGE_MIN && size > lastSize * WHEEL_SURGE);
-      lastWheel = e.timeStamp; lastSize = size;
-      if (isNew) { sum = 0; fired = false; }
-      if (dialogOpen() || !captures(e.deltaY)) return;
-      e.preventDefault();
-      if (play) { fired = true; return; }
-      sum += e.deltaY;
-      if (!fired && Math.abs(sum) >= WHEEL_TRIGGER) { fired = true; startChapter(Math.sign(sum)); }
-    }, {passive: false});
-
-    let startY = 0, swiped = false;
-    addEventListener('touchstart', e => { startY = e.touches[0].clientY; swiped = false; }, {passive: true});
-    addEventListener('touchmove', e => {
-      if (e.touches.length !== 1 || dialogOpen()) return;
-      const d = startY - e.touches[0].clientY; if (!captures(d)) return;
-      e.preventDefault();
-      if (!swiped && !play && Math.abs(d) >= TOUCH_TRIGGER) { swiped = true; startChapter(Math.sign(d)); }
-    }, {passive: false});
-
-    const KEYS = {ArrowDown: 1, PageDown: 1, ' ': 1, ArrowUp: -1, PageUp: -1};
-    addEventListener('keydown', e => {
-      if (e.metaKey || e.ctrlKey || e.altKey || dialogOpen() || e.target.closest('a,button,input,textarea,select')) return;
-      const dir = (KEYS[e.key] || 0) * (e.key === ' ' && e.shiftKey ? -1 : 1); if (!dir || !captures(dir)) return;
-      e.preventDefault();
-      if (!e.repeat) startChapter(dir);
-    });
-  }
-  if (!reduce) listenForChapters();
+  /* after landing, stay locked until the gesture that started it has finished, so its tail can't run on */
+  let lastSize = 0;
+  addEventListener('wheel', e => {
+    const size = Math.abs(e.deltaY), surge = size > WHEEL_SURGE_MIN && size > lastSize * WHEEL_SURGE;
+    lastInput = e.timeStamp; lastSize = size;
+    if (locked && !play && surge) lockScroll(false);
+  }, {passive: true});
+  addEventListener('touchmove', e => { lastInput = e.timeStamp; }, {passive: true});
 
   /* easing by time, not by frame, so a 120 Hz screen feels the same as a 60 Hz one */
   let then = performance.now();
   function tick(now) {
     requestAnimationFrame(tick);
     const dt = Math.min(MAX_STEP_MS, now - then), ease = ms => 1 - Math.exp(-dt / ms); then = now;
+    if (locked && !play && (now - lastInput > WHEEL_GAP_MS || now - landedTime > MAX_TAIL_MS)) lockScroll(false);
     if (play) advance(dt);
     else { p += (target - p) * (reduce ? 1 : ease(SCROLL_EASE_MS)); if (Math.abs(target - p) < 0.00002) p = target; }
     if (canHover && coinReady()) { const dx = tx - mx, dy = ty - my; if (Math.abs(dx) + Math.abs(dy) > .0005 && p * SPAN < from.dive[0]) { mx += dx * ease(CURSOR_EASE_MS); my += dy * ease(CURSOR_EASE_MS); dirty = true; } }
