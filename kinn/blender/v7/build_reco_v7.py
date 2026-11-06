@@ -463,7 +463,7 @@ if MODE in ("stills", "hero", "renders", "cursor"):
         d0 = Vector((-0.06, -0.16, 0.085)); d2 = Vector((-0.13, -0.22, 0.30))
         dv = d0.lerp(d2, c)
         aim(cam, tgt + dv, tgt); cd.lens = 70 - 20 * c
-        foc.location = tgt; cd.dof.aperture_fstop = 5.6 + 10 * c
+        foc.location = tgt; cd.dof.aperture_fstop = float(os.environ.get("RECO_FSTOP", 5.6)) + 10 * c
         LIGHTS["Graze"].data.energy = 6 + 8 * c
 
     if MODE == "stills":
@@ -501,7 +501,7 @@ if MODE in ("stills", "hero", "renders", "cursor"):
         locked(); cam_at((-0.045, 0.060, 0.060), (0, 0.104, 0.004), 85, 7, 12); shot(os.path.join(OUT, "r5_puck_detail.png"))
     elif MODE == "cursor":
         # the floating coin of the intro's first frame, turned to face wherever the cursor is
-        YS, XS = (-15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15), (-9, -6, -3, 0, 3, 6, 9)
+        YS, XS = (-12, -9, -6, -3, 0, 3, 6, 9, 12), (-6, -3, 0, 3, 6)
         hero_pose(0.0)
         base = puck.matrix_world.copy()
         place_puck(puck, seat, (0, 0, 1), (0, 1, 0), lift=26, yaw=0, tilt=0); B0 = puck.matrix_world.copy(); T0 = B0.translation.copy()

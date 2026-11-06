@@ -8,7 +8,7 @@ PH = json.load(open(f'{HERE}/photo_pts.json')); RD = json.load(open(f'{SRC}/wrap
 A, B = np.array([RD[k] for k in K], float), np.array([PH[k] for k in K], float)
 yy, xx = np.mgrid[0:H:4, 0:W:4]; grid = np.stack([xx.ravel(), yy.ravel()], 1).astype(float)
 def warp(a, t):
-    s = RBFInterpolator(A + (B - A) * t, A, kernel='thin_plate_spline', smoothing=30.0)(grid).reshape(xx.shape + (2,))
+    s = RBFInterpolator(A + (B - A) * t, A, kernel='thin_plate_spline', smoothing=100000.0)(grid).reshape(xx.shape + (2,))
     sx = np.asarray(Image.fromarray(s[..., 0].astype('float32')).resize((W, H), Image.BICUBIC)); sy = np.asarray(Image.fromarray(s[..., 1].astype('float32')).resize((W, H), Image.BICUBIC))
     return np.stack([map_coordinates(a[..., c], [sy, sx], order=1, mode='constant') for c in range(4)], -1)
 ease = lambda x: x * x * (3 - 2 * x)
@@ -21,7 +21,9 @@ def run(name, pre, out, weight):
     print(out, len(fs), tot // 1024, 'KB')
 run('wrap', 'a', 'wrap', lambda i, n: max(0, (i - (n - 16)) / 15))
 run('unwrap', 'c', 'unwrap', lambda i, n: max(0, 1 - i / 12))
-os.makedirs(f'{PUB}/flow/coin', exist_ok=True); tot = 0
-for f in sorted(glob.glob(f'{SRC}/cursor/c_*.png')):
-    o = f'{PUB}/flow/coin/{os.path.basename(f)[:-4]}.webp'; Image.open(f).convert('RGBA').save(o, 'WEBP', quality=82, alpha_quality=88, method=4); tot += os.path.getsize(o)
-print('coin', tot // 1024, 'KB')
+def stills(name, out):
+    os.makedirs(f'{PUB}/flow/{out}', exist_ok=True); tot = 0
+    for g in sorted(glob.glob(f'{SRC}/{name}/*.png')):
+        o = f'{PUB}/flow/{out}/{os.path.basename(g)[:-4]}.webp'; Image.open(g).convert('RGBA').save(o, 'WEBP', quality=84, alpha_quality=88, method=4); tot += os.path.getsize(o)
+    print(out, tot // 1024, 'KB')
+stills('hi/cursor', 'coin'); stills('hi/intro', 'intro'); stills('hi/flex', 'flex')
