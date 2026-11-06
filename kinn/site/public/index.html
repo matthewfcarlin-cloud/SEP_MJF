@@ -33,7 +33,7 @@
   <nav aria-label="Main"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a></nav>
 </header>
 
-<section class="flow" id="top" aria-label="One continuous film. The RECO coin turns, drops and twists into the tape. The view dives to the tape's fibers and pulls back to the whole strip. In the dark the strip curves as if around a knee, then light spreads from the coin's ring to reveal it on a seated person's knee. The leg fades away and the tape alone straightens and bends while the angle reads out. A signal travels from the coin to a phone showing recovery progress and a plan for today, sample data. Then the waitlist.">
+<section class="flow" id="top" aria-label="One continuous film. The RECO coin turns, drops and twists into the tape. The view dives to the tape's fibers and pulls back to the whole strip. In the dark the strip curves as if around a knee, then light spreads from the coin's ring to reveal it on a seated person's knee. The leg fades away and the tape alone bends from straight to a deep bend while the angle reads out. A signal travels from the coin to a phone showing recovery progress and a plan for today, sample data. Then the waitlist.">
   <div class="pin">
     <canvas id="flowCv" aria-hidden="true"></canvas>
     <div class="veil" aria-hidden="true"></div>
@@ -44,7 +44,7 @@
       <div class="w mid" data-a="dive .75" data-b="film .46"><h2>From the <em>fiber</em></h2></div>
       <div class="w mid" data-a="film .46" data-b="wrap .3"><h2>To the <em>knee</em></h2></div>
       <div class="w side" data-a="reveal .62" data-b="fade .2"><span class="eyebrow">Recovery, with you.</span><h2 class="huge">A little<br>more <em>you.</em></h2><p>Smart knee tape. A personal app.<br>A clearer way through recovery.</p></div>
-      <div class="w low up right" data-a="bend .1" data-b="bend .96"><h2>Every bend.<br>Every straighten.</h2></div>
+      <div class="w low up right" data-a="bend .06" data-b="bend .97"><h2>Every bend.<br>Every straighten.</h2></div>
       <div class="w low up" data-a="signal .12" data-b="signal .96"><h2>All of it, sent<br>to <em>your phone.</em></h2></div>
       <div class="w low up" data-a="phone .02" data-b="phone .42"><h2>Your recovery,<br><em>at a glance.</em></h2></div>
       <div class="w low up" data-a="phone .42" data-b="close .3"><h2>Your plan<br><em>for today.</em></h2></div>
@@ -54,7 +54,8 @@
         <p class="tester">Early testers wanted: athletes coming back from an ACL or meniscus injury, and their PTs.</p>
       </div>
     </div>
-    <div class="deg gut" id="fDegWrap" aria-hidden="true"><strong id="fDeg">70°</strong><span>Knee bend</span></div>
+    <div class="deg gut" id="fDegWrap" aria-hidden="true"><strong id="fDeg">0°</strong><div class="gauge"><i id="fBar"></i></div><span>Knee bend · live from the tape</span></div>
+    <div class="device" id="device"><div class="screen"><img id="scrToday" src="/flow/screen/today.webp" alt="RECO app, Today: 70% recovery and today's call, Steady. Sample data." width="900" height="1948" loading="lazy"><img id="scrPlan" src="/flow/screen/plan.webp" alt="RECO app, your plan for today: bridges, mini squats, single-leg balance and a stationary bike. Sample data." width="900" height="1948" loading="lazy"></div></div>
     <span class="cue" id="cue" aria-hidden="true"><i></i>Scroll</span>
   </div>
 </section>
