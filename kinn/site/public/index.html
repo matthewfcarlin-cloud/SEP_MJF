@@ -22,7 +22,7 @@
 <meta name="theme-color" content="#0d1212">
 <link rel="icon" href="/brand/reco-mark-ink.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
-<link rel="preload" href="/flow/intro/h_001.webp?v=8" as="image">
+<link rel="preload" href="/flow/intro/h_001.webp?v=10" as="image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..500&family=IBM+Plex+Mono:wght@400&display=swap">
@@ -44,30 +44,28 @@
   <nav aria-label="Main"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a></nav>
 </header>
 
-<section class="flow" id="top" aria-label="One continuous film. The RECO coin turns, drops and twists into the tape. The view dives to the tape's fibers and pulls back to the whole strip. In the dark the strip curves as if around a knee, then light spreads from the coin's ring to reveal it on a seated person's knee. The leg fades away and the tape alone bends from straight to a deep bend while the angle reads out. A signal travels from the coin to a phone showing recovery progress and a plan for today, sample data. Then the waitlist.">
+<section class="flow" id="top" aria-label="One continuous film. The RECO coin turns, drops and twists into the tape. The view pulls back to the whole strip. The tape bends from flat to a deep bend while the angle reads out, then relaxes onto a seated person's knee as light spreads from the coin's ring. The leg moves aside as a signal travels from the coin to a phone showing recovery progress and a plan for today, sample data. Then the waitlist.">
   <div class="pin">
     <canvas id="flowCv" aria-hidden="true"></canvas>
     <div class="veil" aria-hidden="true"></div>
     <div class="words gut" id="words">
       <div class="w low on" data-a="hero 0" data-b="hero .3"><h1>Measure your<br>comeback.</h1></div>
       <div class="w low" data-a="hero .3" data-b="hero .62"><h2>One coin.<br>Twist to lock.</h2></div>
-      <div class="w low" data-a="hero .62" data-b="dive .35"><h2>Wear it<br>all day.</h2></div>
-      <div class="w mid" data-a="dive .75" data-b="film .46"><h2>From the <em>fiber</em></h2></div>
-      <div class="w mid" data-a="film .46" data-b="wrap .3"><h2>To the <em>knee</em></h2></div>
-      <div class="w side" data-a="reveal .62" data-b="fade .2"><span class="eyebrow">Recovery, with you.</span><h2 class="huge">A little<br>more <em>you.</em></h2><p>Smart knee tape. A personal app.<br>A clearer way through recovery.</p></div>
-      <div class="w low up right" data-a="bend .06" data-b="signal .08"><h2>Every bend.<br>Every straighten.</h2></div>
+      <div class="w low" data-a="hero .62" data-b="bend .05"><h2>Wear it<br>all day.</h2></div>
+      <div class="w side" data-a="reveal .62" data-b="signal .08"><span class="eyebrow">Recovery, with you.</span><h2 class="huge">A little<br>more <em>you.</em></h2><p>Smart knee tape. A personal app.<br>A clearer way through recovery.</p></div>
+      <div class="w low up right" data-a="bend .07" data-b="wrap .45"><h2>Every bend.<br>Every straighten.</h2></div>
       <div class="w low up" data-a="signal .12" data-b="signal .96"><h2>All of it, sent<br>to <em>your phone.</em></h2></div>
       <div class="w low up" data-a="phone .02" data-b="phone .42"><h2>Your recovery,<br><em>at a glance.</em></h2></div>
       <div class="w low up" data-a="phone .42" data-b="close .3"><h2>Your plan<br><em>for today.</em></h2></div>
       <div class="w join" id="join" data-a="close .55" data-b="join 2">
-        <a class="cta" href="#join" data-join><h2>Join the <em>waitlist</em></h2><span class="arrow" aria-hidden="true">→</span></a>
-        <p>Free. We only write when there's something to try. <span id="count"></span></p>
+        <div class="join-in"><h2>Be first<br>to <em>wear it.</em></h2>
+        <a class="cta" id="joinCta" href="#join" data-join><span class="cta-fill" aria-hidden="true"></span><span class="cta-label">Join the waitlist</span><span class="arrow" aria-hidden="true">→</span></a></div>
+        <p>Free. We only write when there's a tape for you to try. <span id="count"></span></p>
         <p class="tester">Early testers wanted: athletes coming back from an ACL or meniscus injury, and their PTs.</p>
       </div>
     </div>
     <div class="deg gut" id="fDegWrap" aria-hidden="true"><strong id="fDeg">0°</strong><div class="gauge"><i id="fBar"></i></div><span>Knee bend · live from the tape</span></div>
-    <div class="device" id="device"><div class="screen"><img id="scrToday" src="/flow/screen/today.webp?v=8" alt="RECO app, Today: 70% recovery and today's call, Steady. Sample data." width="900" height="1948" loading="lazy"><img id="scrPlan" src="/flow/screen/plan.webp?v=8" alt="RECO app, your plan for today: bridges, mini squats, single-leg balance and a stationary bike. Sample data." width="900" height="1948" loading="lazy"></div></div>
-    <span class="cue" id="cue" aria-hidden="true"><i></i>Scroll</span>
+    <div class="device" id="device"><div class="screen"><img id="scrToday" src="/flow/screen/today.webp?v=10" alt="RECO app, Today: 70% recovery and today's call, Steady. Sample data." width="900" height="1948" loading="lazy"><img id="scrPlan" src="/flow/screen/plan.webp?v=10" alt="RECO app, your plan for today: bridges, mini squats, single-leg balance and a stationary bike. Sample data." width="900" height="1948" loading="lazy"></div></div>
   </div>
 </section>
 
