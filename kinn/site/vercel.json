@@ -59,6 +59,16 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/knee-recovery",
+      "destination": "https://recorecovery.info/",
+      "permanent": true
+    },
+    {
+      "source": "/knee-recovery/(.*)",
+      "destination": "https://recorecovery.info/",
+      "permanent": true
+    },
+    {
       "source": "/learn",
       "destination": "/try/",
       "permanent": false
