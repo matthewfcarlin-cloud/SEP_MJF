@@ -76,3 +76,9 @@ The vision adds automatic sending before appointments, which changes the Oct 19 
 ## 2026-10-30 · No two-IMU design (team)
 The team does not want thigh and shin IMUs for knee angle. We are planning around one shin IMU plus EMG and/or a stretch sensor, not yet locked. Experiments can still use a separate reference for true angle. The `ble-two-imu` device kind in `core` is unused and can go.
 
+
+## 2026-11-06 · The next build is a real pilot, not a pitch demo (Matthew)
+Real people use it for their own recovery. That makes empty starts, labelled data, consent and guidance limits requirements rather than polish. Spec in [pilot-spec.md](pilot-spec.md).
+
+## 2026-11-06 · Pilot assumptions, open to being overruled (Claude)
+Patient-first with the report as the bridge to PTs. Voice uses an opt-in AI step through a small server, with on-device rules as backup. Phase A has no tape, so range is typed in and labelled by who measured it. About 10 adults, 4 weeks, knee only. Launch at the Descriptive and PT-led guidance levels; the generated plan and suggestions wait for regulatory review. Would change our mind: team review, advisor input, or a working native tape arriving early.
