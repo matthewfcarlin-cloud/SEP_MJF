@@ -25,24 +25,24 @@
   /* the film strips */
   /* bump this whenever frames are replaced under the same names, so no browser keeps showing the old ones */
   const V = 'v=7';
-  const SEQS = {hero: ['/flow/intro/h_', 120], film: ['/film7/v_', 90], wrap: ['/flow/wrap/a_', 70], unwrap: ['/flow/unwrap/c_', 40], flex: ['/flow/flex/k_', 96]};
+  const SEQS = {hero: ['/flow/intro/h_', 120], film: ['/film7/v_', 90], wrap: ['/flow/wrap/a_', 70], settle: ['/flow/settle/s_', 30], unwrap: ['/flow/unwrap/c_', 40], flex: ['/flow/flex/k_', 96]};
   const frames = {}, all = [], seqStart = {}; let count = 0;
   for (const [k, [base, n]] of Object.entries(SEQS)) { frames[k] = []; seqStart[k] = count; count += n; for (let i = 0; i < n; i++) { const o = {src: base + String(i + 1).padStart(3, '0') + '.webp?' + V, k, i}; frames[k].push(o); all.push(o); } }
 
   /* the shots. vh = how much scroll each one takes */
-  const shots = [['hero', 230], ['dive', 60], ['film', 190], ['wrap', 170], ['settle', 26], ['reveal', 130], ['hold', 70], ['fade', 80], ['unsettle', 22], ['unwrap', 70], ['bend', 240], ['signal', 110], ['phone', 230], ['close', 60], ['join', 70]];
+  const shots = [['hero', 230], ['dive', 60], ['film', 190], ['wrap', 170], ['settle', 90], ['reveal', 130], ['hold', 70], ['fade', 80], ['unsettle', 40], ['unwrap', 70], ['bend', 240], ['signal', 110], ['phone', 230], ['close', 60], ['join', 70]];
   const from = {}; let SPAN = 0; for (const [n, vh] of shots) { from[n] = [SPAN, vh]; SPAN += vh; }
   sec.style.height = SPAN + 100 + 'vh';
   const mark = s => { const [n, t] = s.split(' '); return from[n][0] + parseFloat(t) * from[n][1]; };   // 'shot t'
   /* most of the film follows the scroll. These transitions between pages play by themselves once the reader scrolls into them, and scrolling is locked until they land */
-  const AUTO = [['hero .34', 'hero .58', 1500], ['hero .62', 'hero 1', 1700], ['dive 0', 'film .12', 1800], ['wrap 0', 'settle 1', 2800], ['unsettle 0', 'unwrap 1', 1800], ['signal 0', 'signal .95', 2400]].map(([a, b, ms]) => ({a: mark(a), b: mark(b), ms}));
-  const FILMED = {hero: 'hero', film: 'film', wrap: 'wrap', unwrap: 'unwrap', bend: 'flex'};
+  const AUTO = [['hero .34', 'hero .58', 1500], ['hero .62', 'hero 1', 1700], ['dive 0', 'film .12', 1800], ['wrap 0', 'reveal 1', 5600], ['unsettle 0', 'unwrap 1', 2200], ['signal 0', 'signal .95', 2400]].map(([a, b, ms]) => ({a: mark(a), b: mark(b), ms}));
+  const FILMED = {hero: 'hero', film: 'film', wrap: 'wrap', settle: 'settle', unsettle: 'settle', unwrap: 'unwrap', bend: 'flex'};
   let play = null, locked = false, landedAt = -Infinity, landedTime = 0, lastPos = 0, lastInput = -Infinity;
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
 
   /* loading. Every shot gets a rough pass first, every 8th frame, so whatever the reader scrolls to is already there.
      Then the frames nearest the reader fill in. Phones and data-saver skip every second frame */
-  const BEHIND_COST = 3, ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6, BLEND_GAP = 2, BLENDED = new Set(['film', 'wrap', 'unwrap', 'flex']);
+  const BEHIND_COST = 3, ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6, BLEND_GAP = 2, BLENDED = new Set(['film', 'wrap', 'settle', 'unwrap', 'flex']);
   const conn = navigator.connection || {}, stride = innerWidth < 760 || conn.saveData ? 2 : 1;
   const isRough = o => o.i % ROUGH === 0 || o.i === SEQS[o.k][1] - 1;
   let pending = all.filter(o => o.i % stride === 0 || o.i === SEQS[o.k][1] - 1), active = 0, cur = 0, dirty = true;
@@ -214,12 +214,11 @@
       }
       case 'film': film('film', t * 89, ox, 1, 1 + .3 * (1 - smooth(t / .3))); hem(); cur = seqStart.film + t * 89; break;
       case 'wrap': full('wrap', t * 69, ox); cur = seqStart.wrap + t * 69; break;
-      case 'settle':
-        full('wrap', 69, ox, 1 - smooth(t)); if (ready(cutout)) { ctx.globalAlpha = smooth(t); place(ctx, cutout, ox, 0, STAGE_H); ctx.globalAlpha = 1; } break;
+      case 'settle': full('settle', t * 29, ox); cur = seqStart.settle + t * 29; break;
       case 'reveal': lit(smooth(t), ox); glow(Math.sin(Math.min(1, t * 1.4) * Math.PI), ox); break;
       case 'hold': if (ready(photo)) place(ctx, photo, ox, 0, STAGE_H); break;
       case 'fade': lit(1 - smooth(t), ox); break;
-      case 'unsettle': if (ready(cutout)) { ctx.globalAlpha = 1 - smooth(t); place(ctx, cutout, ox, 0, STAGE_H); ctx.globalAlpha = 1; } full('unwrap', 0, ox, smooth(t)); cur = seqStart.unwrap; break;
+      case 'unsettle': full('settle', (1 - t) * 29, ox); cur = seqStart.unwrap; break;
       case 'unwrap': { const z = n ? 1 + (BEND_FLAT_Z - 1) * smooth(t) : 1; full('unwrap', t * 39, ox, 1, z, BEND_FLAT_PX, BEND_PY); cur = seqStart.unwrap + t * 39; break; }
       case 'bend': { const v = bendView(t); film('flex', t * 95, ox, 1, n ? v.z : 1, v.px, BEND_PY); cur = seqStart.flex + t * 95; break; }
       case 'signal': {
