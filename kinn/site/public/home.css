@@ -64,6 +64,7 @@ select:focus{outline:2px solid var(--teal)}
 footer{display:grid;justify-items:center;gap:14px;padding-block:44px calc(36px + env(safe-area-inset-bottom,0px))}
 footer nav{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
 footer nav a{font-size:12px;font-weight:300;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+footer nav a.mail{letter-spacing:.04em;text-transform:none}
 footer .small{color:var(--faint);font-size:12px;text-align:center}
 footer .foot-brand svg{height:22px;width:auto;display:block}
 
