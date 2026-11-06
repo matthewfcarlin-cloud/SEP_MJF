@@ -6,240 +6,17 @@
 <title>RECO · Trust your comeback.</title>
 <meta name="description" content="RECO is a smart tape and app that tracks your injured knee every day, shows your progress and what comes before your pain, and gives your PT the full picture between visits. Join the waitlist.">
 <meta property="og:title" content="RECO · Trust your comeback.">
-<meta property="og:description" content="Smart kinesiology tape and a reusable coin that measure your knee every day. Join the waitlist.">
-<meta property="og:image" content="/img/v3/reco_hero.jpg">
-<meta name="theme-color" content="#F2F1EC">
-<link rel="icon" href="/brand/reco-mark-olive.svg" type="image/svg+xml">
+<meta property="og:description" content="A PT sees your knee 1 to 3 hours a week. RECO is a smart tape and coin that makes the other 160+ visible. Join the waitlist.">
+<meta property="og:image" content="/flow/hero.jpg">
+<meta name="theme-color" content="#0d1212">
+<link rel="icon" href="/brand/reco-mark-ink.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
-<link rel="preload" href="/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/hero7/h_001.webp" as="image">
-<style>
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(/fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:swap;src:url(/fonts/barlow-condensed-latin-800-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/barlow-latin-400-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/barlow-latin-500-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/barlow-latin-600-normal.woff2) format("woff2")}
-/* RECO home. Same scroll film as before (coin → twist → strip, fiber → knee, the knee bends), on the Ceramic brand.
-   Light ceramic stage, one product, Instrument Serif for the big lines, Geist Mono for anything measured. */
-:root{
-  --bg:#F2F1EC;--paper:#FBFAF7;--bone:#E8E5DC;--line:#E0DCD1;
-  --fg:#1C1E1A;--dim:#3F433C;--faint:#565A51;--olive:#2F3A2C;
-  --teal:#1F8A72;--teal-hi:#3DDBB8;--keep:#6F9E68;--steady:#C99A3A;--ease:#D4673F;
-  --sans:"Barlow","Helvetica Neue",Arial,sans-serif;--mono:"Barlow Condensed","Arial Narrow",sans-serif;--serif:"Barlow Condensed","Arial Narrow",sans-serif;
-  --out:cubic-bezier(.215,.61,.355,1);
-  color-scheme:light;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:clip}
-img{max-width:100%;display:block}
-[hidden]{display:none!important}
-p{margin:0}
-a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-.big{font-family:var(--serif);font-weight:700;text-transform:uppercase;letter-spacing:-.005em;line-height:.86;margin:0}
-.big em{font-style:normal;color:var(--teal)}
-.small{font-size:13px;color:var(--dim)}
-.caps{font:600 13px/16px var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--faint)}
-.gut{padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
-
-/* top bar */
-.top{position:fixed;z-index:30;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;height:64px;padding-top:env(safe-area-inset-top,0px);
-  background:color-mix(in srgb,var(--bg) 70%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
-.top.solid{background:color-mix(in srgb,var(--bg) 90%,transparent);border-bottom-color:var(--line)}
-.top .mark svg{height:20px;width:auto;display:block}
-.top nav{display:flex;align-items:center;gap:26px;white-space:nowrap}
-.top nav a{font-size:14px;color:var(--dim)}
-.top nav a:hover{color:var(--fg)}
-.top nav a.pill{background:var(--olive);color:#F2F1EC;padding:10px 16px;border-radius:999px}
-@media (max-width:640px){.top nav a:not(.pill){display:none}}
-.arc{stroke-dasharray:1;stroke-dashoffset:1;animation:arc .9s var(--out) .25s forwards}
-@keyframes arc{to{stroke-dashoffset:0}}
-
-/* hero: path-traced RECO v7 frames (Blender, from the Fusion CAD). Scroll floats the puck, drops it, twists it 60° into the lock, pulls back to the strip */
-.hero{position:relative;height:340vh}
-.hero .pinbox{position:sticky;top:0;height:100vh;height:100svh;min-height:540px;overflow:hidden;background:radial-gradient(70% 60% at 50% 46%,#FBFAF7,var(--bg) 70%)}
-#heroCv{position:absolute;inset:-14px;width:calc(100% + 28px);height:calc(100% + 28px);display:block;z-index:1;opacity:0;transition:opacity .6s;will-change:transform}
-.hero.live #heroCv{opacity:1}
-.hero .poster{position:absolute;inset:0;display:grid;place-items:center;z-index:0}
-.hero .poster img{width:100%;height:100%;object-fit:cover;opacity:1;transition:opacity .6s}
-.hero.live .poster img{opacity:0}
-.hero .ghost{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);text-align:center;font:400 clamp(6rem,24vw,22rem)/1 var(--serif);color:transparent;-webkit-text-stroke:1px rgba(28,30,26,.13);pointer-events:none;z-index:0;white-space:nowrap;transition:opacity .8s}
-.hero .ghost.off{opacity:0}
-.hero .under{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:20px;pointer-events:none}
-.hero .lines{position:relative;min-height:2.2em;flex:1;max-width:620px}
-.hero .lines p{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(8px);transition:opacity .6s var(--out),transform .6s var(--out);font-size:15px;color:var(--dim)}
-.hero .lines p.on{opacity:1;transform:none}
-.hero .lines b{display:block;font:700 clamp(36px,4.4vw,64px)/.9 var(--serif);text-transform:uppercase;color:var(--fg)}
-.hero .under .cue{display:flex;align-items:center;gap:10px;transition:opacity .4s;font:600 13px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--faint)}
-.hero .under .cue.off{opacity:0}
-.hero .under .cue i{width:1px;height:28px;background:linear-gradient(var(--fg),transparent);animation:drop 2s ease-in-out infinite;transform-origin:top}
-@keyframes drop{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
-.hero .tick{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:12px;justify-items:end}
-.hero .tick span{font:600 13px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:#9A978E;transition:color .4s}
-.hero .tick span.on{color:var(--fg)}
-.hero .tick span.on::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal);margin-right:8px;vertical-align:1px}
-.hero .hint{position:absolute;z-index:2;left:50%;top:calc(84px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:600 13px/1 var(--mono);letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);transition:opacity .4s;pointer-events:none}
-.hero .hint.off{opacity:0}
-.hero .pinbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;z-index:1;pointer-events:none;background:linear-gradient(rgba(242,241,236,0),rgba(242,241,236,.92))}
-.flash{position:absolute;inset:0;z-index:1;background:radial-gradient(30% 30% at 50% 55%,rgba(61,219,184,.28),rgba(61,219,184,0));opacity:0;pointer-events:none}
-@media (max-width:560px){.hero .tick{display:none}}
-.hero.static{height:auto}.hero.static .pinbox{position:relative}
-
-/* film: fiber to knee (rendered frames, scrubbed by scroll) */
-.film{position:relative;height:300vh}
-.film .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
-.film canvas,.film .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.film canvas{opacity:0;transition:opacity .6s}.film.live canvas{opacity:1}
-.film .poster{transition:opacity .6s}.film.live .poster{opacity:0}
-.film .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(242,241,236,.75),rgba(242,241,236,0) 26%,rgba(242,241,236,0) 68%,rgba(242,241,236,.9));pointer-events:none}
-.film .words{position:absolute;inset:0;z-index:2;display:grid;place-items:center;text-align:center;pointer-events:none}
-.film .words h2{grid-area:1/1;font-size:clamp(4rem,13vw,12rem);opacity:0;transform:translateY(24px) scale(.98);transition:opacity .8s,transform 1s cubic-bezier(.2,.8,.2,1),color .6s;filter:blur(6px)}
-.film .words h2.on{opacity:1;transform:none;filter:blur(0)}
-.film .words h2.light{color:#F2F1EC}
-.film .cap{position:absolute;z-index:2;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
-.film .meter{font:600 15px/1 var(--mono);letter-spacing:1px;color:var(--fg);font-variant-numeric:tabular-nums}
-
-/* statement */
-.statement{height:240vh;position:relative}
-.statement .stick{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;justify-items:center;text-align:center;gap:36px;overflow:hidden}
-.statement .big{font-size:clamp(4rem,12.5vw,12rem);position:relative}
-.statement .big .ch{display:inline-block;will-change:opacity,filter,transform}
-.statement .big .w2{display:inline-block;white-space:nowrap;color:var(--teal);letter-spacing:var(--ls,-.015em);transition:letter-spacing .08s linear}
-.statement.snap .big .w2{transition:letter-spacing .7s cubic-bezier(.2,1.6,.35,1)}
-.statement .lim{position:absolute;left:50%;bottom:-.06em;height:2px;width:var(--lw,0);transform:translateX(-50%);background:linear-gradient(90deg,transparent,#B9B6AC 12%,#B9B6AC 88%,transparent);transition:background .3s}
-.statement .lim span{position:absolute;right:0;top:12px;font:600 13px/1 var(--mono);letter-spacing:1.6px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
-.statement.snap .lim{background:linear-gradient(90deg,transparent,var(--teal) 12%,var(--teal) 88%,transparent)}
-.statement.snap .lim span{color:var(--teal)}
-.statement p{max-width:640px;color:var(--dim);font-size:clamp(17px,1.6vw,22px);line-height:1.4}
-.statement p b{color:var(--fg);font-weight:500}
-.statement .src{font-size:11px;color:var(--faint);max-width:560px}
-.statement .fade{opacity:var(--o,0);transform:translateY(calc((1 - var(--o,0)) * 18px))}
-
-/* how: the knee bends with scroll; live reading + next-morning note */
-.flex{position:relative;height:420vh}
-.flex .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
-.flex canvas,.flex .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.flex canvas{opacity:0;transition:opacity .6s}.flex.live canvas{opacity:1}
-.flex .poster{transition:opacity .6s}.flex.live .poster{opacity:0}
-.flex .pin::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(242,241,236,.7),rgba(242,241,236,0) 24%,rgba(242,241,236,0) 60%,rgba(242,241,236,.96));pointer-events:none}
-.flex .hud{position:absolute;inset:0;z-index:2;pointer-events:none}.flex .hud .box{position:relative;height:100%}
-.read{position:absolute;display:grid;gap:6px}
-.read b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
-.r-top{left:0;top:calc(96px + env(safe-area-inset-top,0px))}
-.r-top strong{font:500 clamp(3.4rem,7vw,6rem)/1 var(--mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums;transition:color .3s}
-.flex.over .r-top strong{color:var(--ease)}
-.gauge{width:min(240px,42vw);height:3px;border-radius:3px;background:var(--line);position:relative;margin-top:8px}
-.gauge i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--fg);width:0;transition:background .3s}
-.flex.over .gauge i{background:var(--ease)}
-.gauge em{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--teal);left:88.9%}
-.alert{position:absolute;right:0;top:calc(96px + env(safe-area-inset-top,0px));width:min(320px,62%);display:grid;gap:6px;padding:16px 18px;border-radius:18px;background:var(--paper);border:1px solid var(--line);box-shadow:0 20px 50px -20px rgba(28,30,26,.25);font-size:13.5px;line-height:1.4;color:var(--dim);opacity:0;transform:translateY(-10px) scale(.98);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)}
-.alert b{font-weight:600;font-size:16px;color:var(--fg);display:flex;align-items:center;gap:8px}
-.alert b::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--ease)}
-.flex.over .alert{opacity:1;transform:none;animation:buzz .45s linear}
-@keyframes buzz{0%,100%{translate:0}20%,60%{translate:-4px}40%,80%{translate:4px}}
-.steps{position:absolute;left:0;right:0;bottom:calc(32px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
-.step{--f:0;position:relative;padding-top:18px}
-.step::before,.step::after{content:"";position:absolute;left:0;top:0;height:2px;border-radius:2px}
-.step::before{right:0;background:var(--line)}
-.step::after{width:calc(var(--f)*100%);background:var(--fg)}
-.step .n{font:600 13px/1 var(--mono);letter-spacing:1.6px;color:#8E8B82}
-.step b{display:block;margin:8px 0 0;font:700 clamp(22px,2.2vw,32px)/1 var(--serif);text-transform:uppercase;letter-spacing:.01em;
-  background:linear-gradient(90deg,var(--fg) 0 calc(var(--f)*100%),#A9A69C calc(var(--f)*100% + .01%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.step p{font-size:13.5px;line-height:1.5;color:var(--dim);opacity:calc(var(--f)*1.4 - .2);transform:translateY(calc((1 - var(--f))*10px));filter:blur(calc((1 - min(1,var(--f)*2))*4px))}
-.step.on .n{color:var(--fg)}
-@media (max-width:760px){
-  .steps{grid-template-columns:minmax(0,1fr)}
-  .step{grid-area:1/1;opacity:0;transition:opacity .4s}
-  .step.cur{opacity:1}
-  .alert{top:auto;bottom:calc(160px + env(safe-area-inset-bottom,0px));width:100%}
-}
-
-/* the app */
-.learns{padding-block:120px 140px;display:grid;gap:56px}
-.learns .big{font-size:clamp(3rem,8.5vw,8rem)}
-.learns .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-.learns .cols>div{display:grid;gap:10px;align-content:start;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:24px}
-.learns .cols b{font:700 clamp(26px,2.6vw,36px)/.95 var(--serif);text-transform:uppercase}
-.learns .cols p{color:var(--dim);font-size:15px;max-width:30em}
-.learns .note{color:var(--faint);font-size:12px}
-.learns .links{display:flex;gap:12px;flex-wrap:wrap}
-.learns .more{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;border:1px solid var(--line);font-size:15px;font-weight:500;background:var(--paper);transition:border-color .2s}
-.learns .more:hover{border-color:var(--faint)}
-.learns .more.primary{background:var(--olive);color:#F2F1EC;border-color:var(--olive)}
-.plan{font-size:13px;color:var(--faint)}
-@media (max-width:860px){.learns .cols{grid-template-columns:minmax(0,1fr)}}
-
-/* join */
-.join{min-height:100vh;display:grid;align-content:center;gap:56px;padding-block:120px;border-top:1px solid var(--line)}
-.join .big{font-size:clamp(3.6rem,11vw,10rem)}
-.bendin{display:inline-block;perspective:900px}
-.bendin .ch{display:inline-block;transform-origin:50% 100%;will-change:transform,filter,opacity}
-.join .row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start}
-.join aside{color:var(--dim);font-size:14px;max-width:380px;justify-self:end;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
-.join aside b{color:var(--fg);font-weight:600}
-@media (max-width:860px){.join .row{grid-template-columns:minmax(0,1fr)}.join aside{justify-self:start}}
-.cta{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;border-bottom:2px solid var(--fg);padding-bottom:28px;cursor:pointer}
-.cta .arrow{font:300 clamp(2.5rem,7vw,6rem)/1 var(--sans);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-.cta:hover .arrow{transform:translateX(14px)}
-.cta .big{transition:color .4s}.cta:hover .big{color:var(--olive)}
-
-/* intake sheet */
-.intake{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:var(--bg);color:var(--fg);overflow-y:auto}
-.intake::backdrop{background:var(--bg)}
-.intake[open]{animation:sheet .55s cubic-bezier(.2,.8,.2,1)}
-@keyframes sheet{from{opacity:0;transform:translateY(24px)}}
-.intake .sheet{min-height:100%;display:grid;grid-template-rows:auto 1fr;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
-.intake .bar{display:flex;justify-content:space-between;align-items:center}
-.close{background:none;border:0;color:var(--dim);font:500 14px/1 var(--sans);cursor:pointer;padding:8px 0;display:flex;gap:10px;align-items:center}
-.intake form,.intake .done{align-self:center;width:min(100%,760px);margin:0 auto;display:grid;gap:30px;padding-block:48px}
-.intake .big{font-size:clamp(3rem,8vw,6.5rem)}
-.q{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:12px;row-gap:12px;border:0;margin:0;padding:0;min-width:0}
-.q .n{grid-row:1/3;font:500 12px/1 var(--mono);color:var(--faint);padding-top:4px}
-.q>label,.q legend{font-size:16px;font-weight:600;color:var(--fg);padding:0}
-.q legend{float:left;width:100%;margin-bottom:12px}
-.q .chips{grid-column:2}
-.field{display:flex;align-items:center;border-bottom:2px solid var(--line);transition:border-color .3s}
-.field:focus-within{border-color:var(--fg)}
-.field input{flex:1;min-width:0;width:0;background:transparent;border:0;color:var(--fg);font:400 clamp(1.4rem,3vw,2rem)/1.2 var(--sans);letter-spacing:-.02em;padding:12px 0}
-.field input::placeholder{color:#B9B6AC}
-.field input:focus{outline:none}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips label{position:relative}
-.chips input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
-.chips span{display:inline-block;font-size:14px;font-weight:500;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--fg);transition:all .2s}
-.chips input:checked+span{background:var(--olive);border-color:var(--olive);color:#F2F1EC}
-.chips input:focus-visible+span{outline:2px solid var(--teal);outline-offset:3px}
-select{background:var(--paper);border:1px solid var(--line);border-radius:12px;color:var(--fg);font:400 15px var(--sans);padding:12px 14px;max-width:100%}
-select:focus{outline:2px solid var(--teal)}
-.msg{min-height:1.4em;font-size:14px;color:var(--dim)}
-.msg.err{color:var(--ease)}
-.done .big{font-size:clamp(3rem,9vw,8rem)}
-.hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
-.go{justify-self:start;background:var(--olive);color:#F2F1EC;border:0;border-radius:999px;font:500 15px/1 var(--sans);padding:17px 26px;cursor:pointer;display:inline-flex;gap:12px;align-items:center;transition:transform .2s}
-.go:active{transform:scale(.98)}
-.send{display:grid;gap:14px;padding-left:56px}
-.intake .done{gap:22px}
-@media (max-width:560px){.q{grid-template-columns:minmax(0,1fr)}.q .n{grid-row:auto}.q .chips{grid-column:auto}.send{padding-left:0}}
-
-footer{display:grid;justify-items:center;gap:14px;padding-block:44px calc(36px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
-footer nav{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
-footer nav a{font-size:14px;color:var(--dim)}
-footer .small{color:var(--faint);font-size:12px;text-align:center}
-footer .foot-brand svg{height:22px;width:auto;display:block}
-
-.rv{transition:opacity .6s var(--out),transform .6s var(--out)}
-.js .rv.pending{opacity:0;transform:translateY(8px)}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  .hero .under .cue i,.arc{animation:none}.arc{stroke-dashoffset:0}
-  .hero .lines p{transition:none}
-  .rv,.film .words h2,.statement .big .ch,.step,.alert{transition:none;animation:none}
-  .js .rv.pending{opacity:1;transform:none}
-}
-</style>
+<link rel="preload" href="/flow/intro/h_001.webp?v=8" as="image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..500&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="/home.css">
+<link rel="stylesheet" href="/flow.css">
 </head>
 <body>
 
@@ -251,89 +28,41 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 <path transform="translate(1292.0,0)" d="M372 -16Q275 -16 201.0 28.5Q127 73 85.0 155.5Q43 238 43 354Q43 468 84.0 551.5Q125 635 199.0 680.5Q273 726 373 726Q509 726 584.0 658.5Q659 591 682 470L546 463Q533 533 490.0 573.0Q447 613 373 613Q313 613 269.0 581.0Q225 549 201.0 491.0Q177 433 177 354Q177 274 201.5 216.5Q226 159 270.0 128.0Q314 97 372 97Q451 97 494.5 140.5Q538 184 550 260L686 253Q672 170 632.0 109.5Q592 49 526.5 16.5Q461 -16 372 -16Z"/>
 </g>
 <circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
-<path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#1F8A72" stroke-width="101.4" stroke-linecap="round"/>
+<path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#3DDBB8" stroke-width="101.4" stroke-linecap="round"/>
 </svg></a>
-  <nav aria-label="Main"><a href="#mission">Mission</a><a href="#how">How it works</a><a href="/try/?tape=demo">Try the app</a><a class="pill" href="#join" data-join>Join waitlist</a></nav>
+  <nav aria-label="Main"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a></nav>
 </header>
 
-<section class="hero" id="top" aria-label="The RECO coin turns in front of you, drops and twists into the tape's mount, then the view pulls back to show the whole strip">
-  <div class="pinbox">
-    <span class="ghost" id="ghost" aria-hidden="true">RECO</span>
-    <div class="poster" aria-hidden="true"><img src="/hero7/h_001.webp" alt="" width="1440" height="810"></div>
-    <canvas id="heroCv" aria-hidden="true"></canvas>
-    <div class="flash" id="flash" aria-hidden="true"></div>
-    <div class="tick" aria-hidden="true"><span class="on">01 Coin</span><span>02 Twist</span><span>03 Strip</span></div>
-    <div class="under gut">
-      <div class="lines">
-        <p class="on" data-in="0" data-out=".3"><b>Measure your<br>comeback.</b></p>
-        <p data-in=".3" data-out=".62"><b>One coin.<br>Twist to lock.</b></p>
-        <p data-in=".62" data-out="1.1"><b>Wear it<br>all day.</b></p>
+<section class="flow" id="top" aria-label="One continuous film. The RECO coin turns, drops and twists into the tape. The view dives to the tape's fibers and pulls back to the whole strip. In the dark the strip curves as if around a knee, then light spreads from the coin's ring to reveal it on a seated person's knee. The leg fades away and the tape alone bends from straight to a deep bend while the angle reads out. A signal travels from the coin to a phone showing recovery progress and a plan for today, sample data. Then the waitlist.">
+  <div class="pin">
+    <canvas id="flowCv" aria-hidden="true"></canvas>
+    <div class="veil" aria-hidden="true"></div>
+    <div class="words gut" id="words">
+      <div class="w low on" data-a="hero 0" data-b="hero .3"><h1>Measure your<br>comeback.</h1></div>
+      <div class="w low" data-a="hero .3" data-b="hero .62"><h2>One coin.<br>Twist to lock.</h2></div>
+      <div class="w low" data-a="hero .62" data-b="dive .35"><h2>Wear it<br>all day.</h2></div>
+      <div class="w mid" data-a="dive .75" data-b="film .46"><h2>From the <em>fiber</em></h2></div>
+      <div class="w mid" data-a="film .46" data-b="wrap .3"><h2>To the <em>knee</em></h2></div>
+      <div class="w side" data-a="reveal .62" data-b="fade .2"><span class="eyebrow">Recovery, with you.</span><h2 class="huge">A little<br>more <em>you.</em></h2><p>Smart knee tape. A personal app.<br>A clearer way through recovery.</p></div>
+      <div class="w low up right" data-a="bend .06" data-b="signal .08"><h2>Every bend.<br>Every straighten.</h2></div>
+      <div class="w low up" data-a="signal .12" data-b="signal .96"><h2>All of it, sent<br>to <em>your phone.</em></h2></div>
+      <div class="w low up" data-a="phone .02" data-b="phone .42"><h2>Your recovery,<br><em>at a glance.</em></h2></div>
+      <div class="w low up" data-a="phone .42" data-b="close .3"><h2>Your plan<br><em>for today.</em></h2></div>
+      <div class="w join" id="join" data-a="close .55" data-b="join 2">
+        <a class="cta" href="#join" data-join><h2>Join the <em>waitlist</em></h2><span class="arrow" aria-hidden="true">→</span></a>
+        <p>Free. We only write when there's something to try. <span id="count"></span></p>
+        <p class="tester">Early testers wanted: athletes coming back from an ACL or meniscus injury, and their PTs.</p>
       </div>
-      <span class="cue" id="heroCue"><i></i>Scroll</span>
     </div>
-  </div>
-</section>
-
-<section class="film" id="film" aria-label="Close-up of the woven tape and the sensor strip, pulling back to the whole strip">
-  <div class="pin">
-    <img class="poster" src="/film7/v_001.webp" alt="" width="1440" height="810">
-    <canvas id="filmCanvas" aria-hidden="true"></canvas>
-    <div class="words"><h2 class="big on light" data-in="0" data-out=".45">From the <em>fiber</em></h2><h2 class="big" data-in=".45" data-out="1.01">To the <em>knee</em></h2></div>
-    <div class="cap gut"><span></span><p class="meter" id="meter">Field of view · 6 mm</p></div>
-  </div>
-</section>
-
-<section class="statement gut" id="mission">
-  <div class="stick">
-    <span class="caps fade" data-o=".0,.08">Mission</span>
-    <h2 class="big" id="lit" aria-label="Trust your comeback."><span class="w1" aria-hidden="true">Trust your</span><br><span class="w2" aria-hidden="true">comeback.</span></h2>
-    <p class="fade" data-o=".74,.86"><b>Recovery is hard.</b> We're here to help you through every day of it.</p>
-  </div>
-</section>
-
-<section class="flex" id="how" aria-label="How it works: the strip bends with your knee">
-  <div class="pin">
-    <img class="poster" src="/flex7/k_001.webp" alt="" width="1440" height="810">
-    <canvas id="flexCv" role="img" aria-label="The RECO strip and puck bending from straight to a deep knee bend."></canvas>
-    <div class="hud gut"><div class="box">
-      <div class="read r-top">
-        <span class="caps">Knee bend · live from the tape</span>
-        <strong id="fDeg">0°</strong>
-        <div class="gauge" aria-hidden="true"><i id="fBar"></i><em></em></div>
-        <span class="small">Your usual · <b>120°</b></span>
-      </div>
-      <div class="steps" id="steps">
-        <div class="step" data-a="0" data-b=".18"><span class="n">01</span><b>Wear it all day</b></div>
-        <div class="step" data-a=".18" data-b=".38"><span class="n">02</span><b>See it get back to zero</b></div>
-        <div class="step" data-a=".38" data-b=".66"><span class="n">03</span><b>Tap when it hurts</b></div>
-        <div class="step" data-a=".66" data-b=".79"><span class="n">04</span><b>Know when to push</b></div>
-      </div>
-    </div></div>
-  </div>
-</section>
-
-<section class="learns gut" id="learns">
-  <h2 class="big rv">Built for the days<br><em>your PT doesn't see.</em></h2>
-  <div class="cols">
-    <div class="rv"><span class="caps">01 · Progress</span><b>Back to zero</b><p>Every bend, every day.</p></div>
-    <div class="rv"><span class="caps">02 · Pain</span><b>What came before your pain</b><p>Press the coin when it hurts.</p></div>
-    <div class="rv"><span class="caps">03 · Your PT</span><b>The full picture</b><p>A report for your PT, when you choose.</p></div>
-  </div>
-  <div class="links rv"><a class="more primary" href="/try/?tape=demo">Try the app in your browser <span aria-hidden="true">→</span></a><a class="more" href="/progress/">See how the app works <span aria-hidden="true">→</span></a></div>
-  <p class="note rv">In development. Not a medical device.</p>
-</section>
-
-<section class="join gut" id="join">
-  <a class="cta" href="#join" data-join aria-label="Join the waitlist"><span class="big bendin" id="bendin" aria-hidden="true"><span class="ln">Join the</span><br><span class="ln"><em>waitlist</em></span></span><span class="arrow" aria-hidden="true">→</span></a>
-  <div class="row">
-    <p class="small rv">Free. We only write when there's something to try. <span id="count"></span></p>
-    <aside class="rv"><b>Early testers wanted.</b> Athletes coming back from an ACL or meniscus injury, and their PTs.</aside>
+    <div class="deg gut" id="fDegWrap" aria-hidden="true"><strong id="fDeg">0°</strong><div class="gauge"><i id="fBar"></i></div><span>Knee bend · live from the tape</span></div>
+    <div class="device" id="device"><div class="screen"><img id="scrToday" src="/flow/screen/today.webp?v=8" alt="RECO app, Today: 70% recovery and today's call, Steady. Sample data." width="900" height="1948" loading="lazy"><img id="scrPlan" src="/flow/screen/plan.webp?v=8" alt="RECO app, your plan for today: bridges, mini squats, single-leg balance and a stationary bike. Sample data." width="900" height="1948" loading="lazy"></div></div>
+    <span class="cue" id="cue" aria-hidden="true"><i></i>Scroll</span>
   </div>
 </section>
 
 <dialog class="intake" id="intake" aria-labelledby="intakeTitle">
   <div class="sheet gut">
-    <div class="bar"><span class="caps small">RECO · Waitlist</span><button type="button" class="close" data-close>Close <span aria-hidden="true">✕</span></button></div>
+    <div class="bar"><span class="small">Waitlist</span><button type="button" class="close" data-close>Close <span aria-hidden="true">✕</span></button></div>
     <form id="form" novalidate>
       <h2 class="big" id="intakeTitle">Be first<br>to try it.</h2>
       <label class="hp" for="company">Company</label><input class="hp" id="company" name="company" tabindex="-1" autocomplete="off">
@@ -342,7 +71,7 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
       <fieldset class="q"><span class="n">02</span><legend>I'm…</legend>
         <div class="chips">
           <label for="r1"><input type="radio" id="r1" name="role" value="patient" checked><span>Recovering from a knee injury</span></label>
-          <label for="r2"><input type="radio" id="r2" name="role" value="pt"><span>A physio or athletic trainer</span></label>
+          <label for="r2"><input type="radio" id="r2" name="role" value="pt"><span>A PT or athletic trainer</span></label>
           <label for="r3"><input type="radio" id="r3" name="role" value="supporting"><span>A coach or parent</span></label>
           <label for="r4"><input type="radio" id="r4" name="role" value="other"><span>Just curious</span></label>
         </div></fieldset>
@@ -375,7 +104,7 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
         </div></fieldset>
       <fieldset class="q"><span class="n">06</span><legend>How did you find RECO?</legend>
         <div class="chips">
-          <label for="c1"><input type="radio" id="c1" name="channel" value="clinic"><span>My physio or trainer</span></label>
+          <label for="c1"><input type="radio" id="c1" name="channel" value="clinic"><span>My PT or trainer</span></label>
           <label for="c2"><input type="radio" id="c2" name="channel" value="teammate"><span>A teammate or friend</span></label>
           <label for="c3"><input type="radio" id="c3" name="channel" value="online"><span>Reddit or a forum</span></label>
           <label for="c4"><input type="radio" id="c4" name="channel" value="social"><span>Instagram, TikTok or X</span></label>
@@ -383,7 +112,7 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
           <label for="c6"><input type="radio" id="c6" name="channel" value="other"><span>Somewhere else</span></label>
         </div></fieldset>
       <div class="q"><span class="n">07</span><label for="note">Anything we should know? <span class="small">(optional)</span></label>
-        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, club soccer, physio once a week"></div></div>
+        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, club soccer, PT once a week"></div></div>
       <div class="send"><button type="submit" class="go">Join the waitlist <span aria-hidden="true">→</span></button><p class="msg" id="msg" aria-live="polite"></p></div>
     </form>
     <div class="done" id="done" hidden aria-live="polite">
@@ -403,181 +132,13 @@ footer .foot-brand svg{height:22px;width:auto;display:block}
 <path transform="translate(1292.0,0)" d="M372 -16Q275 -16 201.0 28.5Q127 73 85.0 155.5Q43 238 43 354Q43 468 84.0 551.5Q125 635 199.0 680.5Q273 726 373 726Q509 726 584.0 658.5Q659 591 682 470L546 463Q533 533 490.0 573.0Q447 613 373 613Q313 613 269.0 581.0Q225 549 201.0 491.0Q177 433 177 354Q177 274 201.5 216.5Q226 159 270.0 128.0Q314 97 372 97Q451 97 494.5 140.5Q538 184 550 260L686 253Q672 170 632.0 109.5Q592 49 526.5 16.5Q461 -16 372 -16Z"/>
 </g>
 <circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
-<path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#1F8A72" stroke-width="101.4" stroke-linecap="round"/>
+<path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#3DDBB8" stroke-width="101.4" stroke-linecap="round"/>
 </svg></a>
-  <nav aria-label="Footer"><a href="#mission">Mission</a><a href="#how">How it works</a><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join waitlist</a></nav>
-  <p class="small">© 2026 RECO. In development. Not a medical device.</p>
+  <nav aria-label="Footer"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a><a class="mail" href="mailto:recowearable@gmail.com">recowearable@gmail.com</a></nav>
+  <p class="small">RECO tracks and shows. Your PT makes the calls. © 2026 RECO. In development. Not a medical device.</p>
 </footer>
 
-<script>
-document.documentElement.classList.add('js');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-const topbar = document.getElementById('topbar');
-addEventListener('scroll', () => topbar.classList.toggle('solid', scrollY > 40), {passive: true});
-
-/* ---------- frame scrubbers (film + flex share one loader) ---------- */
-function scrubber(sec, cv, base, ext, N, firstFrames) {
-  const ctx = cv.getContext('2d'), frames = []; let started = false, shown = -1;
-  const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(cv.clientHeight * d); shown = -1; };
-  addEventListener('resize', fit); fit();
-  const ready = im => im && im.complete && im.naturalWidth;
-  const draw = i => { const im = frames[i]; if (!ready(im)) return false; const W = cv.width, H = cv.height, s = Math.max(W / im.naturalWidth, H / im.naturalHeight); ctx.clearRect(0, 0, W, H); ctx.drawImage(im, (W - im.naturalWidth * s) / 2, (H - im.naturalHeight * s) / 2, im.naturalWidth * s, im.naturalHeight * s); return true; };
-  const load = () => { const order = []; for (let k = 8; k >= 1; k >>= 1) for (let i = 0; i < N; i += k) if (!order.includes(i)) order.push(i);
-    order.forEach(i => { const im = new Image(); if (!i) im.onload = () => { sec.classList.add('live'); shown = -1; }; im.src = base + String(i + 1).padStart(3, '0') + ext; frames[i] = im; }); };
-  new IntersectionObserver(es => { if (es[0].isIntersecting && !started) { started = true; load(); } }, {rootMargin: '150% 0px'}).observe(sec);
-  return f => { if (f !== shown && started) { let k = f; while (k > 0 && !ready(frames[k])) k--; if (draw(k)) shown = k === f ? f : -1; } };
-}
-const progress = sec => { const b = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight; return cl(-b.top / Math.max(1, span)); };
-
-/* ---------- hero: RECO v7 frames. Float + turn → drop + 60° twist (lock at .6) → pull back to the strip ---------- */
-(function hero() {
-  const sec = document.getElementById('top'), cv = document.getElementById('heroCv');
-  const lines = [...sec.querySelectorAll('.lines [data-in]')], ticks = [...sec.querySelectorAll('.tick span')];
-  const cue = document.getElementById('heroCue'), ghost = document.getElementById('ghost'), flashEl = document.getElementById('flash');
-  const N = 120, LOCK = 0.6, show = scrubber(sec, cv, '/hero7/h_', '.webp', N);
-  let target = 0, prog = 0, mx = 0, my = 0, tx = 0, ty = 0, was = false, snapT = -1;
-  addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, {passive: true});
-  const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read(); prog = target;
-  (function tick(now) {
-    requestAnimationFrame(tick);
-    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0003) prog = target;
-    const p = reduce ? 1 : prog; show(Math.round(p * (N - 1)));
-    mx += (tx - mx) * 0.05; my += (ty - my) * 0.05;                       // a little depth under the cursor
-    const k = reduce ? 0 : 1 - p * 0.6; cv.style.transform = `translate3d(${(-mx * 14 * k).toFixed(1)}px,${(-my * 10 * k).toFixed(1)}px,0)`;
-    const locked = p >= LOCK; if (locked && !was) { snapT = now; was = true; } if (!locked && was) { was = false; snapT = -1; }
-    const since = snapT < 0 ? 99 : (now - snapT) / 1000; flashEl.style.opacity = locked && !reduce ? (0.9 * Math.exp(-since * 3.5)).toFixed(3) : 0;
-    lines.forEach(l => l.classList.toggle('on', p >= +l.dataset.in && p < +l.dataset.out));
-    const phase = p < 0.36 ? 0 : p < LOCK + 0.04 ? 1 : 2; ticks.forEach((s, i) => s.classList.toggle('on', i === phase));
-    cue.classList.toggle('off', p > 0.03); ghost.classList.toggle('off', p > 0.3);
-  })(performance.now());
-})();
-
-/* ---------- film: scroll scrubs fiber → strip ---------- */
-(function film() {
-  const sec = document.getElementById('film'), words = [...sec.querySelectorAll('[data-in]')], meter = document.getElementById('meter');
-  const N = 90, show = scrubber(sec, document.getElementById('filmCanvas'), '/film7/v_', '.webp', N);
-  let target = 0, prog = 0; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
-  (function tick() {
-    requestAnimationFrame(tick);
-    prog += (target - prog) * (reduce ? 1 : 0.1); if (Math.abs(target - prog) < 0.0004) prog = target;
-    const u = Math.min(1, prog / 0.92); show(Math.round(u * (N - 1)));
-    words.forEach(w => w.classList.toggle('on', prog >= +w.dataset.in && prog < +w.dataset.out));
-    const fov = 7.2 * Math.pow(266 / 7.2, Math.pow(u, 1.2));   // same zoom curve the render used
-    meter.textContent = 'Field of view · ' + (fov < 100 ? fov.toFixed(fov < 10 ? 1 : 0) : Math.round(fov)) + ' mm';
-  })();
-})();
-
-/* ---------- statement: letters fill, "comeback." stretches past your usual and snaps back ---------- */
-(function lit() {
-  const sec = document.getElementById('mission'), h = document.getElementById('lit');
-  const w2 = h.querySelector('.w2');
-  const fades = [...sec.querySelectorAll('.fade')].map(el => [el, ...el.dataset.o.split(',').map(Number)]);
-  const chars = [];
-  h.querySelectorAll('.w1,.w2').forEach(w => { const t = w.textContent; w.textContent = ''; for (const c of t) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? ' ' : c; w.appendChild(s); chars.push(s); } });
-  const N = chars.length, FILL_END = .5, STR_A = .5, STR_B = .7; let snapped = false;
-  const upd = () => {
-    const p = reduce ? 1 : progress(sec);
-    chars.forEach((c, i) => { const k = cl((p / FILL_END) * (N + 4) - i, 0, 4) / 4; c.style.opacity = (.14 + .86 * k).toFixed(3); c.style.filter = k < 1 ? `blur(${((1 - k) * 10).toFixed(1)}px)` : 'none'; c.style.transform = `translateY(${((1 - k) * .22).toFixed(3)}em)`; });
-    const st = cl((p - STR_A) / (STR_B - STR_A)), snap = p > STR_B;
-    if (snap !== snapped) { snapped = snap; sec.classList.toggle('snap', snap); }
-    w2.style.setProperty('--ls', snap ? '-.015em' : (-.015 + st * (innerWidth < 700 ? .05 : .16)).toFixed(3) + 'em');
-    fades.forEach(([el, a, b]) => el.style.setProperty('--o', cl((p - a) / (b - a)).toFixed(3)));
-  };
-  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', upd); upd();
-})();
-
-/* ---------- flex: scroll bends the knee; the reading is the same angle the frame was rendered at ---------- */
-(function flex() {
-  const sec = document.getElementById('how'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar');
-  const steps = [...sec.querySelectorAll('.step')];
-  const N = 96, LIMIT = 120, MAXD = 135, BEND = 130, show = scrubber(sec, document.getElementById('flexCv'), '/flex7/k_', '.webp', N);
-  let target = 0, prog = 0, wasOver = false; const read = () => { target = progress(sec); }; addEventListener('scroll', read, {passive: true}); read();
-  (function tick() {
-    requestAnimationFrame(tick);
-    prog += (target - prog) * (reduce ? 1 : 0.12); if (Math.abs(target - prog) < 0.0003) prog = target;
-    const f = Math.round(Math.min(1, prog / 0.86) * (N - 1)); show(f);
-    const u = f / (N - 1), d = BEND * u * u * (3 - 2 * u), over = d >= LIMIT;   // same eased angle the frame was rendered at
-    deg.textContent = Math.round(d) + '°'; bar.style.width = (d / MAXD * 100) + '%';
-    if (over !== wasOver) { sec.classList.toggle('over', over); wasOver = over; }
-    let cur = 0;
-    steps.forEach((s, i) => { const a = +s.dataset.a, b = +s.dataset.b, v = cl((prog - a) / (b - a)); s.style.setProperty('--f', v.toFixed(3)); s.classList.toggle('on', v > 0); if (prog >= a) cur = i; });
-    steps.forEach((s, i) => s.classList.toggle('cur', i === cur));
-  })();
-})();
-
-/* ---------- reveal (cards fade up 8px, 60ms stagger) ---------- */
-if ('IntersectionObserver' in window && !reduce) {
-  const io = new IntersectionObserver(es => { let k = 0; es.forEach(e => { if (e.isIntersecting) { const el = e.target; setTimeout(() => el.classList.remove('pending'), 60 * k++); io.unobserve(el); } }); }, {rootMargin: '0px 0px -10% 0px'});
-  document.querySelectorAll('.rv').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); } });
-}
-
-/* ---------- join: the headline starts bent round a knee, edges blurred, and straightens as you scroll in ---------- */
-(function bendIn() {
-  const el = document.getElementById('bendin'); if (!el) return;
-  const chars = [];
-  el.querySelectorAll('.ln').forEach((ln, li) => {
-    const walk = node => [...node.childNodes].forEach(n => {
-      if (n.nodeType === 3) { const f = document.createDocumentFragment(); for (const c of n.textContent) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c === ' ' ? '\u00a0' : c; f.appendChild(s); chars.push({s, li}); } n.replaceWith(f); }
-      else walk(n);
-    });
-    walk(ln);
-  });
-  let geo = [];
-  const measure = () => {
-    chars.forEach(c => c.s.style.transform = c.s.style.filter = c.s.style.opacity = '');
-    const lines = {}; chars.forEach(c => { const r = c.s.getBoundingClientRect(); c.cx = r.left + r.width / 2; (lines[c.li] = lines[c.li] || []).push(c); });
-    geo = chars.map(c => { const L = lines[c.li], a = L[0].s.getBoundingClientRect().left, b = L[L.length - 1].s.getBoundingClientRect().right, m = (a + b) / 2, h = (b - a) / 2;
-      return {s: c.s, x: (c.cx - m) / h, w: h}; });
-  };
-  const sec = document.getElementById('join');
-  const upd = () => {
-    const r = el.getBoundingClientRect(), H = innerHeight, c = r.top + r.height / 2;
-    const k = reduce ? 1 : cl((H * 0.95 - c) / (H * 0.4));          // short scroll: headline centre from 95% to 55% of the screen
-    const e = 1 - Math.pow(1 - k, 3), bend = 1 - e;
-    geo.forEach(({s, x, w}) => {
-      const ax = Math.abs(x), ang = x * 34 * bend;                  // each side curls back as if wrapped over a knee
-      const lift = ax * ax * w * 0.22 * bend;
-      s.style.transform = bend < 0.001 ? '' : `translateY(${lift.toFixed(1)}px) rotateY(${(-ang).toFixed(2)}deg) rotateZ(${(x * 9 * bend).toFixed(2)}deg)`;
-      s.style.filter = bend < 0.001 ? '' : `blur(${(Math.pow(ax, 1.6) * 9 * bend).toFixed(2)}px)`;
-      s.style.opacity = (1 - Math.pow(ax, 2) * 0.75 * bend).toFixed(3);
-    });
-  };
-  const all = () => { measure(); upd(); };
-  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', all);
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(all); all();
-})();
-
-/* ---------- waitlist intake (opens on "Join") ---------- */
-const dlg = document.getElementById('intake'), form = document.getElementById('form'), msg = document.getElementById('msg'), patientRows = [...form.querySelectorAll('[data-patient]')];
-const SOURCE = (new URLSearchParams(location.search).get('src') || 'site').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || 'site';
-/* questions renumber themselves when the injury and sport rows are hidden for non-patients */
-function renumber() { let n = 0; form.querySelectorAll('.q').forEach(q => { if (q.hidden) return; n += 1; const t = q.querySelector(':scope > .n'); if (t) t.textContent = String(n).padStart(2, '0'); }); }
-let lastFocus = null;
-function openJoin(e) { if (e) e.preventDefault(); lastFocus = document.activeElement; if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); document.body.style.overflow = 'hidden'; setTimeout(() => (form.hidden ? dlg.querySelector('.done .go') : form.email).focus(), 60); }
-function closeJoin() { if (dlg.open) dlg.close(); }
-dlg.addEventListener('close', () => { document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); });
-document.querySelectorAll('[data-join]').forEach(a => a.addEventListener('click', openJoin));
-dlg.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeJoin));
-if (location.hash === '#join') openJoin();
-form.addEventListener('change', () => { const pat = form.role.value === 'patient'; patientRows.forEach(r => { r.hidden = !pat; }); renumber(); });
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const email = form.email.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.className = 'msg err'; msg.textContent = 'Enter a full email address, like name@example.com.'; form.email.focus(); return; }
-  msg.className = 'msg'; msg.textContent = 'Adding you…';
-  const role = form.role.value, pick = name => (form.querySelector(`input[name=${name}]:checked`) || {}).value || '';
-  const data = {email, role, injury: role === 'patient' ? form.injury.value : '', sport: role === 'patient' ? form.sport.value : '', alert: pick('alert'), channel: pick('channel'), note: form.note.value.trim(), company: form.company.value, source: SOURCE};
-  try {
-    const res = await fetch('/api/waitlist', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok || !j.ok) throw new Error(j.error || 'Something went wrong. Try again in a minute.');
-    form.hidden = true; document.getElementById('done').hidden = false;
-        dlg.querySelector('.done .go').focus();
-  } catch (err) { msg.className = 'msg err'; msg.textContent = err.message === 'Failed to fetch' ? "Couldn't reach the server. Check your connection and try again." : err.message; }
-});
-fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) document.getElementById('count').textContent = `${j.count.toLocaleString()} already on the list.`; }).catch(() => {});
-fetch('/api/waitlist/count').then(r => r.json()).then(j => { if (j.count >= 25) document.getElementById('count').textContent = `${j.count.toLocaleString()} already on the list.`; }).catch(() => {});
-</script>
+<script src="/home.js"></script>
+<script src="/flow.js"></script>
 </body>
 </html>
