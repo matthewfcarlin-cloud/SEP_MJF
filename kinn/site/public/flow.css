@@ -11,16 +11,11 @@
 .low{bottom:calc(40px + env(safe-area-inset-bottom,0px))}
 .low h1,.low h2{font-size:clamp(2.6rem,6.4vw,6rem)}
 .right{text-align:right}
-.mid{top:50%;transform:translateY(calc(-50% + 10px));text-align:center}
-.mid.on{transform:translateY(-50%)}
-.mid h2{font-size:clamp(3rem,10.5vw,10rem);text-shadow:0 2px 40px rgba(0,0,0,.35)}
 .side{top:50%;transform:translateY(calc(-50% + 10px));max-width:46vw}
 .side.on{transform:translateY(-50%)}
 .side .huge{font-size:clamp(3.4rem,8.2vw,8rem);line-height:1}
 .side p{margin-top:24px;font-size:clamp(1rem,1.5vw,1.3rem);line-height:1.4;color:rgba(242,241,236,.8)}
 .eyebrow{display:block;margin-bottom:22px;font:400 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.72)}
-.cue{position:absolute;z-index:2;right:max(22px,env(safe-area-inset-right,0px));bottom:calc(40px + env(safe-area-inset-bottom,0px));font:400 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.6);transition:opacity .4s}
-.cue i{display:inline-block;width:1px;height:14px;margin-right:10px;vertical-align:-3px;background:currentColor}
 /* the angle, read off the tape */
 .deg{position:absolute;z-index:2;left:0;right:0;top:calc(88px + env(safe-area-inset-top,0px));pointer-events:none;opacity:0;transition:opacity .45s}
 .deg.on{opacity:1}
@@ -36,13 +31,24 @@
 /* the end of the film */
 .join{top:50%;transform:translateY(calc(-50% + 10px));text-align:center;pointer-events:none}
 .join.on{transform:translateY(-50%);pointer-events:auto}
-.join .cta{display:inline-flex;align-items:baseline;gap:.34em;color:var(--fg);font-size:clamp(2.9rem,8.6vw,8.4rem)}
-.join .cta h2{font-size:inherit}
-.join .arrow{font-size:.8em;line-height:1;transition:transform .3s var(--out)}
-.join .cta:hover .arrow{transform:translateX(.12em)}
-.join .cta:focus-visible{outline:2px solid var(--teal);outline-offset:8px}
-.join p{margin-top:26px;font-size:clamp(.95rem,1.3vw,1.1rem);line-height:1.45;color:rgba(242,241,236,.74)}
-.join .tester{margin-top:8px;color:rgba(242,241,236,.5);font-size:.92rem}
+.join h2{font-size:clamp(2.7rem,6vw,5.8rem)}
+.join .cta{position:relative;display:inline-flex;align-items:center;gap:.7em;margin-top:clamp(20px,3.4vh,34px);padding:.95em 1.5em;overflow:hidden;border-radius:999px;border:1px solid rgba(242,241,236,.34);color:var(--fg);font-size:clamp(1rem,1.35vw,1.2rem);font-weight:450;transform:translate(var(--pull-x,0),var(--pull-y,0));transition:transform .35s var(--out),color .25s var(--out),border-color .25s var(--out)}
+/* the fill grows out of wherever the cursor came in */
+.cta-fill{position:absolute;inset:-1px;background:var(--teal);clip-path:circle(0 at var(--in-x,50%) var(--in-y,50%));transition:clip-path .5s var(--out)}
+.cta-label,.join .arrow{position:relative}
+.join .arrow{line-height:1;transition:transform .35s var(--out)}
+.join .cta:is(:hover,:focus-visible){color:#0d1212;border-color:var(--teal)}
+.join .cta:is(:hover,:focus-visible) .cta-fill{clip-path:circle(150% at var(--in-x,50%) var(--in-y,50%))}
+.join .cta:is(:hover,:focus-visible) .arrow{transform:translateX(.3em)}
+.join .cta:focus-visible{outline:2px solid var(--teal);outline-offset:4px}
+.join p{margin:clamp(14px,2.4vh,24px) auto 0;max-width:30em;font-size:clamp(.92rem,1.15vw,1.02rem);line-height:1.45;color:rgba(242,241,236,.74)}
+.join .tester{margin-top:8px;max-width:26em;color:rgba(242,241,236,.5);font-size:.86rem}
+/* the words arrive one after another once the dial is lit */
+.join>*{opacity:0;transform:translateY(12px);transition:opacity .6s var(--out),transform .6s var(--out)}
+.join.on>*{opacity:1;transform:none}
+.join.on>:nth-child(2){transition-delay:.12s}
+.join.on>:nth-child(3){transition-delay:.2s}
+@media (max-height:560px){.join .tester{display:none}}
 @media (max-width:760px){
   .device{right:auto;left:50%;top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));height:min(68svh,600px);padding:7px;border-radius:44px;transform:translate(-50%,var(--rise,0px))}
   .device::after{top:15px}
@@ -52,12 +58,15 @@
   .up h1,.up h2{font-size:clamp(1.9rem,8.6vw,2.6rem)}
   .deg{top:auto;bottom:calc(36px + env(safe-area-inset-bottom,0px))}
   .deg strong{font-size:clamp(4rem,20vw,6rem)}
-  .join .cta{flex-direction:column;align-items:center;gap:.1em}
+  /* on a narrow screen the dial only holds the headline and the button, and sits higher, with the small print below it. These match NARROW_DIAL_Y and DIAL_W, DIAL_H in flow.js */
+  .join{--dial-r:min(47vw,43svh);top:calc(42svh - var(--dial-r));transform:translateY(10px)}
+  .join.on{transform:none}
+  .join-in{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(var(--dial-r) * 2)}
+  .join-in .cta{margin-top:18px}
   .side{top:auto;bottom:calc(40px + env(safe-area-inset-bottom,0px));max-width:none;transform:translateY(10px)}
   .side.on{transform:none}
   .side .huge{font-size:clamp(2.8rem,14vw,4.4rem)}
   .eyebrow{margin-bottom:12px}
   .side p{margin-top:12px}
-  .mid h2{font-size:clamp(2.8rem,14vw,4.6rem)}
 }
-@media (prefers-reduced-motion:reduce){.w,.veil,.cue,.deg,.join .arrow{transition:none}}
+@media (prefers-reduced-motion:reduce){.join>*,.cta-fill,.join .cta,.join .arrow{transition:none}}

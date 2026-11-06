@@ -1,6 +1,5 @@
-# The two joins of the home page film, in the same scene as the hero, fiber and bend films, so nothing changes appearance.
-#   wrap    from the last frame of the fiber film: the strip bends once over the knee as the camera moves to the hero photo's angle
-#   unwrap  from the photo's angle to the first frame of the bend film
+# The join between the bend film and the hero photo, in the same scene as the other films, so nothing changes appearance.
+#   wrap    from the last frame of the bend film: the tape relaxes from the peak of the bend onto the knee as the camera moves to the photo's angle
 # Frames are 1536x1024 at the same lens, so a 16:9 film frame is exactly this frame's middle.
 import json as J
 from bpy_extras.object_utils import world_to_camera_view as w2c
@@ -31,10 +30,8 @@ if MODE == "dump":
     q = w2c(scn, cam, M_.translation + M_.to_3x3() @ Vector((0, 0, 6 * MM))); print("COIN_END", q.x * 1536, (1 - q.y) * 1024, flush=True)
 else:
     C = J.load(open(CAMS))
-    def film_view():
-        tg = Vector((0, 0.02, 0.0)); return dict(loc=tg + Vector((0.20, -0.20, 0.24)), tgt=tg, lens=50.0, fs=11.0, foc=tg, graze=12.0)
-    def flex_view():
-        return dict(loc=Vector((0.40, -0.27, 0.16)), tgt=Vector((0, 0.03, -0.035)), lens=50.0, fs=9.0, foc=Vector((0.0, 0.01, -0.01)), graze=14.0)
+    def bend_end_view():
+        v = BEND_WHOLE; return dict(loc=Vector(v["loc"]), tgt=Vector(v["tgt"]), lens=v["lens"], fs=v["fs"], foc=Vector(v["foc"]), graze=v["graze"])
     def photo_view():
         loc = Vector(C["cam"]); return dict(loc=loc, tgt=loc + Vector(C["fwd"]), up=Vector(C["up"]), lens=C["lens"], fs=16.0, foc=Vector((0, 0.01, 0.0)), graze=13.0)
     PIVOT = Vector((0.0, 0.02, 0.0))
@@ -58,20 +55,16 @@ else:
         LIGHTS["Graze"].data.energy = a["graze"] + (b["graze"] - a["graze"]) * e
     PHI = math.radians(C["phi"])
     os.makedirs(OUT, exist_ok=True)
-    if MODE == "wrap":
-        ring_glow(RING0 if "RING0" in globals() else 1.5)
-        for f in range(F0, F1):
-            u = f / (NF - 1); e = ease(u)
-            pose(PHI * ease((u - 0.08) / 0.84)); go(film_view(), photo_view(), e)
-            shot(os.path.join(OUT, f"a_{f + 1:03d}.png"))
-        pose(PHI); go(film_view(), photo_view(), 1.0); bpy.context.view_layer.update()
-        res = {}
-        for k, P in points(PHI).items():
-            q = w2c(scn, cam, Vector(P)); res[k] = (q.x * 1536, (1 - q.y) * 1024)
-        J.dump(res, open(os.path.join(OUT, "cp.json"), "w"))
-    else:
-        ring_glow(1.5)
-        for f in range(F0, F1):
-            u = f / (NF - 1); e = ease(u)
-            pose(PHI * (1 - ease(u / 0.9))); go(photo_view(), flex_view(), e)
-            shot(os.path.join(OUT, f"c_{f + 1:03d}.png"))
+    PEAK = math.radians(BEND_PEAK)
+    SEATS_BY = 0.92   # of the shot: on the knee a little before the camera arrives
+    GLOW_FADES_BY, GLOW_PEAK, GLOW_REST = 0.3, 5.5, 1.5   # the ring is lit at the peak of the bend
+    for f in range(F0, F1, STEP):
+        u = f / (NF - 1); e = ease(u); s_ = ease(u / SEATS_BY)
+        pose(PEAK + (PHI - PEAK) * s_, level=BEND_LEVEL + (1 - BEND_LEVEL) * s_); go(bend_end_view(), photo_view(), e)
+        ring_glow(GLOW_REST + (GLOW_PEAK - GLOW_REST) * (1 - ease(u / GLOW_FADES_BY)))
+        shot(os.path.join(OUT, f"a_{f + 1:03d}.png"))
+    pose(PHI); ring_glow(GLOW_REST); go(bend_end_view(), photo_view(), 1.0); bpy.context.view_layer.update()
+    res = {}
+    for k, P in points(PHI).items():
+        q = w2c(scn, cam, Vector(P)); res[k] = (q.x * 1536, (1 - q.y) * 1024)
+    J.dump(res, open(os.path.join(OUT, "cp.json"), "w"))

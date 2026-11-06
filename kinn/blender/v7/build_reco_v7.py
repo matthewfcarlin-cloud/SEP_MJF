@@ -27,6 +27,7 @@ SAMPLES = int(A[3]) if len(A) > 3 else 128
 F0 = int(A[4]) if len(A) > 4 else 0
 F1 = int(A[5]) if len(A) > 5 else 1
 NF = int(A[6]) if len(A) > 6 else 120
+STEP = int(os.environ.get("RECO_STEP", 1))   # every Nth frame, for a quick look at a shot
 os.makedirs(OUT, exist_ok=True)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -396,6 +397,30 @@ area("Fill", (0.55, -0.45, 0.30), (0, 0.05, 0), 1.0, 0.6, 5, (0.95, 0.97, 1.0))
 area("Rim", (0.30, 0.65, 0.12), (0, 0.05, 0), 0.7, 0.10, 14, (1.0, 0.98, 0.95))
 area("Graze", (-0.6, -0.05, 0.05), (0, 0.05, 0), 0.5, 0.06, 6, (1.0, 0.98, 0.95))   # low light that pulls out the wire ridges
 
+
+def soft_reflections(strength=9.0):
+    """The rectangular lights show as hard blocks in the coin's glass. Hide them from reflections and hang one big card,
+    seen only in reflections, that fades smoothly to nothing: the glow sits high on the coin with no edges."""
+    for name in ("Key", "Fill"): LIGHTS[name].visible_glossy = False
+    me = bpy.data.meshes.new("SoftCard"); me.from_pydata([(-1, -1, 0), (1, -1, 0), (1, 1, 0), (-1, 1, 0)], [], [(0, 1, 2, 3)]); me.update()
+    card = link(bpy.data.objects.new("SoftCard", me)); card.scale = (0.9, 0.55, 1); aim(card, (0.10, 1.0, 0.50), (0, 0.09, 0.03))
+    m = bpy.data.materials.new("SoftCard"); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear()
+    tc = nt.nodes.new("ShaderNodeTexCoord"); sep = nt.nodes.new("ShaderNodeSeparateXYZ"); nt.links.new(tc.outputs["Object"], sep.inputs[0])
+    d = nt.nodes.new("ShaderNodeMath"); d.operation = "SQRT"
+    sx = nt.nodes.new("ShaderNodeMath"); sx.operation = "POWER"; sx.inputs[1].default_value = 2; nt.links.new(sep.outputs["X"], sx.inputs[0])
+    sy = nt.nodes.new("ShaderNodeMath"); sy.operation = "POWER"; sy.inputs[1].default_value = 2; nt.links.new(sep.outputs["Y"], sy.inputs[0])
+    ad = nt.nodes.new("ShaderNodeMath"); ad.operation = "ADD"; nt.links.new(sx.outputs[0], ad.inputs[0]); nt.links.new(sy.outputs[0], ad.inputs[1]); nt.links.new(ad.outputs[0], d.inputs[0])
+    ramp = nt.nodes.new("ShaderNodeValToRGB"); cr = ramp.color_ramp; cr.interpolation = "EASE"
+    cr.elements[0].position = 0.0; cr.elements[0].color = (1, 1, 1, 1); cr.elements[1].position = 1.0; cr.elements[1].color = (0, 0, 0, 1)
+    nt.links.new(d.outputs[0], ramp.inputs["Fac"])
+    em = nt.nodes.new("ShaderNodeEmission"); em.inputs["Strength"].default_value = strength; nt.links.new(ramp.outputs["Color"], em.inputs["Color"])
+    out = nt.nodes.new("ShaderNodeOutputMaterial"); nt.links.new(em.outputs[0], out.inputs["Surface"])
+    me.materials.append(m)
+    card.visible_camera = False; card.visible_diffuse = False; card.visible_shadow = False; card.visible_transmission = False; card.visible_volume_scatter = False
+
+
+if os.environ.get("RECO_SOFT"): soft_reflections(float(os.environ["RECO_SOFT"]))
+
 cd = bpy.data.cameras.new("Cam"); cd.sensor_width = 36; cd.clip_start = 0.0005
 cam = link(bpy.data.objects.new("Cam", cd)); scn.camera = cam
 cd.dof.use_dof = True; foc = link(bpy.data.objects.new("Focus", None)); cd.dof.focus_object = foc
@@ -447,24 +472,27 @@ if MODE in ("stills", "hero", "renders", "cursor"):
     lathe("Mount ring", [(13.6, MOUNT_TOP + curl(np.array([108.0]), np.array([0.0]))[0]), (13.6, MOUNT_TOP + 0.75), (15.4, MOUNT_TOP + 0.75), (15.6, MOUNT_TOP)], M_MOUNT).location = (0, MOUNT_C[0] * MM, 0)
     seat = Vector((0, MOUNT_C[0], MOUNT_TOP + 0.75 + curl(np.array([108.0]), np.array([0.0]))[0]))
 
+    COIN_YAW = float(os.environ.get("RECO_YAW", 26))   # keeps RECO level to this camera
+
     def hero_pose(t):
-        """t 0..1: float+turn (0-.35), drop+twist (.35-.62), pull back to the whole strip (.62-1)."""
+        """t 0..1: float+turn (0-.35), drop+twist (.35-.62), pull back to exactly where the wrap onto the knee starts (.62-1).
+        The camera is on the same side as that shot, so the tape never changes direction."""
         a = ease(t / 0.35); b_ = ease((t - 0.35) / 0.22); tw = ease((t - 0.50) / 0.12); c = ease((t - 0.62) / 0.38)
         lift = 26 * (1 - b_) + 0.0
-        yaw = -15 - 45 * a + 60 * tw          # drop in at -60, twist to 0 (RECO upright when locked)
+        yaw = COIN_YAW + (-60 - COIN_YAW) * a + 60 * tw          # drop in at -60, twist to 0 (RECO upright when locked)
         tilt = (22 - 10 * a) * (1 - b_)
         place_puck(puck, seat, (0, 0, 1), (0, 1, 0), lift=lift, yaw=yaw, tilt=tilt)
-        ring_glow(1.2 + 5.0 * ease((t - 0.58) / 0.05) * (1 - 0.6 * ease((t - 0.7) / 0.2)))
+        ring_glow(1.5 + 5.0 * ease((t - 0.58) / 0.05) * (1 - ease((t - 0.7) / 0.25)))
         # camera: close 3/4 on the floating puck -> over the mount -> high pull-back over the strip
         tgt0 = Vector((0, MOUNT_C[0], lift + 5)) * MM
         tgt1 = Vector((0, MOUNT_C[0], 4)) * MM
-        tgt2 = Vector((0, 10, 0)) * MM
+        tgt2 = Vector((0, 20, 0)) * MM
         tgt = tgt0.lerp(tgt1, b_).lerp(tgt2, c)
-        d0 = Vector((-0.06, -0.16, 0.085)); d2 = Vector((-0.13, -0.22, 0.30))
+        d0 = Vector((0.06, -0.16, 0.085)); d2 = Vector((0.20, -0.20, 0.24))
         dv = d0.lerp(d2, c)
         aim(cam, tgt + dv, tgt); cd.lens = 70 - 20 * c
-        foc.location = tgt; cd.dof.aperture_fstop = float(os.environ.get("RECO_FSTOP", 5.6)) + 10 * c
-        LIGHTS["Graze"].data.energy = 6 + 8 * c
+        foc.location = tgt; k0 = float(os.environ.get("RECO_FSTOP", 5.6)); cd.dof.aperture_fstop = k0 + (11 - k0) * c
+        LIGHTS["Graze"].data.energy = 6 + 6 * c
 
     if MODE == "stills":
         # 1) hero: puck floating over the mount
@@ -515,7 +543,7 @@ if MODE in ("stills", "hero", "renders", "cursor"):
             return [(c.x * 1536, (1 - c.y) * 864) for c in (w2c(scn, scn.camera, p) for p in pts)]
         for j, dx in enumerate(XS):
             for i, dy in enumerate(YS):
-                R_ = Matrix.Rotation(math.radians(22 + dx), 4, 'X') @ Matrix.Rotation(math.radians(dy), 4, 'Y') @ Matrix.Rotation(math.radians(-15), 4, 'Z')
+                R_ = Matrix.Rotation(math.radians(22 + dx), 4, 'X') @ Matrix.Rotation(math.radians(dy), 4, 'Y') @ Matrix.Rotation(math.radians(COIN_YAW), 4, 'Z')
                 M_ = B0 @ R_; M_.translation = T0
                 if poses_only:
                     puck.matrix_world = M_; faces.append(face_on_screen())
@@ -541,9 +569,10 @@ if MODE in ("stills", "hero", "renders", "cursor"):
 else:   # floating tape: film (fiber -> whole strip) and flex (bends over an invisible knee)
     RK, RLEG = 48.0, 58.0
 
-    def knee_xyz(u, v, top, phi):
+    def knee_xyz(u, v, top, phi, level=1.0):
         """Fold the flat tape over an invisible knee: arc of radius RK at the window, wrap of radius
-        RLEG across the width. Thigh end (puck) stays level, shin end swings down."""
+        RLEG across the width. level 1: thigh end (puck) stays level, shin end swings down.
+        level 0: an arch, both ends fall away from the peak."""
         y = u + 5.0; h = phi / 2
         T = np.clip(y / RK, -h, h) if phi > 1e-6 else np.zeros_like(y)
         cy, cz = RK * np.sin(T), RK * np.cos(T) - RK
@@ -551,7 +580,8 @@ else:   # floating tape: film (fiber -> whole strip) and flex (bends over an inv
         ny, nz = np.sin(T), np.cos(T)
         w = v / RLEG; lat = (RLEG + top) * np.sin(w); off = (RLEG + top) * np.cos(w) - RLEG
         Y, Z = cy + off * ny, cz + off * nz
-        Yr, Zr = Y * math.cos(h) - Z * math.sin(h), Y * math.sin(h) + Z * math.cos(h)
+        r = h * level
+        Yr, Zr = Y * math.cos(r) - Z * math.sin(r), Y * math.sin(r) + Z * math.cos(r)
         return np.stack([lat, Yr, Zr], 1)
 
     step = 0.2 if sys.platform == "darwin" else 0.5
@@ -562,18 +592,41 @@ else:   # floating tape: film (fiber -> whole strip) and flex (bends over an inv
     objs = [tape, mount]
     REST = {o.name: np.array([v.co[:] for v in o.data.vertices]) / MM for o in objs}
 
-    def pose(phi):
+    def flat_xyz(u, v, top):
+        """The tape exactly as the coin's film leaves it lying, so the bend can start from that frame."""
+        return np.stack([v, u, top + 0.05 + curl(u, v)], 1)
+
+    def pose(phi, level=1.0, flat=0.0):
         for o in objs:
             R_ = REST[o.name]
-            Q = knee_xyz(R_[:, 1], R_[:, 0], R_[:, 2], phi) * MM
-            o.data.vertices.foreach_set("co", Q.ravel()); o.data.update()
-        pc = knee_xyz(np.array([MOUNT_C[0]]), np.array([0.0]), np.array([1.75]), phi)[0]
-        place_puck(puck, pc, (0, 0, 1), (0, 1, 0), yaw=0)
+            Q = knee_xyz(R_[:, 1], R_[:, 0], R_[:, 2], phi, level) * (1 - flat) + flat_xyz(R_[:, 1], R_[:, 0], R_[:, 2]) * flat
+            o.data.vertices.foreach_set("co", (Q * MM).ravel()); o.data.update()
+        u_c, v_c, top_c = np.array([MOUNT_C[0]]), np.array([0.0]), np.array([1.75])
+        pc = knee_xyz(u_c, v_c, top_c, phi, level)[0] * (1 - flat) + flat_xyz(u_c, v_c, top_c)[0] * flat
+        h = phi / 2 * (1 - level)
+        place_puck(puck, pc, (0, math.sin(h), math.cos(h)), (0, math.cos(h), -math.sin(h)), yaw=0)
 
     def flex_cam():
         aim(cam, Vector((0.40, -0.27, 0.16)), Vector((0, 0.03, -0.035))); cd.lens = 50
         foc.location = Vector((0.0, 0.01, -0.01)); cd.dof.aperture_fstop = 9
         LIGHTS["Graze"].data.energy = 14
+
+    def lerp3(a, b, k): return Vector(a).lerp(Vector(b), k)
+
+    # the bend's camera stays near the angle shared by the end of the coin's film and the photo, so the tape is what moves: it only drops lower and turns a little to show the arch
+    BEND_PEAK = 130.0
+    BEND_LEVEL = 0.45   # part way between an even arch and a level thigh, so the coin still shows its face at the peak
+    BEND_START = dict(loc=(0.20, -0.18, 0.24), tgt=(0.0, 0.02, 0.0), foc=(0.0, 0.02, 0.0), fs=11.0, lens=50.0, graze=12.0)
+    BEND_ARCH = dict(loc=(0.335, -0.115, 0.185), tgt=(0.0, 0.004, -0.048), foc=(0.0, 0.010, 0.004), fs=11.0, lens=50.0, graze=14.0)
+    BEND_WHOLE = dict(loc=(0.325, -0.105, 0.170), tgt=(0.0, 0.0, -0.045), foc=(0.0, 0.010, 0.004), fs=12.0, lens=58.0, graze=14.0)
+    FLATTENS_BY, SHADOW_GONE_BY, SHADOW_DROP = 0.3, 0.25, 0.4   # of the shot, and metres: the coin's film has a shadow under the tape, this one sinks it out of sight
+
+    def bend_cam(u):
+        a = ease(u / 0.7); b = ease((u - 0.62) / 0.38)
+        at = lambda key: lerp3(BEND_START[key], BEND_ARCH[key], a).lerp(Vector(BEND_WHOLE[key]), b)
+        num = lambda key: BEND_START[key] + (BEND_ARCH[key] - BEND_START[key]) * a + (BEND_WHOLE[key] - BEND_ARCH[key]) * b
+        aim(cam, at("loc"), at("tgt")); cd.lens = num("lens"); foc.location = at("foc")
+        cd.dof.aperture_fstop = num("fs"); LIGHTS["Graze"].data.energy = num("graze")
 
     if MODE == "legstills":
         pose(math.radians(0))
@@ -582,11 +635,14 @@ else:   # floating tape: film (fiber -> whole strip) and flex (bends over an inv
         pose(math.radians(80)); flex_cam(); ring_glow(4.0)
         shot(os.path.join(OUT, "still_6_flex.png"))
     elif MODE == "flex":
-        for f in range(F0, F1):
-            u = f / (NF - 1); phi = math.radians(130 * ease(u)); pose(phi); flex_cam()
+        bpy.ops.mesh.primitive_plane_add(size=4, location=(0, 0, -0.02 * MM)); surf = bpy.context.active_object; surf.data.materials.append(M_SURF)
+        surf.is_shadow_catcher = True
+        for f in range(F0, F1, STEP):
+            u = f / (NF - 1); phi = math.radians(BEND_PEAK * ease(u)); pose(phi, level=BEND_LEVEL, flat=1 - ease(u / FLATTENS_BY)); bend_cam(u)
+            surf.location.z = -0.02 * MM - SHADOW_DROP * ease(u / SHADOW_GONE_BY); surf.hide_render = u >= SHADOW_GONE_BY
             ring_glow(1.5 + 4.0 * ease((math.degrees(phi) - 105) / 10))
             shot(os.path.join(OUT, f"k_{f + 1:03d}.png"))
-    elif MODE in ("dump", "wrap", "unwrap"):
+    elif MODE in ("dump", "wrap"):
         exec(open(os.path.join(D, "reco_flow.py")).read())
     elif MODE == "film":
         pose(0.0)

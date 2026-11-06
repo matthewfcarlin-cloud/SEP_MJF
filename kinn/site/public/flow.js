@@ -5,46 +5,47 @@
   const STAGE_W = 1536, STAGE_H = 1024, FILM_H = 864, FILM_TOP = 80;     // 16:9 film frames sit inside the 3:2 stage
   const RING = [1200, 345];                                              // the coin's ring in the photograph
   const TAPE_X = 1110;                                                   // what a narrow screen frames once the tape is on the knee
-  const COIN_END = [991, 197];                                           // the coin at the end of the bend film
   const NARROW = () => innerWidth <= 760;
-  /* on a narrow screen the flat tape is wider than the screen, so the framing starts wide and closes in as the tape bends */
-  const BEND_FLAT_Z = .46, BEND_FLAT_PX = 654, BEND_Z = .72, BEND_PX = 853, BEND_PY = 420;
-  const TAPE_BOX = [609, 1093, 176, 727];                             // the tape at the end of the bend film, on the stage
-  const BEND = 130, GAUGE_MAX = 135;
-  const SCROLL_EASE_MS = 120, CURSOR_EASE_MS = 150, COIN_CENTER_MS = 180, MAX_STEP_MS = 64;
-  /* a trackpad keeps sending events after a flick. A pause or a clear surge means a new gesture */
-  const WHEEL_GAP_MS = 140, WHEEL_SURGE = 2, WHEEL_SURGE_MIN = 20, WHEEL_LINE_PX = 16, RECENT_INPUT_MS = 250, MAX_TAIL_MS = 500;
-  /* the transitions speed up with the reader's scrolling. Rate 1 is the pace set in AUTO, and they never go slower: a slow transition would just hold the reader back */
-  const SPEED_FOR_RATE_1 = 1400, RATE_MIN = 1, RATE_MAX = 3, RATE_EASE_MS = 160, SPEED_EASE_MS = 90, SPEED_FADE_MS = 280, INPUT_ACTIVE_MS = 70;
-  const WAIT_FOR_FRAMES_MS = 1500, MIN_AUTO_MS = 300, AUTO_ENTER_VH = .5;
+  /* on a narrow screen the arched tape is wider than the screen, so the framing widens as the tape bends and closes in again on the knee */
+  const BEND_PX = 1022, BEND_PY = 521, BEND_TAPE_W = 839, BEND_FILL = .92, BEND_OPENS_BY = .6;   // the tape at the peak of the bend, on the stage
+  const TAPE_ON_PHOTO = [945, 1300, 265, 915];                           // the tape in the photograph
+  const BEND = 130, SEATED = 50, SEATS_BY = .92, GAUGE_MAX = 135;        // degrees. The tape comes off the peak of the bend down to the knee in the photograph
+  const PEAK_BLEND = .05;       // the wrap's frames match the peak of the bend down to the grain of the tape. Over these first moments, with the tape at rest, that grain is blended rather than swapped
+  const BEND_HEM_FADE = .35;   // the coin's film fades its top and bottom into the page, until the bending tape has come clear of them
+  /* the film follows the scroll exactly as the earlier site did: the same step toward the scroll position on every screen refresh */
+  const SCROLL_STEP = .1, SCROLL_SNAP = .0001, CURSOR_EASE_MS = 170, MAX_STEP_MS = 64;
   const BG = '#0d1212';
   const sec = document.getElementById('top'), cv = document.getElementById('flowCv'), ctx = cv.getContext('2d');
   const off = document.createElement('canvas'), octx = off.getContext('2d');
-  const veil = sec.querySelector('.veil'), cue = document.getElementById('cue'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), degWrap = document.getElementById('fDegWrap');
+  const veil = sec.querySelector('.veil'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), degWrap = document.getElementById('fDegWrap');
   const device = document.getElementById('device'), scrToday = document.getElementById('scrToday'), scrPlan = document.getElementById('scrPlan');
   const smooth = x => { x = cl(x); return x * x * (3 - 2 * x); };
 
   /* the film strips */
   /* bump this whenever frames are replaced under the same names, so no browser keeps showing the old ones */
-  const V = 'v=8';
-  const SEQS = {hero: ['/flow/intro/h_', 120], film: ['/film7/v_', 90], wrap: ['/flow/wrap/a_', 70], settle: ['/flow/settle/s_', 30], unwrap: ['/flow/unwrap/c_', 40], flex: ['/flow/flex/k_', 96]};
+  const V = 'v=10';
+  const SEQS = {hero: ['/flow/intro/h_', 120], flex: ['/flow/flex/k_', 96], wrap: ['/flow/wrap/a_', 70], settle: ['/flow/settle/s_', 30]};
   const frames = {}, all = [], seqStart = {}; let count = 0;
   for (const [k, [base, n]] of Object.entries(SEQS)) { frames[k] = []; seqStart[k] = count; count += n; for (let i = 0; i < n; i++) { const o = {src: base + String(i + 1).padStart(3, '0') + '.webp?' + V, k, i}; frames[k].push(o); all.push(o); } }
 
   /* the shots. vh = how much scroll each one takes */
-  const shots = [['hero', 230], ['dive', 60], ['film', 190], ['wrap', 170], ['settle', 90], ['reveal', 130], ['hold', 70], ['fade', 80], ['unsettle', 40], ['unwrap', 70], ['bend', 240], ['signal', 110], ['phone', 230], ['close', 60], ['join', 70]];
+  /* paced so the picture changes about as much per scroll as on the earlier site, which read well: about 2 to 4 (mean brightness change per vh) */
+  const shots = [['hero', 260], ['bend', 320], ['wrap', 90], ['settle', 40], ['reveal', 90], ['hold', 60], ['signal', 100], ['phone', 140], ['close', 50], ['join', 40]];
+  /* the coin's film barely moves for its first 42 frames, so it spends less scroll there and more on the drop. [scroll through the shot, frame] */
+  const HERO_PACE = [[.07, 0], [.28, 42], [.62, 70], [.66, 76], [1, 119]];
+  const paced = t => { if (t <= HERO_PACE[0][0]) return 0; const i = HERO_PACE.findIndex(s => s[0] >= t), [t0, f0] = HERO_PACE[i - 1], [t1, f1] = HERO_PACE[i]; return f0 + (f1 - f0) * (t - t0) / (t1 - t0); };
+  /* averaged over a window, so the film's speed changes gradually instead of at those points */
+  const HERO_STEPS = 400, HERO_SMOOTH = 24;
+  const heroTable = Array.from({length: HERO_STEPS + 1}, (_, i) => { let sum = 0; for (let d = -HERO_SMOOTH; d <= HERO_SMOOTH; d++) sum += paced(cl((i + d) / HERO_STEPS)); return sum / (HERO_SMOOTH * 2 + 1); });
+  const heroFrame = t => heroTable[Math.round(cl(t) * HERO_STEPS)] * 119 / heroTable[HERO_STEPS];
   const from = {}; let SPAN = 0; for (const [n, vh] of shots) { from[n] = [SPAN, vh]; SPAN += vh; }
   sec.style.height = SPAN + 100 + 'vh';
   const mark = s => { const [n, t] = s.split(' '); return from[n][0] + parseFloat(t) * from[n][1]; };   // 'shot t'
-  /* most of the film follows the scroll. These transitions between pages play by themselves once the reader scrolls into them, and scrolling is locked until they land */
-  const AUTO = [['hero .02', 'hero .58', 2400], ['hero .62', 'hero 1', 1700], ['dive 0', 'film .12', 1800], ['wrap 0', 'reveal 1', 5600], ['unsettle 0', 'unwrap 1', 2200], ['signal 0', 'signal .95', 2400]].map(([a, b, ms]) => ({a: mark(a), b: mark(b), ms}));
-  const FILMED = {hero: 'hero', film: 'film', wrap: 'wrap', settle: 'settle', unsettle: 'settle', unwrap: 'unwrap', bend: 'flex'};
-  let play = null, locked = false, landedAt = -Infinity, landedTime = 0, lastPos = 0, lastInput = -Infinity, scrollSpeed = 0;
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
 
   /* loading. Every shot gets a rough pass first, every 8th frame, so whatever the reader scrolls to is already there.
      Then the frames nearest the reader fill in. Phones and data-saver skip every second frame */
-  const BEHIND_COST = 3, ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6, BLEND_GAP = 2, BLENDED = new Set(['film', 'wrap', 'settle', 'unwrap', 'flex']);
+  const BEHIND_COST = 3, ROUGH = 8, ROUGH_PULL = 100, RETRIES = 2, RETRY_MS = 1000, SLOTS = 6;
   const conn = navigator.connection || {}, stride = innerWidth < 760 || conn.saveData ? 2 : 1;
   const isRough = o => o.i % ROUGH === 0 || o.i === SEQS[o.k][1] - 1;
   let pending = all.filter(o => o.i % stride === 0 || o.i === SEQS[o.k][1] - 1), active = 0, cur = 0, dirty = true;
@@ -69,31 +70,26 @@
   const still = src => { const im = new Image(); im.onload = () => { dirty = true; }; im.src = src; return im; };
   const photo = still('/flow/hero.webp?' + V), cutout = still('/flow/tape.webp?' + V);
   const ready = im => im && im.complete && im.naturalWidth;
-  /* the loaded frames either side of a moment. Frames dissolve into each other so the motion is continuous.
-     Under the scroll the coin stays on one sharp frame: it moves too far per frame, and a held blend would show the logo doubled */
-  function around(k, x) {
-    const f = frames[k], last = f.length - 1, at = cl(x, 0, last); let a = Math.floor(at), b = Math.ceil(at);
-    while (a > 0 && !f[a].img) a--;
-    while (b < last && !f[b].img) b++;
-    const lo = f[a].img, hi = f[b].img;
-    if (!lo || !hi || a === b) return {lo: lo || hi, hi: null, mix: 0};
-    const mix = (at - a) / (b - a);
-    const blends = play ? b - a <= ROUGH : BLENDED.has(k) && b - a <= BLEND_GAP;
-    return blends ? {lo, hi, mix} : {lo: mix < .5 ? lo : hi, hi: null, mix: 0};
+  /* the nearest loaded frame, one image at a time. Blending two frames shows both tapes at once */
+  function nearest(k, x) {
+    const f = frames[k], at = Math.round(cl(x, 0, f.length - 1));
+    for (let d = 0; d < f.length; d++) { if (f[at - d] && f[at - d].img) return f[at - d].img; if (f[at + d] && f[at + d].img) return f[at + d].img; }
+    return null;
   }
 
   /* the coin follows the cursor: the first frame of the intro, rendered turned to many angles. Only for a real pointer */
   const COLS = 15, ROWS = 7, canHover = matchMedia('(hover:hover) and (pointer:fine)').matches && !reduce;
-  const COIN_SLOTS = 4, COIN_REST_T = .02, COIN_CENTERED = .03, IDLE_X = .07, IDLE_Y = .06, IDLE_X_MS = 1700, IDLE_Y_MS = 2300;
+  const COIN_SLOTS = 4, COIN_REST_T = .07, CURSOR_REACH = .75, IDLE_X = .25, IDLE_Y = .14, IDLE_X_MS = 2200, IDLE_Y_MS = 1600, BOB_PX = 7, BOB_MS = 1250;
   const turned = new Array(COLS * ROWS); let tx = 0, ty = 0, mx = 0, my = 0, coarseLeft = 0, fineLeft = 0;
   const isCoarse = (i, j) => i % 2 === 1 && j % 2 === 1;   // every 6 degrees, through the centre: enough to respond while the rest load
   function loadCoin() {
-    if (!canHover) return;
+    if (reduce) return;
     coinStarted = true;
     fetch(`/flow/coin/poses.json?${V}`).then(r => (r.ok ? r.json() : null)).then(j => { if (!j) return; coinPoses = j.poses; coinShape = j.coin; dirty = true; }).catch(() => {});
     const grid = []; for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) grid.push({i, j});
-    const queue = [...grid.filter(g => isCoarse(g.i, g.j)), ...grid.filter(g => !isCoarse(g.i, g.j))];
-    coarseLeft = queue.filter(g => isCoarse(g.i, g.j)).length; fineLeft = queue.length;
+    /* a touch screen has no cursor, so the coarse set is enough for the coin to drift on its own */
+    const queue = [...grid.filter(g => isCoarse(g.i, g.j)), ...(canHover ? grid.filter(g => !isCoarse(g.i, g.j)) : [])];
+    coarseLeft = queue.filter(g => isCoarse(g.i, g.j)).length; fineLeft = canHover ? queue.length : Infinity;
     const next = () => {
       const g = queue.shift(); if (!g) return;
       const im = new Image();
@@ -117,10 +113,8 @@
     c.drawImage(im, x0, y0, STAGE_W * zoom * S, h * zoom * S);
   }
   function show(k, x, ox, y, h, a, zoom, px, py) {
-    const {lo, hi, mix} = around(k, x); if (!lo) return;
-    ctx.globalAlpha = a; place(ctx, lo, ox, y, h, zoom, px, py);
-    if (hi && mix > 0) { ctx.globalAlpha = a * mix; place(ctx, hi, ox, y, h, zoom, px, py); }
-    ctx.globalAlpha = 1;
+    const im = nearest(k, x); if (!im) return;
+    ctx.globalAlpha = a; place(ctx, im, ox, y, h, zoom, px, py); ctx.globalAlpha = 1;
   }
   const film = (k, x, ox, a = 1, zoom = 1, px, py) => show(k, x, ox, FILM_TOP, FILM_H, a, zoom, px, py);
   const full = (k, x, ox, a = 1, zoom = 1, px, py) => show(k, x, ox, 0, STAGE_H, a, zoom, px, py);
@@ -146,16 +140,16 @@
     const max = Math.floor((n - 1 - offset * 2) / step), x = cl((cl(m + .5) * (n - 1) - offset) / step, 0, max), i = Math.min(Math.floor(x), max - 1);
     return {a: offset + i * step, b: offset + (i + 1) * step, f: x - i};
   }
-  function coinTurn(ox) {
+  function coinTurn(ox, settle) {   // settle: 1 at rest, 0 where it hands over to the film, which starts from the centre pose
     if (!coinReady()) return false;
-    const fine = fineLeft === 0, X = coinAxis(mx, COLS, fine ? 0 : 1, fine ? 1 : 2), Y = coinAxis(my, ROWS, fine ? 0 : 1, fine ? 1 : 2), u = X.f, v = Y.f, last = u * v;
+    const fine = fineLeft === 0, X = coinAxis(mx * settle, COLS, fine ? 0 : 1, fine ? 1 : 2), Y = coinAxis(my * settle, ROWS, fine ? 0 : 1, fine ? 1 : 2), u = X.f, v = Y.f, last = u * v;
     const cells = [[X.a, Y.a, 1, (1 - u) * (1 - v)], [X.b, Y.a, u, u * (1 - v)], [X.a, Y.b, last >= 1 ? 0 : v * (1 - u) / (1 - last), (1 - u) * v], [X.b, Y.b, last, u * v]];
     const screen = [S, 0, 0, S, ox + shiftX, OY + FILM_TOP * S + shiftY];
     const draw = (i, j, alpha, M) => { const im = turned[j * COLS + i]; if (!im || alpha <= 0) return; ctx.globalAlpha = alpha; ctx.setTransform(...M); ctx.drawImage(im, 0, 0, STAGE_W, FILM_H); };
     if (!coinPoses) { for (const [i, j, alpha] of cells) draw(i, j, alpha, screen); }
     else {
       /* all on this canvas, which the browser accelerates: the lined-up coin first, its edge faded out, then the tape slid in behind it */
-      const between = [0, 1, 2, 3, 4, 5].map(n => cells.reduce((sum, [i, j, , weight]) => sum + coinPoses[j * COLS + i][n] * weight, 0)), onScreen = matMul(screen, between);
+      const between = [0, 1, 2, 3, 4, 5].map(n => cells.reduce((sum, [i, j, , weight]) => sum + coinPoses[j * COLS + i][n] * weight, 0)), onScreen = matMul(screen, matMul([1, 0, 0, 1, 0, Math.sin(performance.now() / BOB_MS) * BOB_PX * settle], between));
       const {top, base, a, b} = coinShape, mid = t => top[t] + (base[t] - top[t]) * COIN_MASK_MIDDLE;
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H);
       for (const [i, j, alpha] of cells) draw(i, j, alpha, matMul(onScreen, matInv(coinPoses[j * COLS + i])));
@@ -192,17 +186,33 @@
   }
 
   /* the reading off the knee, sent to the phone: one fine line and a point of light */
-  /* beside the phone the tape grows into all the room left of it, whatever the window's shape, and is never hidden by it */
-  function tapeBeside(k, ox) {
-    const [bx0, bx1, by0, by1] = TAPE_BOX, bw = bx1 - bx0, bh = by1 - by0, bcx = (bx0 + bx1) / 2, bcy = (by0 + by1) / 2;
-    const room = (device.getBoundingClientRect().left - cv.getBoundingClientRect().left) * DPR, pad = 28 * DPR;
-    const fitZ = Math.min(1.5, (room - pad * 2) / (bw * S), (H * .76) / (bh * S));
-    const z = 1 + (fitZ - 1) * k, cx = ox + bcx * S + (room / 2 - (ox + bcx * S)) * k, cy = OY + bcy * S + (H * .45 - (OY + bcy * S)) * k;
-    const x0 = cx - bcx * z * S, y0 = cy - (bcy - FILM_TOP) * z * S;
-    return {x0, y0, w: STAGE_W * z * S, h: FILM_H * z * S, coin: [x0 + COIN_END[0] * z * S, y0 + (COIN_END[1] - FILM_TOP) * z * S]};
+  /* as the phone arrives the photograph moves aside, so the tape is never hidden: into all the room left of the phone, or above it on a narrow screen */
+  const BESIDE_MAX_ZOOM = 1.25, BESIDE_PAD = 28, BESIDE_TAPE_H = .8, BESIDE_TAPE_Y = .47, ABOVE_PHONE_GAP = 70, ABOVE_PHONE_BOTTOM = 20, ABOVE_PHONE_COIN_X = .74, PHOTO_FADE = 220;   // the coin sits right of the caption on a narrow screen
+  function photoAside(k, ox) {
+    const r = device.getBoundingClientRect(), c = cv.getBoundingClientRect();
+    const [bx0, bx1, by0, by1] = TAPE_ON_PHOTO, coverH = z => H - STAGE_H * z * S;
+    let z, x, y;
+    if (NARROW()) {
+      const coinY = (c.height - r.height - ABOVE_PHONE_BOTTOM - ABOVE_PHONE_GAP) * DPR;
+      z = Math.max(1, (H - coinY) / ((STAGE_H - RING[1]) * S));   // far enough in that the photograph still reaches the bottom
+      x = cl(W * ABOVE_PHONE_COIN_X - RING[0] * z * S, W - STAGE_W * z * S, 0); y = coinY - RING[1] * z * S;
+    } else {
+      const room = (r.left - c.left) * DPR;
+      z = cl(Math.min((room - BESIDE_PAD * DPR * 2) / ((bx1 - bx0) * S), H * BESIDE_TAPE_H / ((by1 - by0) * S)), 1, BESIDE_MAX_ZOOM);
+      x = room / 2 - (bx0 + bx1) / 2 * z * S; y = cl(H * BESIDE_TAPE_Y - (by0 + by1) / 2 * z * S, coverH(z), 0);
+    }
+    const at = {z: 1 + (z - 1) * k, x: ox + (x - ox) * k, y: OY + (y - OY) * k};
+    return {...at, w: STAGE_W * at.z * S, h: STAGE_H * at.z * S, coin: [at.x + RING[0] * at.z * S, at.y + RING[1] * at.z * S]};
   }
-  function drawBeside(r) { const {lo} = around('flex', 95); if (lo) ctx.drawImage(lo, r.x0, r.y0, r.w, r.h); }
-  const coinNarrow = [BEND_PX + (COIN_END[0] - BEND_PX) * BEND_Z, BEND_PY + (COIN_END[1] - BEND_PY) * BEND_Z];
+  function drawAside(f, a = 1) {
+    if (!ready(photo) || a <= 0) return;
+    ctx.globalAlpha = a; ctx.drawImage(photo, f.x, f.y, f.w, f.h); ctx.globalAlpha = 1;
+    /* its right edge fades into the page, once that edge is on screen */
+    const edge = f.x + f.w, soft = PHOTO_FADE * f.z * S;
+    if (edge - soft >= W) return;
+    const g = ctx.createLinearGradient(edge - soft, 0, edge, 0); g.addColorStop(0, 'rgba(13,18,18,0)'); g.addColorStop(1, BG);
+    ctx.fillStyle = g; ctx.fillRect(edge - soft, 0, soft, H); ctx.fillStyle = BG; ctx.fillRect(edge - 1, 0, W - edge + 1, H);
+  }
   function curve(s, x0, y0, x1, y1) {
     const m = 1 - s, cx1 = x0 + (x1 - x0) * .45, cy1 = y0 + 40 * S, cx2 = x0 + (x1 - x0) * .55, cy2 = y1;
     return [m*m*m*x0 + 3*m*m*s*cx1 + 3*m*s*s*cx2 + s*s*s*x1, m*m*m*y0 + 3*m*m*s*cy1 + 3*m*s*s*cy2 + s*s*s*y1];
@@ -219,22 +229,55 @@
     ctx.fillStyle = g; ctx.fillRect(hx - rr, hy - rr, rr * 2, rr * 2);
     ctx.restore();
   }
-  const bendView = t => { const k = smooth((t - .25) / .45); return {z: BEND_FLAT_Z + (BEND_Z - BEND_FLAT_Z) * k, px: BEND_FLAT_PX + (BEND_PX - BEND_FLAT_PX) * k}; };
+  const bendZ = () => Math.min(1, W * BEND_FILL / (BEND_TAPE_W * S));
+  const bendView = t => { const k = smooth(t / BEND_OPENS_BY); return {z: 1 + (bendZ() - 1) * k, px: STAGE_W / 2 + (BEND_PX - STAGE_W / 2) * k}; };
+  const wrapView = t => { const k = smooth(t); return {z: bendZ() + (1 - bendZ()) * k, px: BEND_PX + (TAPE_X - BEND_PX) * k}; };
   function phone(rise, a, plan) {
     const on = a > .001;
     device.style.visibility = on ? 'visible' : 'hidden'; if (!on) return;
     device.style.opacity = a.toFixed(3); device.style.setProperty('--rise', (rise * innerHeight).toFixed(1) + 'px'); scrToday.style.opacity = cl(1 - plan * 2).toFixed(3); scrPlan.style.opacity = cl(plan * 2 - 1).toFixed(3);
   }
 
+  /* the end of the film: the app's tick dial around the words. It lights clockwise to 9 o'clock with the scroll, as the logo's arc does.
+     The ticks rise toward the cursor, and the button sweeps the arc almost closed */
+  const DIAL_TICKS = 108, NARROW_DIAL_Y = .42, DIAL_W = .47, DIAL_H = .43, DIAL_TICK = 16, DIAL_RISE = 30, DIAL_REACH = .3, DIAL_LIT = .75, DIAL_NEARLY_CLOSED = .985, DIAL_WAVE_MS = 1100, DIAL_EASE_MS = 150, DIAL_SWEEP_MS = 320;
+  const dialOpens = () => mark('close .4'), dialOpen = () => mark('join .8');
+  let dialX = 0, dialY = 0, dialCursor = 0, dialHover = 0, ctaHovered = false;
+  function dial(k, now) {
+    if (k <= 0) return;
+    const cx = W / 2, cy = H * (NARROW() ? NARROW_DIAL_Y : .5), r = Math.min(W * DIAL_W, H * DIAL_H), arc = k * (DIAL_LIT + (DIAL_NEARLY_CLOSED - DIAL_LIT) * dialHover);
+    const toward = Math.atan2((dialY + .5) * H - cy, (dialX + .5) * W - cx), wave = reduce ? 0 : now / DIAL_WAVE_MS;
+    ctx.lineCap = 'round'; ctx.lineWidth = 2 * DPR;
+    for (let i = 0; i < DIAL_TICKS; i++) {
+      const f = i / DIAL_TICKS, a = -Math.PI / 2 + f * Math.PI * 2, shown = smooth((k * 1.3 - f) / .3);
+      if (shown <= 0) continue;
+      const off = Math.atan2(Math.sin(a - toward), Math.cos(a - toward)), rise = dialCursor * Math.exp(-((off / DIAL_REACH) ** 2));
+      const lit = cl((arc - f) * DIAL_TICKS), breath = .86 + .14 * Math.sin(f * 14 - wave);
+      const inner = r - DIAL_TICK * DPR * .5, outer = inner + (DIAL_TICK + DIAL_RISE * rise) * DPR;
+      const alpha = lit ? lit * breath : .17 + .55 * rise;
+      ctx.strokeStyle = lit ? `rgba(61,219,184,${(alpha * shown).toFixed(3)})` : `rgba(242,241,236,${(alpha * shown).toFixed(3)})`;
+      ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner); ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer); ctx.stroke();
+    }
+  }
+  /* the button leans a little toward the cursor. The fill starts from where the cursor came in */
+  const CTA_PULL = .16, cta = document.getElementById('joinCta');
+  const ctaAt = e => { const b = cta.getBoundingClientRect(); return {x: e.clientX - b.left, y: e.clientY - b.top, w: b.width, h: b.height}; };
+  if (canHover) {
+    cta.addEventListener('pointerenter', e => { const c = ctaAt(e); cta.style.setProperty('--in-x', c.x + 'px'); cta.style.setProperty('--in-y', c.y + 'px'); ctaHovered = true; dirty = true; });
+    cta.addEventListener('pointermove', e => { const c = ctaAt(e); cta.style.setProperty('--pull-x', ((c.x - c.w / 2) * CTA_PULL).toFixed(1) + 'px'); cta.style.setProperty('--pull-y', ((c.y - c.h / 2) * CTA_PULL).toFixed(1) + 'px'); });
+    cta.addEventListener('pointerleave', () => { cta.style.setProperty('--pull-x', '0px'); cta.style.setProperty('--pull-y', '0px'); ctaHovered = false; });
+  }
+  cta.addEventListener('focus', () => { ctaHovered = true; dirty = true; });
+  cta.addEventListener('blur', () => { ctaHovered = false; });
+
   function draw(pos) {
     let name = shots[shots.length - 1][0]; for (const [n, vh] of shots) { if (pos < from[n][0] + vh) { name = n; break; } }
     const t = cl((pos - from[name][0]) / from[name][1]), n = NARROW();
     /* a narrow screen follows the tape as it moves */
     let cx = STAGE_W / 2;
-    if (name === 'wrap') cx += (TAPE_X - STAGE_W / 2) * smooth(t);
+    if (name === 'bend') cx = bendView(t).px;
+    else if (name === 'wrap') cx = wrapView(t).px;
     else if (pos >= from.settle[0]) cx = TAPE_X;
-    if (name === 'unwrap') cx = TAPE_X + (BEND_FLAT_PX - TAPE_X) * smooth(t);
-    if (pos >= from.bend[0]) cx = name === 'bend' ? bendView(t).px : BEND_PX;
     const ox = originX(cx);
     shiftX = shiftY = 0;
     ctx.globalAlpha = 1; ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
@@ -243,127 +286,67 @@
       case 'hero': {
         /* at rest the coin follows the cursor, with a little depth. Once it leaves, the film takes over from the same pose */
         if (canHover) { const k = 1 - t * .6; shiftX = -mx * 14 * k * DPR; shiftY = -my * 10 * k * DPR; }
-        const leaving = play && play.t > 0;
-        if (t > COIN_REST_T || leaving || !coinTurn(ox)) film('hero', t * 119, ox);
-        shiftX = shiftY = 0; hem(); cur = seqStart.hero + t * 119; break;
+        if (t > COIN_REST_T || !coinTurn(ox, smooth(1 - t / COIN_REST_T))) film('hero', heroFrame(t), ox);
+        shiftX = shiftY = 0; hem(); cur = seqStart.hero + heroFrame(t); break;
       }
-      case 'dive': {
-        /* into the tape: the strip grows past the frame while the fibers come up inside it */
-        const z = Math.exp(Math.log(8) * smooth(t));
-        film('hero', 119, ox, 1 - smooth((t - .4) / .45), z, 610, 560);
-        hem(1 - smooth(t / .3));
-        film('film', 0, ox, smooth((t - .4) / .45), 1.3 * (1 + .9 * (1 - smooth(t))));
-        hem(smooth((t - .4) / .45));
-        cur = seqStart.film; break;
+      case 'bend': {
+        const v = bendView(t); film('flex', t * 95, ox, 1, n ? v.z : 1, v.px, BEND_PY); hem(1 - smooth(t / BEND_HEM_FADE)); cur = seqStart.flex + t * 95; break;
       }
-      case 'film': film('film', t * 89, ox, 1, 1 + .3 * (1 - smooth(t / .3))); hem(); cur = seqStart.film + t * 89; break;
-      case 'wrap': full('wrap', t * 69, ox); cur = seqStart.wrap + t * 69; break;
+      case 'wrap': {
+        const v = wrapView(t), z = n ? v.z : 1;
+        full('wrap', t * 69, ox, 1, z, v.px, BEND_PY);
+        if (t < PEAK_BLEND) film('flex', 95, ox, 1 - smooth(t / PEAK_BLEND), z, v.px, BEND_PY);
+        cur = seqStart.wrap + t * 69; break;
+      }
       case 'settle': full('settle', t * 29, ox); cur = seqStart.settle + t * 29; break;
       case 'reveal': lit(smooth(t), ox); glow(Math.sin(Math.min(1, t * 1.4) * Math.PI), ox); break;
       case 'hold': if (ready(photo)) place(ctx, photo, ox, 0, STAGE_H); break;
-      case 'fade': lit(1 - smooth(t), ox); break;
-      case 'unsettle': full('settle', (1 - t) * 29, ox); cur = seqStart.unwrap; break;
-      case 'unwrap': { const z = n ? 1 + (BEND_FLAT_Z - 1) * smooth(t) : 1; full('unwrap', t * 39, ox, 1, z, BEND_FLAT_PX, BEND_PY); cur = seqStart.unwrap + t * 39; break; }
-      case 'bend': { const v = bendView(t); film('flex', t * 95, ox, 1, n ? v.z : 1, v.px, BEND_PY); cur = seqStart.flex + t * 95; break; }
       case 'signal': {
         phoneRise = .9 * (1 - smooth((t - .1) / .75)); phoneA = smooth((t - .08) / .3);
-        if (n) { film('flex', 95, ox, 1, BEND_Z, BEND_PX, BEND_PY); link(smooth((t - .3) / .55), 1, ox, [ox + coinNarrow[0] * S, OY + coinNarrow[1] * S]); }
-        else { const r = tapeBeside(smooth(t / .8), ox); drawBeside(r); link(smooth((t - .3) / .55), 1, ox, r.coin); }
-        cur = seqStart.flex + 95; break;
+        const f = photoAside(smooth(t / .8), ox); drawAside(f); link(smooth((t - .3) / .55), 1, ox, f.coin);
+        break;
       }
       case 'phone': {
         phoneRise = 0; phoneA = 1; plan = smooth((t - .41) / .04);
-        if (n) { film('flex', 95, ox, 1 - smooth(t / .1), BEND_Z, BEND_PX, BEND_PY); link(1, 1 - smooth(t / .08), ox, [ox + coinNarrow[0] * S, OY + coinNarrow[1] * S]); }
-        else { const r = tapeBeside(1, ox); drawBeside(r); link(1, 1 - smooth((t - .25) / .2), ox, r.coin); }
+        const f = photoAside(1, ox);
+        if (n) { drawAside(f, 1 - smooth(t / .1)); link(1, 1 - smooth(t / .08), ox, f.coin); }
+        else { drawAside(f); link(1, 1 - smooth((t - .25) / .2), ox, f.coin); }
         break;
       }
-      case 'close': if (!n) { ctx.globalAlpha = 1 - smooth(t); drawBeside(tapeBeside(1, ox)); ctx.globalAlpha = 1; } phoneRise = -.02 * t; phoneA = 1 - smooth(t); plan = 1; break;
+      case 'close': if (!n) drawAside(photoAside(1, ox), 1 - smooth(t)); phoneRise = -.02 * t; phoneA = 1 - smooth(t); plan = 1; break;
       case 'join': break;
     }
+    dial(smooth((pos - dialOpens()) / (dialOpen() - dialOpens())), performance.now());
     phone(phoneRise, phoneA, plan);
     words.forEach(w => w.el.classList.toggle('on', pos >= w.a && pos < w.b));
-    const reading = pos >= mark('unwrap .85') && pos < mark('signal .2');
+    const reading = pos >= mark('bend .03') && pos < mark('wrap .7');
     degWrap.classList.toggle('on', reading);
-    if (reading) { const d = name === 'bend' ? BEND * smooth(t) : name === 'unwrap' ? 0 : BEND; deg.textContent = Math.round(d) + '°'; bar.style.width = (d / GAUGE_MAX * 100) + '%'; }
-    veil.style.opacity = n && pos >= mark('reveal .5') && pos < mark('fade .3') ? 1 : 0;
-    cue.style.opacity = pos > 25 ? 0 : 1;
+    if (reading) { const d = name === 'bend' ? BEND * smooth(t) : BEND + (SEATED - BEND) * smooth(t / SEATS_BY); deg.textContent = Math.round(d) + '°'; bar.style.width = (d / GAUGE_MAX * 100) + '%'; }
+    veil.style.opacity = pos >= mark(n ? 'reveal .5' : 'signal .05') && pos < mark('close .5') ? 1 : 0;
   }
 
   let target = 0, p = 0, shown = -1;
   const measure = () => cl(-sec.getBoundingClientRect().top / Math.max(1, sec.offsetHeight - innerHeight));
-  function read() {
-    if (play || locked) return;
-    if (Math.abs(scrollY - landedAt) <= 1) return;   // the browser rounds the landing: stay exactly on it
-    landedAt = -Infinity; target = measure();
-    if (!reduce) enterAuto(target * SPAN);
-    lastPos = target * SPAN;
-  }
+  const read = () => { target = measure(); };
   addEventListener('scroll', read, {passive: true}); addEventListener('resize', () => { fit(); read(); });
-  fit(); target = p = measure(); lastPos = p * SPAN; pump(); loadCoin();
-
-  /* the transitions that play by themselves */
+  fit(); target = p = measure(); pump(); loadCoin();
   const restP = () => COIN_REST_T * from.hero[1] / SPAN;
-  function framesLoaded(a, b) {
-    const lo = Math.min(a, b), hi = Math.max(a, b);
-    return shots.every(([name]) => {
-      const k = FILMED[name]; if (!k) return true;
-      const [start, vh] = from[name], t0 = (lo - start) / vh, t1 = (hi - start) / vh; if (t1 <= 0 || t0 >= 1) return true;
-      const f = frames[k], last = f.length - 1;
-      for (let i = Math.floor(cl(t0) * last); i <= Math.ceil(cl(t1) * last); i++) { if ((i % stride === 0 || i === last) && !f[i].img) return false; }
-      return true;
-    });
-  }
-  /* overflow, not preventDefault: browsers stop letting a page cancel a gesture once it has started scrolling */
-  const lockScroll = on => { locked = on; document.documentElement.style.overflow = on ? 'hidden' : ''; };
-  const wantedRate = () => cl(scrollSpeed / SPEED_FOR_RATE_1, RATE_MIN, RATE_MAX);
-  function enterAuto(pos) {
-    const dir = pos >= lastPos ? 1 : -1, recent = performance.now() - lastInput < RECENT_INPUT_MS;
-    const inside = z => pos > z.a + AUTO_ENTER_VH && pos < z.b - AUTO_ENTER_VH;
-    const jumped = z => recent && (dir > 0 ? lastPos <= z.a + AUTO_ENTER_VH && pos >= z.b - AUTO_ENTER_VH : lastPos >= z.b - AUTO_ENTER_VH && pos <= z.a + AUTO_ENTER_VH);
-    const zone = (dir > 0 ? AUTO : [...AUTO].reverse()).find(z => inside(z) || jumped(z));
-    if (!zone) return;
-    const start = p * SPAN, end = dir > 0 ? zone.b : zone.a;
-    play = {from: start, to: end, ms: Math.max(MIN_AUTO_MS, zone.ms * Math.abs(end - start) / (zone.b - zone.a)), t: 0, waited: 0, rate: wantedRate()};
-    lockScroll(true); pump();
-  }
-  function advance(dt) {
-    if (play.t === 0 && coinReady() && p <= restP() && Math.abs(mx) + Math.abs(my) > COIN_CENTERED) return;   // the coin turns back to centre first, so it hands over to the film without a jump
-    if (play.t === 0 && play.waited < WAIT_FOR_FRAMES_MS && !framesLoaded(play.from, play.to)) { play.waited += dt; return; }
-    play.rate += (wantedRate() - play.rate) * (1 - Math.exp(-dt / RATE_EASE_MS));   // eased, so a change of pace never shows as a jump
-    play.t = Math.min(play.ms, play.t + dt * play.rate);
-    p = (play.from + (play.to - play.from) * smooth(play.t / play.ms)) / SPAN;
-    if (play.t < play.ms) return;
-    lastPos = play.to; target = p; play = null; dirty = true;
-    scrollTo({top: sec.offsetTop + p * (sec.offsetHeight - innerHeight), behavior: 'instant'});
-    landedAt = scrollY; landedTime = performance.now();
-  }
-  /* after landing, stay locked until the gesture that started it has finished, so its tail can't run on */
-  let lastSize = 0, lastTouchY = 0;
-  function noteInput(distance, time) {
-    const gap = Math.max(8, time - lastInput);
-    scrollSpeed += (distance / gap * 1000 - scrollSpeed) * Math.min(1, gap / SPEED_EASE_MS);
-    lastInput = time;
-  }
-  addEventListener('wheel', e => {
-    const size = Math.abs(e.deltaY), surge = size > WHEEL_SURGE_MIN && size > lastSize * WHEEL_SURGE;
-    noteInput(size * (e.deltaMode === 1 ? WHEEL_LINE_PX : 1), e.timeStamp); lastSize = size;
-    if (locked && !play && surge) lockScroll(false);
-  }, {passive: true});
-  addEventListener('touchstart', e => { lastTouchY = e.touches[0].clientY; }, {passive: true});
-  addEventListener('touchmove', e => { const y = e.touches[0].clientY; noteInput(Math.abs(y - lastTouchY), e.timeStamp); lastTouchY = y; }, {passive: true});
 
   /* easing by time, not by frame, so a 120 Hz screen feels the same as a 60 Hz one */
   let then = performance.now();
   function tick(now) {
     requestAnimationFrame(tick);
     const dt = Math.min(MAX_STEP_MS, now - then), ease = ms => 1 - Math.exp(-dt / ms); then = now;
-    if (now - lastInput > INPUT_ACTIVE_MS) scrollSpeed *= Math.exp(-dt / SPEED_FADE_MS);
-    if (locked && !play && (now - lastInput > WHEEL_GAP_MS || now - landedTime > MAX_TAIL_MS / wantedRate())) lockScroll(false);   // a fast scroller runs straight on
-    if (play) advance(dt);
-    else { p += (target - p) * (reduce ? 1 : ease(SCROLL_EASE_MS)); if (Math.abs(target - p) < 0.00002) p = target; }
+    p += (target - p) * (reduce ? 1 : SCROLL_STEP); if (Math.abs(target - p) < SCROLL_SNAP) p = target;
     if (coinReady() && p <= restP()) {
-      const gx = play ? 0 : tx + Math.sin(now / IDLE_X_MS) * IDLE_X, gy = play ? 0 : ty + Math.sin(now / IDLE_Y_MS) * IDLE_Y, k = ease(play ? COIN_CENTER_MS : CURSOR_EASE_MS);
-      mx += (gx - mx) * k; my += (gy - my) * k; dirty = true;
+      const k = ease(CURSOR_EASE_MS);
+      mx += (tx * CURSOR_REACH + Math.sin(now / IDLE_X_MS) * IDLE_X - mx) * k; my += (ty * CURSOR_REACH + Math.sin(now / IDLE_Y_MS) * IDLE_Y - my) * k; dirty = true;
+    }
+    if (p * SPAN >= dialOpens()) {
+      const k = ease(DIAL_EASE_MS);
+      dialX += (tx - dialX) * k; dialY += (ty - dialY) * k; dialCursor += ((canHover ? 1 : 0) - dialCursor) * k;
+      dialHover += ((ctaHovered ? 1 : 0) - dialHover) * ease(DIAL_SWEEP_MS);
+      if (!reduce) dirty = true;
     }
     if (p === shown && !dirty) return;
     shown = p; dirty = false; draw(p * SPAN); pump();
