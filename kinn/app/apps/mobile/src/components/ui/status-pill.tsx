@@ -15,15 +15,17 @@ export const statusColor: Record<Status, ColorToken> = {
 
 interface StatusPillProps {
   readonly status: Status
+  /** The word for this guidance level. Defaults to the status name. */
+  readonly word?: string
   readonly large?: boolean
   readonly align?: 'flex-start' | 'center'
 }
 
 /**
- * Today's status as a word plus its colour. Large: a dot and the word, no chip (Today).
+ * Today's read as a word plus its colour. Large: a dot and the word, no chip (Today).
  * Small: a tinted chip. The word stays in ink so it reads on the light page at any status.
  */
-export function StatusPill({ status, large = false, align = 'flex-start' }: StatusPillProps) {
+export function StatusPill({ status, word, large = false, align = 'flex-start' }: StatusPillProps) {
   const colors = useColors()
   const tone = colors[statusColor[status]]
   return (
@@ -39,9 +41,7 @@ export function StatusPill({ status, large = false, align = 'flex-start' }: Stat
         backgroundColor: large ? 'transparent' : `${tone}2E`,
       }}>
       <View style={{ width: large ? 10 : 8, height: large ? 10 : 8, borderRadius: radius.pill, backgroundColor: tone }} />
-      <Txt kind={large ? 'title' : 'small'} style={large ? { fontSize: 24, lineHeight: 30 } : undefined}>
-        {copy.status[status]}
-      </Txt>
+      <Txt kind={large ? 'heading' : 'small'}>{word ?? copy.status[status]}</Txt>
     </View>
   )
 }

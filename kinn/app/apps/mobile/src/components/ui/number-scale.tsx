@@ -21,7 +21,7 @@ export function NumberScale({ value, onChange, lowLabel, highLabel }: NumberScal
     <View style={{ gap: space.sm }}>
       <View style={{ minHeight: 28, justifyContent: 'flex-end' }}>
         <Txt kind="heading" color={value === undefined ? 'textMuted' : 'text'}>
-          {value === undefined ? copy.pain.pickOne : `${value} · ${copy.pain.scaleWord(value)}`}
+          {value === undefined ? copy.pain.tapNumber : `${value} · ${copy.pain.scaleWord(value)}`}
         </Txt>
       </View>
       <View style={{ flexDirection: 'row', gap: 4, alignItems: 'flex-end' }}>

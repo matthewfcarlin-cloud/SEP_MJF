@@ -50,22 +50,28 @@ export const palette = {
 export type Scheme = keyof typeof palette
 export type ColorToken = keyof typeof palette.dark
 
-export const fonts = Platform.select({
-  ios: { sans: 'system-ui', rounded: 'ui-rounded', mono: 'ui-monospace' },
-  web: { sans: 'system-ui', rounded: 'system-ui', mono: "ui-monospace, 'SF Mono', Menlo, monospace" },
-  default: { sans: 'normal', rounded: 'normal', mono: 'monospace' },
-})
+/** The three brand faces, loaded in the root layout. A custom face picks its weight by family name, not fontWeight. */
+export const fonts = {
+  regular: 'Geist_400Regular',
+  medium: 'Geist_500Medium',
+  semibold: 'Geist_600SemiBold',
+  mono: 'GeistMono_400Regular',
+  monoMedium: 'GeistMono_500Medium',
+  serif: 'InstrumentSerif_400Regular',
+} as const
 
 export const type = {
-  display: { fontSize: 44, lineHeight: 48, fontWeight: '600' as const, letterSpacing: -1 },
-  title: { fontSize: 28, lineHeight: 34, fontWeight: '600' as const, letterSpacing: -0.5 },
-  heading: { fontSize: 20, lineHeight: 26, fontWeight: '600' as const },
-  body: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
-  bodyStrong: { fontSize: 16, lineHeight: 24, fontWeight: '600' as const },
-  small: { fontSize: 13, lineHeight: 18, fontWeight: '500' as const },
-  label: { fontSize: 11, lineHeight: 16, fontWeight: '500' as const, letterSpacing: 0.9, textTransform: 'uppercase' as const, fontFamily: fonts.mono },
-  number: { fontSize: 64, lineHeight: 68, fontWeight: '600' as const, letterSpacing: -2 },
-  mono: { fontSize: 20, lineHeight: 26, fontWeight: '400' as const, fontFamily: fonts.mono },
+  display: { fontSize: 44, lineHeight: 48, fontFamily: fonts.semibold, letterSpacing: -1 },
+  title: { fontSize: 28, lineHeight: 34, fontFamily: fonts.medium, letterSpacing: -0.5 },
+  heading: { fontSize: 20, lineHeight: 26, fontFamily: fonts.medium },
+  body: { fontSize: 16, lineHeight: 24, fontFamily: fonts.regular },
+  bodyStrong: { fontSize: 16, lineHeight: 24, fontFamily: fonts.medium },
+  small: { fontSize: 13, lineHeight: 18, fontFamily: fonts.regular },
+  label: { fontSize: 11, lineHeight: 16, letterSpacing: 0.9, textTransform: 'uppercase' as const, fontFamily: fonts.monoMedium },
+  number: { fontSize: 64, lineHeight: 68, letterSpacing: -2, fontFamily: fonts.monoMedium },
+  mono: { fontSize: 20, lineHeight: 26, fontFamily: fonts.mono },
+  serif: { fontSize: 34, lineHeight: 38, fontFamily: fonts.serif },
+  quote: { fontSize: 20, lineHeight: 26, fontFamily: fonts.serif },
 } as const
 
 export const space = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 } as const

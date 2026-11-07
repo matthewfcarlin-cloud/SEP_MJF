@@ -1,160 +1,193 @@
+import { router } from 'expo-router'
 import { View } from 'react-native'
+import Svg, { Circle } from 'react-native-svg'
 import { ROM_TARGETS } from '@reco/core'
-import type { RomDay } from '@reco/core'
+import type { MeterState, MilestoneKind, RomDay } from '@reco/core'
 
-import { copy } from '@/copy'
-import { shortDate } from '@/format'
-import { useStore } from '@/store/provider'
 import { LineChart } from '@/components/line-chart'
-import { Bars } from '@/components/ui/bars'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { ProgressBar } from '@/components/ui/progress-bar'
-import { SampleTag } from '@/components/ui/sample-tag'
+import { CheckCircle } from '@/components/ui/check'
+import { ListRow } from '@/components/ui/list-row'
 import { Screen } from '@/components/ui/screen'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Txt } from '@/components/ui/txt'
-import { space } from '@/theme/tokens'
+import { copy } from '@/copy'
+import { shortDate } from '@/format'
+import { useStore } from '@/store/provider'
+import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
-function Stat({ label, value, sub }: { readonly label: string; readonly value: string; readonly sub?: string }) {
+const RING = 64
+const RING_STROKE = 5
+const STALE_OPACITY = 0.45
+const WEEKS_PER_MONTH = 4.345
+
+function Ring({ percent, faded }: { readonly percent: number | undefined; readonly faded: boolean }) {
+  const colors = useColors()
+  const r = (RING - RING_STROKE) / 2
+  const c = 2 * Math.PI * r
   return (
-    <View style={{ flex: 1 }}>
-      <Txt kind="small" color="textMuted">
-        {label}
-      </Txt>
-      <Txt kind="heading">{value}</Txt>
-      {sub ? (
-        <Txt kind="small" color="textSecondary">
-          {sub}
-        </Txt>
-      ) : null}
+    <View style={{ width: RING, height: RING, alignItems: 'center', justifyContent: 'center', opacity: faded ? STALE_OPACITY : 1 }}>
+      <Svg width={RING} height={RING} style={{ position: 'absolute', transform: [{ rotate: '-90deg' }] }}>
+        <Circle cx={RING / 2} cy={RING / 2} r={r} stroke={colors.track} strokeWidth={RING_STROKE} fill="none" />
+        {percent !== undefined ? <Circle cx={RING / 2} cy={RING / 2} r={r} stroke={colors.accent} strokeWidth={RING_STROKE} fill="none" strokeDasharray={`${(c * percent) / 100} ${c}`} strokeLinecap="round" /> : null}
+      </Svg>
+      <Txt kind="mono">{percent ?? '–'}</Txt>
     </View>
   )
 }
 
-export default function ProgressScreen() {
-  const { view, state } = useStore()
+function WhoTag({ rom }: { readonly rom: RomDay }) {
   const colors = useColors()
-  const rom = [...state.data.romDays].sort((a, b) => a.date.localeCompare(b.date))
+  return (
+    <View style={{ paddingVertical: 3, paddingHorizontal: 8, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border }}>
+      <Txt kind="label" color="textMuted">
+        {copy.read.whoTag[rom.source]}
+      </Txt>
+    </View>
+  )
+}
+
+function BuildingMeter({ meter }: { readonly meter: Extract<MeterState, { kind: 'building' }> }) {
+  return (
+    <Card index={0} style={{ gap: 0 }}>
+      <View style={{ flexDirection: 'row', gap: space.md, alignItems: 'center', paddingBottom: space.sm }}>
+        <Ring percent={undefined} faded={false} />
+        <View style={{ flex: 1 }}>
+          <SectionLabel>{copy.meter.label}</SectionLabel>
+          <Txt kind="bodyStrong">{copy.meter.buildingTitle}</Txt>
+        </View>
+      </View>
+      <ListRow title={copy.meter.addRange} sub={copy.meter.addRangeSub} right={<CheckCircle done={meter.hasRange} />} {...(meter.hasRange ? {} : { onPress: () => router.push('/measure') })} />
+      <ListRow title={copy.meter.logDays(meter.daysNeeded)} sub={copy.meter.logDaysSub(Math.min(meter.loggedDays, meter.daysNeeded), meter.daysNeeded)} right={<CheckCircle done={meter.loggedDays >= meter.daysNeeded} />} />
+    </Card>
+  )
+}
+
+function ShownMeter({ meter }: { readonly meter: Extract<MeterState, { kind: 'normal' | 'stale' }> }) {
+  const { view } = useStore()
+  const stale = meter.kind === 'stale'
+  const { delta, reason } = view.progressChange
+  const headline = stale ? copy.meter.lastMeasured(shortDate(meter.lastMeasured.date)) : delta > 0 ? copy.meter.up(delta) : delta < 0 ? copy.meter.down(-delta) : copy.meter.flat
+  return (
+    <Card index={0}>
+      <View style={{ flexDirection: 'row', gap: space.md, alignItems: 'center' }}>
+        <Ring percent={meter.percent} faded={stale} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <SectionLabel>{copy.meter.label}</SectionLabel>
+          <Txt kind="bodyStrong">{headline}</Txt>
+          <Txt kind="small" color="textSecondary">
+            {stale ? copy.meter.staleBody : copy.meter.reason[reason]}
+          </Txt>
+        </View>
+      </View>
+      {stale ? (
+        <Button label={copy.meter.add} onPress={() => router.push('/measure')} />
+      ) : (
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Txt kind="small" color="textSecondary">
+            {copy.meter.lastMeasured(shortDate(meter.lastMeasured.date))}
+          </Txt>
+          <WhoTag rom={meter.lastMeasured} />
+        </View>
+      )}
+    </Card>
+  )
+}
+
+function RangeCards({ rom, faded }: { readonly rom: readonly RomDay[]; readonly faded: boolean }) {
   const first = rom[0]
   const latest = rom.at(-1)
-  const weekAgo = rom.at(-8)
-  const indexOf = (date: string): number => rom.findIndex((d) => d.date === date)
-  const marker = (kinds: readonly string[]) =>
-    view.milestones
-      .filter((m) => kinds.includes(m.kind))
-      .map((m) => ({ index: indexOf(m.date), label: `${m.label} · ${shortDate(m.date)}` }))
-      .filter((m) => m.index >= 0)
-  const xLabels = first && latest ? ([shortDate(first.date), shortDate(rom[Math.floor(rom.length / 2)]?.date ?? first.date), shortDate(latest.date)] as const) : undefined
-  const last21 = view.loads.slice(-21)
-
-  const bendGain = (from: RomDay | undefined, to: RomDay | undefined): string =>
-    from && to ? (to.flexionDeg > from.flexionDeg ? copy.progress.gainedBend(to.flexionDeg - from.flexionDeg) : copy.progress.noGain) : copy.report.none
-  const straightGain = (from: RomDay | undefined, to: RomDay | undefined): string =>
-    from && to
-      ? from.extensionDeficitDeg - to.extensionDeficitDeg >= 1
-        ? copy.progress.gainedStraight(Math.round(from.extensionDeficitDeg - to.extensionDeficitDeg))
-        : copy.progress.noGain
-      : copy.report.none
-
-  const reached = new Set(view.milestones.map((m) => m.kind))
-  const nextUp = !latest
-    ? undefined
-    : !reached.has('bike-range')
-      ? copy.progress.nextBike(Math.max(0, ROM_TARGETS.bikeFlexionDeg - latest.flexionDeg))
-      : !reached.has('full-bend')
-        ? copy.progress.nextFullBend(Math.max(0, ROM_TARGETS.fullFlexionDeg - latest.flexionDeg))
-        : copy.progress.allReached
-
+  if (!first || !latest) {
+    return (
+      <Card index={1}>
+        <SectionLabel>{copy.meter.emptyRangeLabel}</SectionLabel>
+        <Txt color="textSecondary">{copy.meter.emptyRangeBody}</Txt>
+      </Card>
+    )
+  }
+  const xLabels = [shortDate(first.date), shortDate(rom[Math.floor(rom.length / 2)]?.date ?? first.date), shortDate(latest.date)] as const
   return (
-    <Screen title={copy.progress.title} subtitle={copy.progress.subtitle} right={<SampleTag label={copy.viaTape} />}>
-      <Card index={0}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <SectionLabel>{copy.today.progressLabel}</SectionLabel>
-          <Txt kind="heading">{view.progressPercent}%</Txt>
-        </View>
-        <ProgressBar value={view.progressPercent} height={12} />
-        {nextUp ? (
-          <View style={{ marginTop: space.xs }}>
-            <Txt kind="small" color="textMuted">
-              {copy.progress.nextMilestone}
-            </Txt>
-            <Txt kind="bodyStrong">{nextUp}</Txt>
+    <View style={{ gap: space.md, opacity: faded ? STALE_OPACITY : 1 }}>
+      <Card index={1}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ gap: 2 }}>
+            <SectionLabel>{copy.progress.flexion}</SectionLabel>
+            <Txt kind="number" style={{ fontSize: 36, lineHeight: 42, letterSpacing: -1 }}>{`${latest.flexionDeg}°`}</Txt>
           </View>
-        ) : null}
-      </Card>
-
-      <Card index={1} raised>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <SectionLabel>{copy.progress.flexion}</SectionLabel>
-          {latest ? <Txt kind="title">{copy.progress.flexionValue(latest.flexionDeg)}</Txt> : null}
-        </View>
-        <LineChart
-          values={rom.map((d) => d.flexionDeg)}
-          min={90}
-          max={135}
-          unit="°"
-          area
-          markers={marker(['bike-range', 'full-bend'])}
-          reference={ROM_TARGETS.bikeFlexionDeg}
-          referenceLabel={copy.progress.bikeLine}
-          xLabels={xLabels}
-        />
-        <View style={{ flexDirection: 'row', gap: space.md, marginTop: space.xs }}>
-          <Stat label={copy.progress.sinceStart} value={bendGain(first, latest)} />
-          <Stat label={copy.progress.thisWeek} value={bendGain(weekAgo, latest)} />
-        </View>
-      </Card>
-
-      <Card index={2}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <SectionLabel>{copy.progress.extension}</SectionLabel>
-          {latest ? <Txt kind="title">{copy.progress.extensionValue(latest.extensionDeficitDeg)}</Txt> : null}
-        </View>
-        <LineChart
-          values={rom.map((d) => d.extensionDeficitDeg)}
-          min={0}
-          max={10}
-          unit="° short"
-          color="good"
-          area
-          markers={marker(['full-straightening'])}
-          reference={ROM_TARGETS.straightDeg}
-          referenceLabel={copy.progress.straightLine}
-          xLabels={xLabels}
-        />
-        <View style={{ flexDirection: 'row', gap: space.md, marginTop: space.xs }}>
-          <Stat label={copy.progress.sinceStart} value={straightGain(first, latest)} />
-          <Stat label={copy.progress.thisWeek} value={straightGain(weekAgo, latest)} />
-        </View>
-      </Card>
-
-      {view.milestones.length > 0 ? (
-        <Card index={3}>
-          <SectionLabel>{copy.progress.milestones}</SectionLabel>
-          {view.milestones.map((m) => (
-            <View key={m.kind} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.good }} />
-              <Txt kind="bodyStrong" style={{ flex: 1 }}>
-                {m.label}
-              </Txt>
-              <Txt color="textSecondary">{shortDate(m.date)}</Txt>
-            </View>
-          ))}
-        </Card>
-      ) : null}
-
-      <Card index={4}>
-        <SectionLabel>{copy.progress.loadTitle}</SectionLabel>
-        <Bars bars={last21.map((l) => ({ key: l.date, value: l.score, color: 'textMuted' as const }))} height={64} />
-        <View style={{ flexDirection: 'row' }}>
-          {[2, 1, 0].map((n) => (
-            <Txt key={n} kind="small" color="textMuted" style={{ flex: 1, textAlign: 'center' }}>
-              {copy.progress.weekAgo(n)}
+          {rom.length > 1 ? (
+            <Txt kind="small" color="textSecondary">
+              {copy.meter.sinceFirst(latest.flexionDeg - first.flexionDeg)}
             </Txt>
-          ))}
+          ) : null}
+        </View>
+        {rom.length > 1 ? <LineChart values={rom.map((d) => d.flexionDeg)} min={Math.min(90, ...rom.map((d) => d.flexionDeg))} max={ROM_TARGETS.fullFlexionDeg} unit="°" area reference={ROM_TARGETS.bikeFlexionDeg} referenceLabel={copy.progress.bikeLine} xLabels={xLabels} /> : null}
+      </Card>
+      <Card index={2}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <View style={{ gap: 2 }}>
+            <SectionLabel>{copy.progress.extension}</SectionLabel>
+            <Txt kind="number" style={{ fontSize: 36, lineHeight: 42, letterSpacing: -1 }}>{`${latest.extensionDeficitDeg}°`}</Txt>
+          </View>
+          <Txt kind="small" color="textSecondary">
+            {copy.read.straightValue(latest.extensionDeficitDeg)}
+          </Txt>
         </View>
       </Card>
+    </View>
+  )
+}
+
+function Milestones({ latest }: { readonly latest: RomDay | undefined }) {
+  const { view } = useStore()
+  if (!latest) return null
+  const reached = (k: MilestoneKind) => view.milestones.find((m) => m.kind === k)
+  const rows: readonly { kind: MilestoneKind; title: string; left: number }[] = [
+    { kind: 'full-straightening', title: copy.meter.fullyStraight, left: Math.max(0, latest.extensionDeficitDeg - ROM_TARGETS.straightDeg) },
+    { kind: 'bike-range', title: copy.meter.bike, left: Math.max(0, ROM_TARGETS.bikeFlexionDeg - latest.flexionDeg) },
+    { kind: 'full-bend', title: copy.meter.fullBend, left: Math.max(0, ROM_TARGETS.fullFlexionDeg - latest.flexionDeg) },
+  ]
+  return (
+    <Card index={3} style={{ gap: 0 }}>
+      <SectionLabel spaced>{copy.meter.milestones}</SectionLabel>
+      {rows.map((r) => {
+        const hit = reached(r.kind)
+        return <ListRow key={r.kind} title={r.title} sub={hit ? copy.meter.reached(shortDate(hit.date)) : copy.meter.toGo(r.left)} right={<CheckCircle done={hit !== undefined} />} />
+      })}
+    </Card>
+  )
+}
+
+function TypicalReturn() {
+  const { view, state } = useStore()
+  const { profile } = state.data
+  const { lowWeeks, highWeeks } = view.plan.typicalReturn
+  const words = profile.hadSurgery ? copy.meter.surgeryWord : copy.meter.injuryWord
+  const word = words[profile.injury as keyof typeof words] ?? words.other
+  return (
+    <Card index={4}>
+      <SectionLabel>{copy.meter.backLabel}</SectionLabel>
+      <Txt kind="bodyStrong">{copy.meter.typical(word, Math.ceil(lowWeeks / WEEKS_PER_MONTH), Math.round(highWeeks / WEEKS_PER_MONTH))}</Txt>
+      <Txt kind="small" color="textSecondary">
+        {copy.meter.typicalNote}
+      </Txt>
+    </Card>
+  )
+}
+
+export default function ProgressScreen() {
+  const { view, state, mode } = useStore()
+  const rom = [...state.data.romDays].sort((a, b) => a.date.localeCompare(b.date))
+  const { meter } = view
+  const eyebrow = view.firstDay ? copy.today.dayOne : copy.today.weekLabel(view.weeksSinceInjury)
+  return (
+    <Screen eyebrow={eyebrow} title={copy.progress.title}>
+      {meter.kind === 'building' ? <BuildingMeter meter={meter} /> : <ShownMeter meter={meter} />}
+      <RangeCards rom={rom} faded={meter.kind === 'stale'} />
+      {mode === 'real' && meter.kind !== 'stale' ? <Button label={copy.meter.add} variant="secondary" onPress={() => router.push('/measure')} /> : null}
+      <Milestones latest={rom.at(-1)} />
+      <TypicalReturn />
     </Screen>
   )
 }

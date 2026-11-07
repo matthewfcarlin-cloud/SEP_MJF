@@ -11,9 +11,11 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
   readonly label: string
   readonly variant?: Variant
   readonly style?: StyleProp<ViewStyle>
+  /** For the one destructive label. */
+  readonly labelColor?: 'warn'
 }
 
-export function Button({ label, variant = 'primary', disabled, style, ...rest }: ButtonProps) {
+export function Button({ label, variant = 'primary', disabled, style, labelColor, ...rest }: ButtonProps) {
   const colors = useColors()
   const bg = variant === 'primary' ? colors.accent : variant === 'secondary' ? colors.surfaceRaised : 'transparent'
   const fg = variant === 'primary' ? 'onAccent' : variant === 'secondary' ? 'text' : 'textSecondary'
@@ -35,7 +37,7 @@ export function Button({ label, variant = 'primary', disabled, style, ...rest }:
         style,
       ]}
       {...rest}>
-      <Txt kind="bodyStrong" color={fg}>
+      <Txt kind="bodyStrong" color={labelColor ?? fg}>
         {label}
       </Txt>
     </Pressable>

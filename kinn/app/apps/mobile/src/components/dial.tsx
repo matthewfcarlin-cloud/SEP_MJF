@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
-import Svg, { Circle, Defs, Line, RadialGradient, Stop } from 'react-native-svg'
+import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg'
 import type { ReactNode } from 'react'
 
 import { radius } from '@/theme/tokens'
@@ -8,25 +8,17 @@ import type { ColorToken } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
 interface DialProps {
-  /** 0..100, how far round the arc the ticks are lit. */
+  /** 0..100, how far round the ring the arc runs. */
   readonly value: number
-  /** Colour of the lit ticks (status colour on Today). */
+  /** Colour of the arc (status colour on Today). */
   readonly color: ColorToken
   readonly size?: number
-  /** Second value shown as a thin marker on the arc, e.g. the usual load. */
-  readonly marker?: number
   readonly children?: ReactNode
 }
 
-const TICKS = 64
-const SWEEP_DEG = 270
-const START_DEG = 225 // 7:30 on the clock face, sweeping clockwise through 12 to 4:30
+const RING_STROKE = 7
+const DISC_GAP = 16
 const FILL_MS = 900
-
-const polar = (cx: number, cy: number, r: number, deg: number): { x: number; y: number } => {
-  const rad = ((deg - 90) * Math.PI) / 180
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
-}
 
 /** Counts up from 0 to `target` with an ease-out, for the mount animation. */
 function useCountUp(target: number): number {
@@ -50,69 +42,43 @@ function useCountUp(target: number): number {
 }
 
 /**
- * Tick-arc dial in the Oura / Whoop family. Pure SVG; the centre is whatever
- * the caller puts in `children`. Lit ticks glow slightly by drawing a wider,
- * faint copy behind each one.
+ * The Sensor O as a readout: a faint full track with a live arc on top, starting at 12 o'clock and
+ * running clockwise, the same shape as the logo and the coin's ring. The centre is whatever the caller
+ * puts in `children`.
  */
-export function Dial({ value, color, size = 280, marker, children }: DialProps) {
+export function Dial({ value, color, size = 280, children }: DialProps) {
   const colors = useColors()
   const shown = useCountUp(Math.max(0, Math.min(100, value)))
   const cx = size / 2
-  const cy = size / 2
-  const outer = size / 2 - 6
-  const inner = outer - 26
-  const lit = Math.round((shown / 100) * TICKS)
-  const litColor = colors[color]
-  const discR = inner - 18
+  const r = size / 2 - RING_STROKE
+  const circumference = 2 * Math.PI * r
+  const discR = r - DISC_GAP
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      {/* Soft lift under the ceramic disc; the ticks and their fill animation are unchanged. */}
       <View style={{ position: 'absolute', width: discR * 2, height: discR * 2, borderRadius: radius.pill, boxShadow: `0 10px 24px ${colors.text}1F` }} />
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
-        {Array.from({ length: TICKS + 1 }, (_, i) => {
-          const deg = START_DEG + (i / TICKS) * SWEEP_DEG
-          const a = polar(cx, cy, inner, deg)
-          const b = polar(cx, cy, outer, deg)
-          const isLit = i < lit
-          const isEdge = i === lit
-          return (
-            <Line
-              key={i}
-              x1={a.x}
-              y1={a.y}
-              x2={b.x}
-              y2={b.y}
-              stroke={isEdge ? colors.text : isLit ? litColor : colors.track}
-              strokeWidth={isEdge ? 4 : 3}
-              strokeLinecap="round"
-              opacity={isLit || isEdge ? 1 : 0.9}
-            />
-          )
-        })}
-        {lit > 0
-          ? Array.from({ length: lit }, (_, i) => {
-              const deg = START_DEG + (i / TICKS) * SWEEP_DEG
-              const a = polar(cx, cy, inner - 2, deg)
-              const b = polar(cx, cy, outer + 2, deg)
-              return <Line key={`glow-${i}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={litColor} strokeWidth={8} strokeLinecap="round" opacity={0.12} />
-            })
-          : null}
-        {marker !== undefined ? (
-          (() => {
-            const deg = START_DEG + (Math.max(0, Math.min(100, marker)) / 100) * SWEEP_DEG
-            const a = polar(cx, cy, outer + 3, deg)
-            const b = polar(cx, cy, outer + 9, deg)
-            return <Line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={colors.textSecondary} strokeWidth={3} strokeLinecap="round" />
-          })()
-        ) : null}
         <Defs>
           <RadialGradient id="dial-disc" cx="38%" cy="30%" r="75%">
             <Stop offset="0" stopColor={colors.surface} />
             <Stop offset="1" stopColor={colors.surfaceRaised} />
           </RadialGradient>
         </Defs>
-        <Circle cx={cx} cy={cy} r={discR} fill="url(#dial-disc)" stroke={colors.border} strokeWidth={1} />
+        <Circle cx={cx} cy={cx} r={r} stroke={colors.track} strokeWidth={RING_STROKE} fill="none" />
+        {shown > 0 ? (
+          <Circle
+            cx={cx}
+            cy={cx}
+            r={r}
+            stroke={colors[color]}
+            strokeWidth={RING_STROKE}
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray={`${(circumference * shown) / 100} ${circumference}`}
+            transform={`rotate(-90 ${cx} ${cx})`}
+          />
+        ) : null}
+        <Circle cx={cx} cy={cx} r={discR} fill="url(#dial-disc)" stroke={colors.border} strokeWidth={1} />
       </Svg>
       <View style={{ width: discR * 2 - 24, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill }}>{children}</View>
     </View>

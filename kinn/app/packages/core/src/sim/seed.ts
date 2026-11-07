@@ -5,7 +5,7 @@
  * extension reaching fully straight around day 15, flexion climbing to ~128°.
  */
 import { addDays, startOfDay } from '../time/day'
-import type { ActivityLog, Dataset, Intensity, ManualActivity, MorningCheckIn, PainLog, Profile, RomDay } from '../manual/types'
+import type { ActivityLog, Dataset, Intensity, ManualActivity, MorningCheckIn, PainLog, Profile, RomDay, PlanExercise } from '../manual/types'
 
 export const SEED_DAYS = 21
 
@@ -108,5 +108,11 @@ export function seedDataset(today: string): Dataset {
 
   const romDays: RomDay[] = PLAN.map((_, i) => ({ date: dateAt(i), ...romFor(i), source: 'reco-tape-sim' as const }))
 
-  return { profile: SEED_PROFILE, activityLogs, painLogs, checkIns, romDays }
+  const exercises: PlanExercise[] = [
+    { id: 'seed-ex-quad', name: 'Quad sets', sets: 3, reps: 10, daysPerWeek: 5 },
+    { id: 'seed-ex-heel', name: 'Heel slides', sets: 2, reps: 15, daysPerWeek: 5 },
+    { id: 'seed-ex-raise', name: 'Straight leg raises', sets: 3, reps: 10, daysPerWeek: 3 },
+  ]
+
+  return { profile: SEED_PROFILE, activityLogs, painLogs, checkIns, romDays, exercises, planMarks: [] }
 }

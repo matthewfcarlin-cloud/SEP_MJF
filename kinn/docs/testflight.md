@@ -24,12 +24,14 @@ For a Monday demo with teammates, internal testing is enough. For athletes or PT
 
 **Route A, Xcode only (chosen 2026-10-26).** No Expo account. Archive on this Mac from the non-iCloud checkout at `~/kinn-native` and upload from Xcode's Organizer. Needs only the paid Apple Developer account that already exists.
 
-1. Bring the checkout to the latest commit and regenerate the native project (run by Claude, or by hand):
+1. Bring the checkout to the latest commit and regenerate the native project (run by Claude, or by hand). CocoaPods crashes without a UTF-8 locale, and `.xcode.env.local` tells Xcode where Node is:
    ```bash
+   export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
    cd ~/kinn-native && git checkout -- . && git checkout --detach main
-   cd kinn/app && npm install && cd apps/mobile && rm -rf ios && npx expo prebuild --platform ios && open ios/RECO.xcworkspace
+   cd kinn/app && npm install && cd apps/mobile && rm -rf ios && npx expo prebuild --platform ios
+   echo "export NODE_BINARY=$(which node)" > ios/.xcode.env.local && open ios/RECO.xcworkspace
    ```
-2. In Xcode: select the **RECO** target → **Signing & Capabilities** → tick *Automatically manage signing* → choose your **Team** (the paid account, not "Personal Team"). Xcode creates the App ID `com.recoapp.recovery` and a profile. If the bundle id is already taken by someone else, Xcode says so here; change `ios.bundleIdentifier` in `app.json`, rerun step 1.
+2. The team (`GK97AW599V`) now comes from `ios.appleTeamId` in `app.json`, so Xcode should already show it under **RECO** target → **Signing & Capabilities**. If the bundle id is already taken by someone else, Xcode says so here; change `ios.bundleIdentifier` in `app.json`, rerun step 1.
 3. Set the run destination to **Any iOS Device (arm64)**, then **Product → Archive**. First archive takes 5 to 10 minutes.
 4. The Organizer opens with the archive. **Distribute App → TestFlight & App Store → Upload**, accept the defaults (Xcode manages signing). Sign in with your Apple ID if asked. Upload takes a few minutes; processing on Apple's side 5 to 30 more.
 5. Create the app record first at appstoreconnect.apple.com → Apps → "+": iOS, name **RECO Knee Recovery** (the plain name "RECO" is taken on the App Store; the listing name must be unique store-wide, while the home-screen name stays RECO), English (U.S.), bundle id `com.recoapp.recovery`, SKU `reco-ios`. Letting Xcode create the record fails with "App Name you entered is already being used".
@@ -62,14 +64,14 @@ For a Monday demo with teammates, internal testing is enough. For athletes or PT
 5. **Internal testers (team).** App Store Connect → Users and Access → add each teammate with any role (Developer is enough), then TestFlight → Internal Testing → "+" group → add them and tick the build. They get an email, install TestFlight, and the app appears.
 
 6. **External testers (athletes, PTs).** TestFlight → External Testing → "+" group. Fill in:
-   - **Beta App Description**: "RECO is a knee-recovery companion for athletes coming back from ACL and meniscus injuries. Log activity, pain and morning check-ins; see what tends to come before a flare-up; share a weekly summary with your PT. This beta runs on sample data you can reset from Settings."
+   - **Beta App Description**: "RECO is a knee-recovery companion for athletes coming back from ACL and meniscus injuries. Log activity, pain and morning check-ins; see what tends to come before a flare-up; share a weekly summary with your PT. It starts empty, and everything stays on the phone unless you send it."
    - **Feedback email**: yours.
    - **Privacy Policy URL**: `https://matthewfcarlin-cloud.github.io/reco-privacy/privacy/` (GitHub Pages, repo matthewfcarlin-cloud/reco-privacy; the same page is also in `site/public/privacy/`).
-   - **What to Test**: the demo path. Open the app, answer the morning questions, log a pain, look at Insights and Progress, share a report.
-   - **Review notes**: "No login required. Sample data is preloaded. Settings → Reset to sample data restores it."
+   - **What to Test**: set up your recovery, check in each morning, tap Log pain when something hurts, add a measurement after a PT visit, and send the weekly report.
+   - **Review notes**: "No login required. On the first screen, Look around with sample data shows a filled-in account. The same option is in Settings."
    Add the build, submit for Beta App Review. After approval, share the public link or add emails.
 
-7. **App Privacy** (App Store Connect → App Privacy): answer **Data Not Collected**. This is accurate: the app has no server, no analytics and no identifiers.
+7. **App Privacy** (App Store Connect → App Privacy): answer **Data Not Collected**. This is accurate while voice stays on the phone: the app has no server, no analytics and no identifiers. Revisit it before adding the AI step.
 
 ## Each new build after that (Route B)
 
@@ -84,7 +86,7 @@ The build number increments on EAS; testers see an update in TestFlight within t
 
 - A privacy policy URL that 404s. Deploy the site change before submitting the external group.
 - Placeholder icon. Apple accepts it for TestFlight, but replace it when the RECO mark exists.
-- The app opening on a blank screen. It does not; it opens on onboarding with "Use the sample athlete instead" as the shortcut.
+- The app opening on a blank screen. It does not; it opens on a welcome screen with "Look around with sample data" as the shortcut.
 - Medical claims. Copy is tested against the banned-words list; the disclaimer is in Settings and the share text.
 
 ## Not needed for TestFlight

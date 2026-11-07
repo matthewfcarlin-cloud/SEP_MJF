@@ -1,4 +1,4 @@
-import { personalLine, redFlag, warningFor } from '../../src/warnings/line'
+import { hasRedFlagWords, personalLine, redFlag, warningFor } from '../../src/warnings/line'
 import { containsBannedWord } from '../../src/copy/banned'
 import type { DayLoad, FlareDay } from '../../src/manual/types'
 
@@ -49,5 +49,14 @@ describe('redFlag', () => {
     expect(redFlag([{ id: 'a', t: 0, date: 'd', pain: 8 }], 'd')?.id).toBe('a')
     expect(redFlag([{ id: 'b', t: 0, date: 'd', pain: 4, note: 'knee gave way on a cut' }], 'd')?.id).toBe('b')
     expect(redFlag([{ id: 'c', t: 0, date: 'd', pain: 5, note: 'sore' }], 'd')).toBeUndefined()
+  })
+})
+
+describe('hasRedFlagWords', () => {
+  test.each(['it gave way on the stairs', 'my knee locked', 'felt it pop, it popped', 'my foot went numb', "can't straighten it"])('flags "%s"', (t) => {
+    expect(hasRedFlagWords(t)).toBe(true)
+  })
+  test.each(['pain number 3 after the walk', 'I was locked in at practice', 'numbers look good'])('leaves "%s" alone', (t) => {
+    expect(hasRedFlagWords(t)).toBe(false)
   })
 })

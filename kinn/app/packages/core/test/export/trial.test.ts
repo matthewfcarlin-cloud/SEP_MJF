@@ -87,3 +87,26 @@ describe('deriveToday with tape records', () => {
     expect(withTape.progressPercent).toBe(without.progressPercent)
   })
 })
+
+describe('pilot export privacy', () => {
+  const TODAY = '2026-11-06'
+  const base = seedDataset(TODAY)
+  const data = {
+    ...base,
+    profile: { ...base.profile, name: 'Samira', goal: 'Dance at my sister wedding', story: 'my words', ptName: 'Lena', ptEmail: 'lena@example.com' },
+    painLogs: [{ id: 'p', t: 1, date: TODAY, note: 'my note', voiceUri: 'file:///v.m4a', photoUri: 'file:///p.jpg', kind: 'press' as const }],
+    journal: [{ id: 'j', t: 1, date: TODAY, text: 'journal words', source: 'voice' as const }],
+    exercises: [{ id: 'e', name: 'Quad sets', sets: 3, reps: 10, daysPerWeek: 5, note: 'PT said go easy' }],
+  }
+  const exp = trialExport({ data, seededFor: TODAY, today: TODAY, tape: { cursors: [], calibrations: [], records: [] }, exportedAt: 0, appVersion: 't', guidance: 'pt-led' })
+  const text = JSON.stringify(exp)
+
+  test('leaves out their words, file paths and their PT details', () => {
+    for (const secret of ['Samira', 'sister wedding', 'my words', 'my note', 'journal words', 'PT said go easy', 'file:///', 'lena@example.com', 'Lena']) expect(text).not.toContain(secret)
+  })
+  test('keeps the counts the pilot needs', () => {
+    expect(exp.guidance).toBe('pt-led')
+    expect(exp.counts).toMatchObject({ journalEntries: 1, journalByVoice: 1, painTaps: 1, painTapsWithDetail: 1 })
+    expect(exp.painLogs[0]).toMatchObject({ hasNote: true, hasVoice: true, hasPhoto: true })
+  })
+})

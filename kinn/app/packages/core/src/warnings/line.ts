@@ -87,9 +87,12 @@ export function warningFor(input: WarningInput): Warning | undefined {
   }
 }
 
-const RED_FLAG_WORDS = /\b(gave way|giving way|buckled|popped|locked|can'?t (?:straighten|bend|put weight)|numb)/i
+const RED_FLAG_WORDS = /\b(gave way|giving way|buckled|popped|locked(?! in\b)|can'?t (?:straighten|bend|put weight)|numb)\b/i
+
+/** Words in a note that should stop normal advice, whatever else was logged. */
+export const hasRedFlagWords = (text: string): boolean => RED_FLAG_WORDS.test(text)
 
 /** A sudden spike or the joint giving way: stop normal advice and point to a clinician. */
 export function redFlag(painLogs: readonly PainLog[], today: string): PainLog | undefined {
-  return painLogs.find((p) => p.date === today && (p.pain >= WARNING_RULES.redFlagPain || (p.note !== undefined && RED_FLAG_WORDS.test(p.note))))
+  return painLogs.find((p) => p.date === today && ((p.pain ?? 0) >= WARNING_RULES.redFlagPain || (p.note !== undefined && RED_FLAG_WORDS.test(p.note))))
 }

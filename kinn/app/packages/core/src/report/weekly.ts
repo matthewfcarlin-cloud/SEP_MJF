@@ -50,7 +50,7 @@ const maxBy = (xs: readonly RomDay[], f: (d: RomDay) => number): number | undefi
 const mean = (xs: readonly number[]): number =>
   xs.length === 0 ? 0 : xs.reduce((s, x) => s + x, 0) / xs.length
 
-function morningMark(data: Dataset, date: string, flareDates: ReadonlySet<string>): MorningMark {
+export function morningMark(data: Dataset, date: string, flareDates: ReadonlySet<string>): MorningMark {
   if (flareDates.has(date)) return 'flare'
   const checkIn = data.checkIns.find((c) => c.date === date)
   if (!checkIn) return 'none'
@@ -104,23 +104,20 @@ export function weekChange(data: Dataset, weekEnd: string): WeekChange {
 
 const flareWords = (n: number): string => (n === 0 ? 'no flare-up mornings' : n === 1 ? 'one flare-up morning' : `${n} flare-up mornings`)
 
-/** One sentence for the top of the report. Observations only. */
-export function weekHeadline(summary: WeeklySummary, change: WeekChange): string {
+function rangeWords(summary: WeeklySummary, change: WeekChange): string {
+  const deficit = summary.bestExtensionDeficitDeg
+  if (deficit === undefined) return ''
+  const straight = deficit <= 2 ? 'the knee straightened fully' : `straightening ${deficit}° short`
+  const delta = change.flexionDeltaDeg
+  const bend = delta !== undefined && delta > 0 ? `, bend up ${delta}°` : delta !== undefined && delta < 0 ? `, bend down ${Math.abs(delta)}°` : ''
+  return `, ${straight}${bend}`
+}
+
+/** One sentence for the top of the report. Observations only. Range stays out when the person leaves it out of the report. */
+export function weekHeadline(summary: WeeklySummary, change: WeekChange, includeRange = true): string {
   const load =
     change.avgScoreDelta > 5 ? 'a heavier week than last' : change.avgScoreDelta < -5 ? 'a lighter week than last' : 'a week like the last one'
-  const range =
-    summary.bestExtensionDeficitDeg !== undefined && summary.bestExtensionDeficitDeg <= 2
-      ? 'the knee straightened fully'
-      : summary.bestExtensionDeficitDeg !== undefined
-        ? `straightening ${summary.bestExtensionDeficitDeg}° short`
-        : 'no range data'
-  const bend =
-    change.flexionDeltaDeg !== undefined && change.flexionDeltaDeg > 0
-      ? `, bend up ${change.flexionDeltaDeg}°`
-      : change.flexionDeltaDeg !== undefined && change.flexionDeltaDeg < 0
-        ? `, bend down ${Math.abs(change.flexionDeltaDeg)}°`
-        : ''
-  return `${capitalise(load)}, ${flareWords(summary.flares.length)}, ${range}${bend}.`
+  return `${capitalise(load)}, ${flareWords(summary.flares.length)}${includeRange ? rangeWords(summary, change) : ''}.`
 }
 
 const capitalise = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)

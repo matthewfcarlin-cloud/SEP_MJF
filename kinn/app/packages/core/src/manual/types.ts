@@ -1,6 +1,6 @@
 /**
- * Manual-log MVP types. The athlete logs activities, pain and a morning
- * check-in by hand; range-of-motion days are simulated "via RECO tape".
+ * Manual-log types. The person logs activities, pain and a morning check-in by hand,
+ * and types in range measurements. Sample data simulates range instead.
  * All records are immutable.
  */
 import type { Swelling } from '../domain/types'
@@ -24,8 +24,8 @@ export interface PainLog {
   readonly id: string
   readonly t: number
   readonly date: string
-  /** 0..10 */
-  readonly pain: number
+  /** 0..10. Missing on a one-tap press with no detail, which still counts in patterns. */
+  readonly pain?: number
   readonly doing?: Doing
   /** Answer to the next-morning "Did it settle?" notification. */
   readonly settled?: Settled
@@ -68,12 +68,34 @@ export interface MorningCheckIn {
   readonly swelling: Swelling
 }
 
-/** One day of simulated tape data. extensionDeficitDeg: 0 = fully straight. */
+/** Who measured a range day. 'reco-tape-sim' only ever appears in sample data. */
+export type RomSource = 'pt' | 'self' | 'reco-tape-sim'
+
+/** One day of range of motion. extensionDeficitDeg: 0 = fully straight. */
 export interface RomDay {
   readonly date: string
   readonly extensionDeficitDeg: number
   readonly flexionDeg: number
-  readonly source: 'reco-tape-sim'
+  readonly source: RomSource
+}
+
+/** One exercise the person typed in from their PT. */
+export interface PlanExercise {
+  readonly id: string
+  readonly name: string
+  readonly sets: number
+  readonly reps: number
+  /** 1..7 */
+  readonly daysPerWeek: number
+  readonly note?: string
+}
+
+export type EveningWord = 'quiet' | 'sore' | 'worse'
+
+/** The optional end-of-day answer. Sore and worse also add a pain log, so the morning ask follows. */
+export interface EveningCheck {
+  readonly date: string
+  readonly word: EveningWord
 }
 
 export type Joint = 'knee' | 'shoulder' | 'elbow'
@@ -141,4 +163,6 @@ export interface Dataset {
   readonly journal?: readonly JournalEntry[]
   readonly planMarks?: readonly PlanMark[]
   readonly warningFeedback?: readonly WarningFeedback[]
+  readonly exercises?: readonly PlanExercise[]
+  readonly eveningChecks?: readonly EveningCheck[]
 }
