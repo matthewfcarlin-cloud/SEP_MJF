@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>What RECO does</title>
+<meta name="description" content="What the RECO knee tape tracks, why it tracks it, and what the app does with it.">
+<link rel="canonical" href="https://recotape.co/preorder/learn">
+<meta property="og:title" content="What RECO does">
+<meta property="og:description" content="What the RECO knee tape tracks, why it tracks it, and what the app does with it.">
+<meta property="og:image" content="https://recotape.co/preorder/img/lineup.webp">
+<link rel="icon" href="/brand/reco-mark-ink.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300..500&display=swap">
+<link rel="stylesheet" href="/home.css">
+<meta name="theme-color" content="#0d1212">
+<link rel="stylesheet" href="/preorder/preorder.css">
+<link rel="stylesheet" href="/preorder/learn.css">
+</head>
+<body class="po">
+<header class="top gut">
+  <a class="mark" href="/preorder" aria-label="Back to Introducing RECO"><svg viewBox="0 0 3008 912" aria-hidden="true">
+<g transform="translate(85.2,811.2) scale(1,-1)" fill="currentColor">
+<path transform="translate(0.0,0)" d="M80 0V710H377Q454 710 510.0 684.0Q566 658 597.0 610.0Q628 562 628 497Q628 448 607.0 410.0Q586 372 550.5 349.0Q515 326 472 321L467 331Q536 331 573.5 300.0Q611 269 616 205L634 0H502L487 186Q484 228 460.0 248.0Q436 268 380 268H210V0ZM210 382H369Q428 382 461.0 410.0Q494 438 494 489Q494 541 460.5 569.0Q427 597 363 597H210Z"/>
+<path transform="translate(683.0,0)" d="M80 0V710H558V597H210V412H546V300H210V113H566V0Z"/>
+<path transform="translate(1292.0,0)" d="M372 -16Q275 -16 201.0 28.5Q127 73 85.0 155.5Q43 238 43 354Q43 468 84.0 551.5Q125 635 199.0 680.5Q273 726 373 726Q509 726 584.0 658.5Q659 591 682 470L546 463Q533 533 490.0 573.0Q447 613 373 613Q313 613 269.0 581.0Q225 549 201.0 491.0Q177 433 177 354Q177 274 201.5 216.5Q226 159 270.0 128.0Q314 97 372 97Q451 97 494.5 140.5Q538 184 550 260L686 253Q672 170 632.0 109.5Q592 49 526.5 16.5Q461 -16 372 -16Z"/>
+</g>
+<circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
+<path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#3DDBB8" stroke-width="101.4" stroke-linecap="round"/>
+</svg></a>
+  <nav aria-label="Main"><a href="/preorder/reserve" data-preorder-cta>Preorder</a></nav>
+</header>
+<main>
+  <section class="l-open">
+    <div class="l-open-art"><img src="/flow/flex/k_001.webp?v=10" alt="The whole RECO tape from above, with the coin locked on at one end and a window for the kneecap. Design render." width="2160" height="1215"></div>
+    <div class="l-open-copy gut">
+      <h1>One coin.<br>One tape.</h1>
+      <p>The coin holds the electronics, twist-locks on, and stays with you. The tape reads your knee as it moves, and it's the part you replace.</p>
+      <p class="soft">This is what RECO is being built to do. The graphics use sample data.</p>
+    </div>
+  </section>
+
+  <section class="l-angle" id="angle">
+    <div class="l-pin">
+      <canvas id="bendCv" aria-hidden="true"></canvas>
+      <strong class="l-deg" id="bendDeg" aria-hidden="true">0°</strong>
+      <div class="l-text gut"><h2>Knee angle.</h2><p>How far you bend and straighten, all day. You see your range against your other knee and your own trend.</p></div>
+    </div>
+  </section>
+
+  <section class="l-full l-load" id="load">
+    <div class="l-text gut"><h2>Load.</h2><p>An estimate from your bends, their angle and how long you kept going, not a direct measure of force. It shows when you're doing more than your knee is used to.</p></div>
+    <div class="load-art" id="loadArt" role="img" aria-label="Four weeks of load as a row of lines, with today rising well above your usual range"><span class="load-usual"></span><span class="g-label g-usual">Your usual</span><span class="g-label g-today">Today</span></div>
+  </section>
+
+  <section class="l-full l-pain" id="pain">
+    <div class="l-text gut"><h2>Pain taps.</h2><p>One tap on the coin when it hurts. Over time RECO shows what came before your pain, like "3 of your last 4 flare-ups came after game days."</p></div>
+    <div class="pain-art" role="img" aria-label="A day of activity as a line, with a pain tap and the stretch before it highlighted">
+      <svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><rect class="pain-before" x="470" y="0" width="230" height="300"/><path class="pain-day" d="M0 260 C60 256 90 214 150 214 S240 262 300 250 S390 150 450 110 S560 30 620 44 S670 170 700 200 S820 250 1000 254"/></svg>
+      <span class="pain-tap" style="left:70%;top:66.6%"></span><span class="g-label g-before">What came before</span><span class="g-label g-tap">You tapped</span>
+    </div>
+  </section>
+
+  <section class="l-full l-warn" id="warn">
+    <div class="warn-art"><svg id="warnDial" viewBox="0 0 400 400" aria-hidden="true"></svg><div class="warn-center" aria-hidden="true"><strong>Ease off</strong><span>More than you're used to</span></div></div>
+    <div class="warn-copy gut">
+      <h2>Warning signs.</h2>
+      <p>Something speaks up before you overdo it. RECO compares today with your own baseline and with what came before your past pain, then suggests what to do.</p>
+      <p class="soft">RECO can't predict or prevent injury. Your PT's word overrides RECO's.</p>
+    </div>
+  </section>
+
+  <section class="l-app" id="app">
+    <div class="phone" aria-hidden="true"><div class="phone-screen"><img src="/flow/screen/today.webp?v=10" alt="" width="900" height="1948" loading="lazy"><img class="second" src="/flow/screen/plan.webp?v=10" alt="" width="900" height="1948" loading="lazy"></div></div>
+    <div class="l-app-copy gut">
+      <h2>Your recovery data,<br>in your hand.</h2>
+      <p>Your recovery, at a glance, with one clear read on how you're trending.</p>
+      <p>A plan for today that starts from your answers and changes with your data. Your plan, based on published rehab protocols. Your PT can change it.</p>
+      <p>With one tap, share your week with your PT.</p>
+    </div>
+  </section>
+
+  <section class="l-end light">
+    <div class="l-end-copy gut">
+      <h2>Get yours first.</h2>
+      <a class="btn" href="/preorder/reserve" data-preorder-cta>Preorder</a>
+      <p class="fine" data-if-open>Or <a href="/#join">join the waitlist for free.</a></p>
+    </div>
+    <div class="l-end-art"><img src="/preorder/img/lineup.webp" alt="" width="3240" height="1020" loading="lazy"></div>
+    <p class="intro-fine">In development. Not a medical device. Images are design renders, and the final product may look different.</p>
+  </section>
+</main>
+<script src="/preorder.js"></script>
+<script src="/preorder/learn.js"></script>
+</body>
+</html>

@@ -6,23 +6,28 @@
 //   ADMIN_TOKEN      secret for /admin/waitlist.csv and /admin/stats (required to read the list)
 //   RESEND_API_KEY   optional: send a welcome email through Resend
 //   FROM_EMAIL       optional: sender for the welcome email, e.g. "RECO <hello@yourdomain.com>"
+//   Preorders        see preorder.js
 //   VERCEL           set by Vercel; static files and the index.html fallback are then left to Vercel's CDN (see vercel.json)
 
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const Stripe = require('stripe');
+const { WEBHOOK_PATH, refundByDate, createPreorderStore, preorderHandlers } = require('./preorder');
 
 const app = express();
 app.set('trust proxy', true);
+/* Stripe signs the exact bytes it sends, so this one route has to come before the JSON parser */
+app.post(WEBHOOK_PATH, express.raw({ type: 'application/json', limit: '1mb' }), (req, res) => ready.then(() => preorders.webhook(req, res), () => res.status(500).send('Try again')));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 
 /* ---------------- storage ---------------- */
-let store;
+let store, pool = null;
 if (process.env.DATABASE_URL) {
   const { Pool } = require('pg');
-  const pool = new Pool({
+  pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: /localhost|127\.0\.0\.1|\.railway\.internal/.test(process.env.DATABASE_URL) ? false : { rejectUnauthorized: false },
   });
@@ -78,7 +83,8 @@ if (process.env.DATABASE_URL) {
   };
 }
 
-const ready = store.init();
+const preorderStore = createPreorderStore({ pool, file: path.join(__dirname, 'data', 'preorders.json') });
+const ready = Promise.all([store.init(), preorderStore.init()]);
 app.use((req, res, next) => { ready.then(() => next(), next); });
 
 /* ---------------- helpers ---------------- */
@@ -109,20 +115,32 @@ function tokenOk(req) {
   const a = Buffer.from(got), b = Buffer.from(want);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
-async function welcomeEmail(to) {
+async function sendEmail({ to, subject, text }) {
   if (!process.env.RESEND_API_KEY || !process.env.FROM_EMAIL) return;
   try {
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: process.env.FROM_EMAIL, to,
-        subject: "You're on the RECO waitlist",
-        text: "Thanks for joining the RECO waitlist.\n\nWe're building a thin knee tape with a reusable coin that tracks how your knee bends and straightens through a comeback from an ACL or meniscus injury, so you know when to push and when to ease off. You'll get early access and updates as we build.\n\n— The RECO team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
-      }),
+      body: JSON.stringify({ from: process.env.FROM_EMAIL, to, subject, text }),
     });
-  } catch (e) { console.error('welcome email failed', e.message); }
+  } catch (e) { console.error('email failed', e.message); }
 }
+const welcomeEmail = to => sendEmail({
+  to,
+  subject: "You're on the RECO waitlist",
+  text: "Thanks for joining the RECO waitlist.\n\nWe're building a thin knee tape with a reusable coin that tracks how your knee bends and straightens through a comeback from an ACL or meniscus injury, so you know when to push and when to ease off. You'll get early access and updates as we build.\n\n— The RECO team\n\nIf you didn't sign up, ignore this email and you won't hear from us again.",
+});
+const csv = (cols, rows) => {
+  const esc = v => { const s = v == null ? '' : (v instanceof Date ? v.toISOString() : String(v)); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  return [cols.join(','), ...rows.map(r => cols.map(c => esc(r[c])).join(','))].join('\n');
+};
+const preorders = preorderHandlers({
+  stripe: process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null,
+  store: preorderStore,
+  env: process.env,
+  sendEmail,
+  tooMany: rateLimiter(8),
+});
 
 /* ---------------- routes ---------------- */
 app.get('/healthz', (req, res) => res.json({ ok: true, store: store.kind }));
@@ -163,10 +181,20 @@ app.get('/admin/waitlist.csv', async (req, res) => {
   if (!tokenOk(req)) return res.status(401).send('Unauthorized. Add ?token=YOUR_ADMIN_TOKEN');
   const rows = await store.all();
   const cols = ['id', 'created_at', 'email', 'role', 'injury', 'sport', 'alert', 'channel', 'note', 'source', 'referrer'];
-  const esc = v => { const s = v == null ? '' : (v instanceof Date ? v.toISOString() : String(v)); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', 'attachment; filename="kinn-waitlist.csv"');
-  res.send([cols.join(','), ...rows.map(r => cols.map(c => esc(r[c])).join(','))].join('\n'));
+  res.send(csv(cols, rows));
+});
+
+app.get('/api/preorder/config', preorders.config);
+app.post('/api/preorder/checkout', preorders.checkout);
+
+app.get('/admin/preorders.csv', async (req, res) => {
+  if (!tokenOk(req)) return res.status(401).send('Unauthorized. Add ?token=YOUR_ADMIN_TOKEN');
+  const cols = ['id', 'created_at', 'status', 'refund_by', 'email', 'name', 'amount_cents', 'currency', 'source', 'stripe_session_id', 'stripe_payment_intent', 'refunded_at'];
+  res.set('Content-Type', 'text/csv; charset=utf-8');
+  res.set('Content-Disposition', 'attachment; filename="reco-preorders.csv"');
+  res.send(csv(cols, (await preorderStore.all()).map(r => ({ ...r, refund_by: refundByDate(r.created_at) }))));
 });
 
 app.get('/admin/stats', async (req, res) => {

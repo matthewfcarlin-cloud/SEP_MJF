@@ -10,6 +10,7 @@
 .w em{font-style:normal;color:var(--mint)}
 .low{bottom:calc(40px + env(safe-area-inset-bottom,0px))}
 .low h1,.low h2{font-size:clamp(2.6rem,6.4vw,6rem)}
+.low p{margin-top:12px;max-width:34em;font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.4;color:rgba(242,241,236,.8)}
 .right{text-align:right}
 .side{top:50%;transform:translateY(calc(-50% + 10px));max-width:46vw}
 .side.on{transform:translateY(-50%)}
@@ -32,12 +33,15 @@
 .join{top:50%;transform:translateY(calc(-50% + 10px));text-align:center;pointer-events:none}
 .join.on{transform:translateY(-50%);pointer-events:auto}
 .join h2{font-size:clamp(2.7rem,6vw,5.8rem)}
-.join .cta{position:relative;display:inline-flex;align-items:center;gap:.7em;margin-top:clamp(20px,3.4vh,34px);padding:.95em 1.5em;overflow:hidden;border-radius:999px;border:1px solid rgba(242,241,236,.34);color:var(--fg);font-size:clamp(1rem,1.35vw,1.2rem);font-weight:450;transform:translate(var(--pull-x,0),var(--pull-y,0));transition:transform .35s var(--out),color .25s var(--out),border-color .25s var(--out)}
+.cta-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:clamp(20px,3.4vh,34px)}
+.join .cta{position:relative;display:inline-flex;align-items:center;gap:.7em;padding:.95em 1.5em;overflow:hidden;border-radius:999px;border:1px solid rgba(242,241,236,.34);color:var(--fg);font-size:clamp(1rem,1.35vw,1.2rem);font-weight:450;transform:translate(var(--pull-x,0),var(--pull-y,0));transition:transform .35s var(--out),color .25s var(--out),border-color .25s var(--out)}
 /* the fill grows out of wherever the cursor came in */
 .cta-fill{position:absolute;inset:-1px;background:var(--teal);clip-path:circle(0 at var(--in-x,50%) var(--in-y,50%));transition:clip-path .5s var(--out)}
 .cta-label,.join .arrow{position:relative}
 .join .arrow{line-height:1;transition:transform .35s var(--out)}
-.join .cta:is(:hover,:focus-visible){color:#0d1212;border-color:var(--teal)}
+.join .cta.ghost{border-color:transparent;color:var(--dim)}
+.join .cta.ghost:is(:hover,:focus-visible){color:var(--fg);border-color:rgba(242,241,236,.34)}
+.join .cta:not(.ghost):is(:hover,:focus-visible){color:#0d1212;border-color:var(--teal)}
 .join .cta:is(:hover,:focus-visible) .cta-fill{clip-path:circle(150% at var(--in-x,50%) var(--in-y,50%))}
 .join .cta:is(:hover,:focus-visible) .arrow{transform:translateX(.3em)}
 .join .cta:focus-visible{outline:2px solid var(--teal);outline-offset:4px}
@@ -62,7 +66,7 @@
   .join{--dial-r:min(47vw,43svh);top:calc(42svh - var(--dial-r));transform:translateY(10px)}
   .join.on{transform:none}
   .join-in{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(var(--dial-r) * 2)}
-  .join-in .cta{margin-top:18px}
+  .join-in .cta-row{margin-top:18px;flex-direction:column;align-items:center;gap:4px}
   .side{top:auto;bottom:calc(40px + env(safe-area-inset-bottom,0px));max-width:none;transform:translateY(10px)}
   .side.on{transform:none}
   .side .huge{font-size:clamp(2.8rem,14vw,4.4rem)}
