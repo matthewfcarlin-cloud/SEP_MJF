@@ -2,7 +2,7 @@ import { router } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import Svg, { Ellipse } from 'react-native-svg'
-import { statusFor, suggestionFor } from '@reco/core'
+import { statusFor, suggestionFor, wordFor } from '@reco/core'
 import type { Swelling } from '@reco/core'
 
 import { copy } from '@/copy'
@@ -21,7 +21,7 @@ import { useColors } from '@/theme/use-tokens'
 const LEVELS: readonly Swelling[] = ['none', 'some', 'a-lot']
 const KNEE_RX: Record<Swelling, number> = { none: 18, some: 24, 'a-lot': 30 }
 
-/** Placeholder picture scale: a kneecap outline that gets puffier. Replace with Figma illustrations. */
+/** Picture scale: a kneecap outline that gets puffier. */
 function KneePicture({ level, selected }: { readonly level: Swelling; readonly selected: boolean }) {
   const colors = useColors()
   const rx = KNEE_RX[level]
@@ -34,7 +34,7 @@ function KneePicture({ level, selected }: { readonly level: Swelling; readonly s
 }
 
 export default function CheckInScreen() {
-  const { setCheckIn, view, today } = useStore()
+  const { setCheckIn, view, today, state } = useStore()
   const colors = useColors()
   const [pain, setPain] = useState<number | undefined>(undefined)
   const [swelling, setSwelling] = useState<Swelling | undefined>(undefined)
@@ -102,19 +102,23 @@ export default function CheckInScreen() {
           })}
         </View>
       </Card>
-      <Card raised style={{ alignItems: 'center', gap: space.sm, minHeight: 120, justifyContent: 'center' }}>
-        <SectionLabel>{copy.checkIn.previewLabel}</SectionLabel>
-        {preview ? (
-          <>
-            <StatusPill status={preview.status} large align="center" />
-            <Txt kind="small" color="textSecondary" style={{ textAlign: 'center' }}>
-              {suggestionFor(preview)}
-            </Txt>
-          </>
-        ) : (
-          <Txt color="textMuted">{copy.checkIn.previewHint}</Txt>
-        )}
-      </Card>
+      {view.firstDay || view.redFlag ? null : (
+        <Card raised style={{ alignItems: 'center', gap: space.sm, minHeight: 120, justifyContent: 'center' }}>
+          <SectionLabel>{copy.checkIn.previewLabel}</SectionLabel>
+          {preview ? (
+            <>
+              <StatusPill status={preview.status} word={wordFor(preview.status, state.guidance)} large align="center" />
+              {state.guidance === 'guided' ? (
+                <Txt kind="small" color="textSecondary" style={{ textAlign: 'center' }}>
+                  {suggestionFor(preview)}
+                </Txt>
+              ) : null}
+            </>
+          ) : (
+            <Txt color="textMuted">{copy.checkIn.previewHint}</Txt>
+          )}
+        </Card>
+      )}
       <Button label={copy.checkIn.save} disabled={!complete} onPress={save} />
     </Screen>
   )

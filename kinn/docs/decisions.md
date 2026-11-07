@@ -82,3 +82,13 @@ Real people use it for their own recovery. That makes empty starts, labelled dat
 
 ## 2026-11-06 · Pilot assumptions, open to being overruled (Claude)
 Patient-first with the report as the bridge to PTs. Voice uses an opt-in AI step through a small server, with on-device rules as backup. Phase A has no tape, so range is typed in and labelled by who measured it. About 10 adults, 4 weeks, knee only. Launch at the Descriptive and PT-led guidance levels; the generated plan and suggestions wait for regulatory review. Would change our mind: team review, advisor input, or a working native tape arriving early.
+
+## 2026-11-06 · Voice stays on the phone for the first pilot build (Claude, open to being overruled)
+The spec's AI step needs a server and a no-training, no-retention contract that do not exist yet, and an opt-in for a service that is not running would be false. So speech is recognised on the device only, sorted by the rules in `@reco/core`, and the privacy policy's "nothing leaves the phone" stays true. If a phone cannot recognise speech offline, voice reports itself as unavailable instead of falling back to Apple's servers. Would change our mind: testers correcting too many fields, once the service and contract are in place. This defers A2 and B5.
+
+## 2026-11-06 · The guidance level changes only through a team link (Claude, open to being overruled)
+`reco://guidance?level=pt-led` sets it. There is no control in the app's screens, because PT-led needs the PT's agreement and Guided needs regulatory review. Would change our mind: a signed-in admin path once there is a server.
+
+## 2026-11-06 · Expo modules build from source (Claude)
+The prebuilt `expo-print` and `expo-file-system` binaries in SDK 58 do not match the installed `expo-modules-core` 58.0.23, and the app crashes at launch with a missing `AnyModule` symbol. `plugins/with-source-modules.js` turns off precompiled modules. It adds a few minutes to a clean build. Try removing it after the next Expo upgrade.
+

@@ -10,6 +10,7 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.recoapp.recovery",
+      "appleTeamId": "GK97AW599V",
       "buildNumber": "1",
       "supportsTablet": false,
       "infoPlist": {
@@ -32,6 +33,7 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/with-source-modules",
       [
         "expo-splash-screen",
         {
@@ -46,10 +48,30 @@
           "color": "#111111"
         }
       ],
-      "expo-speech-recognition",
-      "expo-audio",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "RECO uses the microphone when you choose to speak a note about your knee.",
+          "speechRecognitionPermission": "RECO turns your words into text on this phone when you choose to speak."
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "RECO uses the microphone when you choose to speak a note about your knee."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "RECO lets you attach a photo of your knee. It stays on this phone.",
+          "cameraPermission": "RECO lets you take a photo of your knee. It stays on this phone.",
+          "microphonePermission": false
+        }
+      ],
       "expo-mail-composer",
-      "expo-sharing"
+      "expo-sharing",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,

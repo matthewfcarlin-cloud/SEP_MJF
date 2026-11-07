@@ -258,6 +258,8 @@ Each step leaves something testable.
 
 Regulatory hour and PT conversations run alongside, and ideally before step 4, since they can change the PT path and report.
 
+**Status, 2026-11-06:** steps 1 to 6 are built on branch `feat/pilot-app`, except the AI step and policy update in step 5 (see [decisions.md](decisions.md)). Step 7 has not started. Not built yet: restoring from an export, the weekly "I know whether I'm making progress" question, and the non-range milestones in 5.8.
+
 ## 11. Not in this pilot
 
 | Item | When | Needs |

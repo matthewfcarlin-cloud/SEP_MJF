@@ -12,7 +12,9 @@ import { buildPlan } from '../plan/build'
 import type { PlanView } from '../plan/build'
 import { personalLine, redFlag, warningFor } from '../warnings/line'
 import type { PersonalLine, Warning } from '../warnings/line'
-import type { Dataset, DayLoad, FlareDay, ManualActivity, PainLog, RomDay } from './types'
+import { loggedDays, meterFor } from './meter'
+import type { MeterState } from './meter'
+import type { Dataset, DayLoad, FlareDay, ManualActivity, MorningCheckIn, PainLog, Profile, RomDay } from './types'
 import { weeksSince } from '../time/day'
 import { tapeDays } from '../tape/days'
 import type { TapeDay } from '../tape/days'
@@ -46,6 +48,15 @@ export interface TodayView {
   readonly yesterdayLoad: DayLoad
   readonly baselineScore: number
   readonly checkInDone: boolean
+  readonly checkIn: MorningCheckIn | undefined
+  /** The highest rating logged yesterday, for "up from 3 last night". */
+  readonly lastNightPain: number | undefined
+  /** Nothing is recorded before today, so there is no morning to compare with yet. */
+  readonly firstDay: boolean
+  /** Records exist, but none in the last week. Never a reproach, only an offer to catch up. */
+  readonly quiet: boolean
+  readonly loggedDayCount: number
+  readonly meter: MeterState
   /** Pain logs from yesterday still waiting for a "Did it settle?" answer. */
   readonly pendingSettle: readonly PainLog[]
   readonly loads: readonly DayLoad[]
@@ -58,6 +69,17 @@ export interface TodayView {
   /** Synced tape minutes rolled up per day over the same window (real tape only, never the seed). */
   readonly tapeDays: readonly TapeDay[]
   readonly todayTape: TapeDay | undefined
+}
+
+const QUIET_AFTER_DAYS = 7
+/** A warning needs a usual day to mean anything. */
+const MIN_LOGGED_DAYS_FOR_WARNING = 3
+
+export const EMPTY_PROFILE: Profile = { name: '', injury: 'other', injuryDate: '', hadSurgery: false, sport: '', hasPt: false, goal: '' }
+
+/** A real account starts here: nothing logged and no borrowed history. */
+export function emptyDataset(today: string): Dataset {
+  return { profile: { ...EMPTY_PROFILE, injuryDate: today }, activityLogs: [], painLogs: [], checkIns: [], romDays: [] }
 }
 
 /** Date keys from `days` before today through today, oldest first. */
@@ -100,6 +122,11 @@ export function deriveToday(data: Dataset, today: string, tape: readonly StoredR
   const romGain = latestRom && romWeekAgo ? latestRom.flexionDeg - romWeekAgo.flexionDeg + (romWeekAgo.extensionDeficitDeg - latestRom.extensionDeficitDeg) : 0
   const line = personalLine(loads, flares, baseline, data.warningFeedback ?? [], today)
   const dismissedToday = (data.warningFeedback ?? []).some((f) => f.date === today)
+  const logged = loggedDays(data)
+  const enoughForWarning = logged.length >= MIN_LOGGED_DAYS_FOR_WARNING
+  const lastLogged = logged.at(-1)
+  const quiet = lastLogged !== undefined && lastLogged < addDays(today, -QUIET_AFTER_DAYS)
+  const lastNightRatings = yesterdaysPain.map((p) => p.pain).filter((p): p is number => p !== undefined)
   return {
     date: today,
     status,
@@ -108,7 +135,7 @@ export function deriveToday(data: Dataset, today: string, tape: readonly StoredR
     progressChange: progressChange(percentNow, percentWeekAgo, romGain, flares.filter((f) => f.date > weekAgo).length),
     plan: buildPlan({ profile: data.profile, today, status: status.status, flares, marks: data.planMarks ?? [] }),
     line,
-    warning: warningFor({ todayScore: todayLoad.score, line, signalOk: true, dismissedToday }),
+    warning: enoughForWarning && !quiet ? warningFor({ todayScore: todayLoad.score, line, signalOk: true, dismissedToday }) : undefined,
     redFlag: redFlag(data.painLogs, today),
     weeksSinceInjury: weeks,
     latestRom,
@@ -116,6 +143,12 @@ export function deriveToday(data: Dataset, today: string, tape: readonly StoredR
     yesterdayLoad,
     baselineScore: baseline,
     checkInDone: checkIn !== undefined,
+    checkIn,
+    lastNightPain: lastNightRatings.length ? Math.max(...lastNightRatings) : undefined,
+    firstDay: !logged.some((d) => d < today),
+    quiet,
+    loggedDayCount: logged.length,
+    meter: meterFor(percentNow, data.romDays, logged.length, today),
     pendingSettle: yesterdaysPain.filter((p) => p.settled === undefined),
     loads,
     flares,

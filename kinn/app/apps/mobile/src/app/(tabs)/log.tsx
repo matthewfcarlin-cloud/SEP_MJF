@@ -1,7 +1,8 @@
-import { router } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { MANUAL_UNITS, addDays, scoreFromUnits } from '@reco/core'
+
+import { DiaryCard } from '@/components/log/diary-card'
 import type { Intensity, ManualActivity } from '@reco/core'
 
 import { copy } from '@/copy'
@@ -11,7 +12,6 @@ import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Chip, ChipRow } from '@/components/ui/chip'
-import { SampleTag } from '@/components/ui/sample-tag'
 import { Screen } from '@/components/ui/screen'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Txt } from '@/components/ui/txt'
@@ -44,8 +44,6 @@ function LoadVersusUsual({ score, usual, max }: { readonly score: number; readon
   )
 }
 
-const openTape = () => router.push('/tape')
-
 export default function LogScreen() {
   const { state, today, addActivity, removeActivity, view } = useStore()
   const colors = useColors()
@@ -75,9 +73,12 @@ export default function LogScreen() {
   }
 
   return (
-    <Screen title={copy.log.title} right={<SampleTag label={copy.log.autoTag} onPress={openTape} />}>
+    <Screen title={copy.log.title}>
+      <DiaryCard />
+
       <Card index={0}>
-        <SectionLabel>{copy.log.activityTitle}</SectionLabel>
+        <SectionLabel>{copy.logFlow.byHand}</SectionLabel>
+        <Txt kind="bodyStrong">{copy.log.activityTitle}</Txt>
         <ChipRow>
           {ACTIVITIES.map((a) => (
             <Chip key={a} label={copy.log.activity[a]} selected={activity === a} onPress={() => setActivity(activity === a ? undefined : a)} />
@@ -162,9 +163,6 @@ export default function LogScreen() {
             </Txt>
           </View>
         ))}
-        <Txt kind="small" color="textMuted" style={{ marginTop: space.xs }}>
-          {copy.log.autoBody}
-        </Txt>
       </Card>
     </Screen>
   )

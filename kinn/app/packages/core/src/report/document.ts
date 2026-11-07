@@ -4,13 +4,13 @@
  * the disclaimer in the footer. The athlete chooses which sections go in.
  */
 import { DISCLAIMER } from '../copy/disclaimer'
-import type { Dataset, ManualActivity } from '../manual/types'
+import type { Dataset, ManualActivity, RomSource } from '../manual/types'
 import { jointOf } from '../manual/types'
-import type { PlanView } from '../plan/build'
 import type { WeekChange, WeeklySummary } from './weekly'
 import { weekHeadline } from './weekly'
 
 export interface ReportSections {
+  readonly headline: boolean
   readonly days: boolean
   readonly range: boolean
   readonly pain: boolean
@@ -18,18 +18,24 @@ export interface ReportSections {
   readonly notes: boolean
 }
 
-export const DEFAULT_SECTIONS: ReportSections = { days: true, range: true, pain: true, plan: true, notes: false }
+export const DEFAULT_SECTIONS: ReportSections = { headline: true, days: true, range: true, pain: true, plan: true, notes: false }
 
 const esc = (s: string): string => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
 const ACTIVITY: Readonly<Record<ManualActivity, string>> = { practice: 'Practice', game: 'Game', gym: 'Gym', pt: 'PT', walking: 'Walking', rest: 'Rest' }
 const MORNING_COLOUR = { clear: '#6F9E68', some: '#C99A3A', flare: '#D4673F', none: '#C9C5BA' } as const
 
+const LITTLE_DATA_DAYS = 3
+const ROM_SOURCE: Readonly<Record<RomSource, string>> = { pt: 'Range · measured by their PT', self: 'Range · self-measured, rough', 'reco-tape-sim': 'Range · sample data' }
+
 export interface ReportInput {
   readonly data: Dataset
   readonly summary: WeeklySummary
   readonly change: WeekChange
-  readonly plan: PlanView
+  /** Sessions done against planned, with one line on where the plan comes from. Missing when there is no plan. */
+  readonly plan?: { readonly done: number; readonly planned: number; readonly note: string }
+  /** Days with anything logged in this week. Fewer than this many is said at the top. */
+  readonly loggedDaysThisWeek: number
   readonly sections: ReportSections
   /** Generated date, YYYY-MM-DD. */
   readonly generated: string
@@ -44,11 +50,12 @@ export function reportHtml(input: ReportInput): string {
     .join('')
   const pains = data.painLogs.filter((x) => x.date >= summary.weekStart && x.date <= summary.weekEnd)
   const painRows = pains
-    .map((x) => `<tr><td>${esc(x.date.slice(5))}</td><td class="num">${x.pain}</td><td>${esc(x.doing ?? '')}</td><td>${esc(x.settled ? `Settled: ${x.settled}` : '')}</td>${sections.notes ? `<td>${esc(x.note ?? '')}</td>` : ''}</tr>`)
+    .map((x) => `<tr><td>${esc(x.date.slice(5))}</td><td class="num">${x.pain ?? 'tap'}</td><td>${esc(x.doing ?? '')}</td><td>${esc(x.settled ? `Settled: ${x.settled}` : '')}</td>${sections.notes ? `<td>${esc(x.note ?? '')}</td>` : ''}</tr>`)
     .join('')
   const notes = (data.journal ?? []).filter((j) => j.date >= summary.weekStart && j.date <= summary.weekEnd)
-  const done = plan.week.flatMap((d) => d.items).filter((i) => i.done).length
-  const planned = plan.week.flatMap((d) => d.items).length
+  const measured = data.romDays.filter((r) => r.date >= summary.weekStart && r.date <= summary.weekEnd).sort((a, b) => a.date.localeCompare(b.date)).at(-1)
+  const whoMeasured = measured ? ROM_SOURCE[measured.source] : 'Range'
+  const little = input.loggedDaysThisWeek < LITTLE_DATA_DAYS
   const block = (on: boolean, title: string, body: string): string => (on ? `<section><h2>${title}</h2>${body}</section>` : '')
   return `<!doctype html><html><head><meta charset="utf-8"><title>RECO weekly report</title><style>
   body{margin:0;background:#FBFAF7;color:#1C1E1A;font:13px/1.45 Geist,-apple-system,system-ui,sans-serif}
@@ -65,19 +72,20 @@ export function reportHtml(input: ReportInput): string {
   </style></head><body><main>
   <header><span class="brand">RECO</span><span class="meta">${esc(summary.weekStart)} to ${esc(summary.weekEnd)} · generated ${esc(input.generated)}</span></header>
   <p class="meta">${esc(who)} · goal: ${esc(p.goal)}${p.ptName ? ` · for ${esc(p.ptName)}` : ''}</p>
-  <h1>${esc(weekHeadline(summary, change))}</h1>
-  ${p.story ? `<p class="meta">In their words: “${esc(p.story)}”</p>` : ''}
+  ${little ? `<p class="meta">${input.loggedDaysThisWeek === 0 ? 'Nothing logged this week.' : `Only ${input.loggedDaysThisWeek} ${input.loggedDaysThisWeek === 1 ? 'day' : 'days'} logged this week.`}</p>` : ''}
+  ${sections.headline ? `<h1>${esc(weekHeadline(summary, change, sections.range))}</h1>` : ''}
+  ${sections.notes && p.story ? `<p class="meta">In their words: “${esc(p.story)}”</p>` : ''}
   <div class="grid">
     <div class="tile"><span class="meta">Avg load</span><b>${summary.avgScore}</b></div>
-    <div class="tile"><span class="meta">Deepest bend</span><b>${summary.peakFlexionDeg ?? '—'}${summary.peakFlexionDeg ? '°' : ''}</b></div>
+    ${sections.range ? `<div class="tile"><span class="meta">Deepest bend</span><b>${summary.peakFlexionDeg ?? '—'}${summary.peakFlexionDeg ? '°' : ''}</b></div>` : ''}
     <div class="tile"><span class="meta">Flare-up mornings</span><b>${summary.flares.length}</b></div>
-    <div class="tile"><span class="meta">Plan sessions done</span><b>${done}/${planned}</b></div>
+    ${sections.plan && plan ? `<div class="tile"><span class="meta">Plan sessions done</span><b>${plan.done}/${plan.planned}</b></div>` : ''}
   </div>
   ${block(sections.days, 'Day by day · load and next morning', `<table>${rows}</table>`)}
-  ${block(sections.range && summary.peakFlexionDeg !== undefined, 'Range via RECO tape', `<p>Best straightening ${summary.bestExtensionDeficitDeg}° short of full. Deepest bend ${summary.peakFlexionDeg}°.</p>`)}
+  ${block(sections.range && summary.peakFlexionDeg !== undefined, esc(`${whoMeasured}`), `<p>Best straightening ${summary.bestExtensionDeficitDeg}° short of full. Deepest bend ${summary.peakFlexionDeg}°.</p>`)}
   ${block(sections.pain, 'Pain logs', pains.length ? `<table>${painRows}</table>` : '<p>None logged.</p>')}
-  ${block(sections.plan, `Plan · ${esc(plan.phaseName)}`, `<p>${plan.source === 'with-pt' ? 'Suggestions between visits; your plan comes first.' : 'Based on published rehab protocols.'}${plan.heldBack ? ' Held back a phase after recent flare-ups.' : ''}</p>`)}
+  ${block(sections.plan && plan !== undefined, 'Plan sessions', `<p>${plan ? `${plan.done} of ${plan.planned} this week. ${esc(plan.note)}` : ''}</p>`)}
   ${block(sections.notes && notes.length > 0, 'Journal', notes.map((n) => `<p><span class="meta">${esc(n.date.slice(5))}</span> ${esc(n.text)}</p>`).join(''))}
-  <footer>${esc(DISCLAIMER)} Not a medical device. Load is estimated from logged activity and tape movement, not measured force.</footer>
+  <footer>${esc(DISCLAIMER)} Not a medical device. Load is estimated from logged activity, not measured force.</footer>
   </main></body></html>`
 }

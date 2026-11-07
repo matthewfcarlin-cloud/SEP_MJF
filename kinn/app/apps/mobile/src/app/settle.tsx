@@ -4,6 +4,7 @@ import { Pressable, View } from 'react-native'
 import type { Settled } from '@reco/core'
 
 import { copy } from '@/copy'
+import { timeOf } from '@/format'
 import { successFeedback, tapFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
@@ -17,12 +18,6 @@ import { useColors } from '@/theme/use-tokens'
 
 const ANSWERS: readonly Settled[] = ['yes', 'a-bit', 'no']
 const TONE: Record<Settled, ColorToken> = { yes: 'good', 'a-bit': 'caution', no: 'warn' }
-
-const timeOf = (t: number): string => {
-  const d = new Date(t)
-  const h = d.getHours() % 12 || 12
-  return `${h}:${String(d.getMinutes()).padStart(2, '0')} ${d.getHours() < 12 ? 'am' : 'pm'}`
-}
 
 export default function SettleScreen() {
   const { view, answerSettle } = useStore()
@@ -65,9 +60,9 @@ export default function SettleScreen() {
       <Card>
         <SectionLabel>{copy.pain.settleLoggedAt(timeOf(pending.t), pending.doing ? copy.doing[pending.doing] : undefined)}</SectionLabel>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
-          <Txt kind="number">{pending.pain}</Txt>
+          <Txt kind="number">{pending.pain ?? '–'}</Txt>
           <Txt kind="heading" color="textSecondary">
-            {copy.pain.scaleWord(pending.pain)}
+            {pending.pain === undefined ? copy.today.painButton : copy.pain.scaleWord(pending.pain)}
           </Txt>
         </View>
         <Txt color="textSecondary">{copy.pain.settleBody(pending.pain)}</Txt>

@@ -1,8 +1,10 @@
+import { resolve } from 'node:path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  // The mobile copy test imports from apps/mobile; stop Vite from reading that app's Expo tsconfig.
+  // The mobile copy and store tests import from apps/mobile; stop Vite from reading that app's Expo tsconfig.
   esbuild: { tsconfigRaw: '{"compilerOptions":{"jsx":"react-jsx","target":"ES2022"}}' },
+  resolve: { alias: { '@reco/core': resolve(__dirname, 'src/index.ts') } },
   test: {
     globals: true,
     include: ['test/**/*.test.ts'],

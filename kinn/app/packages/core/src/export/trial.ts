@@ -1,6 +1,7 @@
 import { addDays, dayKey, localDateKey } from '../time/day'
 import { dayLoad } from '../manual/load'
-import type { ActivityLog, Dataset, MorningCheckIn, PainLog, Profile, RomDay } from '../manual/types'
+import type { GuidanceLevel } from '../guidance/read'
+import type { ActivityLog, Dataset, EveningCheck, MorningCheckIn, PainLog, PlanExercise, PlanMark, Profile, RomDay, WarningFeedback } from '../manual/types'
 import { seedDataset } from '../sim/seed'
 import { tapeDays } from '../tape/days'
 import type { TapeDay } from '../tape/days'
@@ -14,9 +15,11 @@ import type { CalibrationEvent, CursorState, StoredRecord } from '../tape/types'
  */
 
 export const TRIAL_EXPORT_SCHEMA = 'reco.trial-export'
-export const TRIAL_EXPORT_VERSION = 1
+export const TRIAL_EXPORT_VERSION = 2
 
 type Sampled<T> = T & { readonly sample: boolean }
+type ExportedProfile = Omit<Profile, 'name' | 'goal' | 'story' | 'ptName' | 'ptEmail'>
+type ExportedPain = Omit<PainLog, 'note' | 'voiceUri' | 'photoUri'> & { readonly hasNote: boolean; readonly hasVoice: boolean; readonly hasPhoto: boolean }
 
 export interface TrialExportInput {
   readonly data: Dataset
@@ -30,6 +33,17 @@ export interface TrialExportInput {
   }
   readonly exportedAt: number
   readonly appVersion: string
+  readonly guidance?: GuidanceLevel
+}
+
+/** Counts for the pilot's questions. Words the person spoke or typed stay out of the export. */
+export interface PilotCounts {
+  readonly painTaps: number
+  readonly painTapsWithDetail: number
+  readonly journalEntries: number
+  readonly journalByVoice: number
+  readonly warningsWrong: number
+  readonly warningsHelpful: number
 }
 
 export interface DailyRow {
@@ -56,9 +70,15 @@ export interface TrialExport {
   readonly exportedAt: string
   readonly appVersion: string
   readonly tzOffsetMin: number
-  readonly profile: Profile
+  readonly guidance: GuidanceLevel
+  readonly profile: ExportedProfile
+  readonly exercises: readonly Omit<PlanExercise, 'note'>[]
+  readonly planMarks: readonly PlanMark[]
+  readonly warningFeedback: readonly WarningFeedback[]
+  readonly eveningChecks: readonly EveningCheck[]
+  readonly counts: PilotCounts
   readonly activityLogs: readonly Sampled<ActivityLog>[]
-  readonly painLogs: readonly Sampled<PainLog>[]
+  readonly painLogs: readonly Sampled<ExportedPain>[]
   readonly checkIns: readonly Sampled<MorningCheckIn>[]
   readonly romDays: readonly Sampled<RomDay>[]
   readonly tape: {
@@ -82,7 +102,8 @@ export function trialExport(input: TrialExportInput): TrialExport {
   const { data, tape } = input
   const isSampleCheckIn = sampleCheckIns(input.seededFor)
   const activityLogs = data.activityLogs.map((l) => ({ ...l, sample: isSeedId(l.id) }))
-  const painLogs = data.painLogs.map((p) => ({ ...p, sample: isSeedId(p.id) }))
+  // A note, voice file or photo stays on the phone; the export keeps only that one existed.
+  const painLogs = data.painLogs.map(({ note, voiceUri, photoUri, ...p }) => ({ ...p, hasNote: note !== undefined, hasVoice: voiceUri !== undefined, hasPhoto: photoUri !== undefined, sample: isSeedId(p.id) }))
   const checkIns = data.checkIns.map((c) => ({ ...c, sample: isSampleCheckIn(c) }))
   // Every RomDay today is simulated; the v1 tape cannot measure angle.
   const romDays = data.romDays.map((r) => ({ ...r, sample: r.source === 'reco-tape-sim' }))
@@ -94,7 +115,13 @@ export function trialExport(input: TrialExportInput): TrialExport {
     exportedAt: new Date(input.exportedAt).toISOString(),
     appVersion: input.appVersion,
     tzOffsetMin: -new Date(input.exportedAt).getTimezoneOffset(),
-    profile: data.profile,
+    guidance: input.guidance ?? 'descriptive',
+    profile: withoutPrivateProfile(data.profile),
+    exercises: (data.exercises ?? []).map(({ note: _note, ...e }) => e),
+    planMarks: data.planMarks ?? [],
+    warningFeedback: data.warningFeedback ?? [],
+    eveningChecks: data.eveningChecks ?? [],
+    counts: pilotCounts(data),
     activityLogs,
     painLogs,
     checkIns,
@@ -104,11 +131,35 @@ export function trialExport(input: TrialExportInput): TrialExport {
   }
 }
 
+/** Their name, their own words and their PT's details are not needed to analyse the pilot, so they stay on the phone. */
+function withoutPrivateProfile({ name: _name, goal: _goal, story: _story, ptName: _ptName, ptEmail: _ptEmail, ...profile }: Profile): ExportedProfile {
+  return profile
+}
+
+function maxRating(pains: readonly ExportedPain[]): number | '' {
+  const rated = pains.map((p) => p.pain).filter((p): p is number => p !== undefined)
+  return rated.length ? Math.max(...rated) : ''
+}
+
+function pilotCounts(data: Dataset): PilotCounts {
+  const taps = data.painLogs.filter((p) => p.kind !== 'evening')
+  const journal = data.journal ?? []
+  const feedback = data.warningFeedback ?? []
+  return {
+    painTaps: taps.length,
+    painTapsWithDetail: taps.filter((p) => p.pain !== undefined || p.doing !== undefined || p.note !== undefined || p.voiceUri !== undefined || p.photoUri !== undefined).length,
+    journalEntries: journal.length,
+    journalByVoice: journal.filter((j) => j.source === 'voice').length,
+    warningsWrong: feedback.filter((f) => f.kind === 'wrong').length,
+    warningsHelpful: feedback.filter((f) => f.kind === 'helpful').length,
+  }
+}
+
 /** One row per day from the first record of any kind through today. */
 function dailyRows(
   today: string,
   activityLogs: readonly Sampled<ActivityLog>[],
-  painLogs: readonly Sampled<PainLog>[],
+  painLogs: readonly Sampled<ExportedPain>[],
   checkIns: readonly Sampled<MorningCheckIn>[],
   days: readonly TapeDay[],
 ): readonly DailyRow[] {
@@ -132,7 +183,7 @@ function dailyRows(
       morningPain: check?.pain ?? '',
       swelling: check?.swelling ?? '',
       painLogs: pains.length,
-      maxLoggedPain: pains.length ? Math.max(...pains.map((p) => p.pain)) : '',
+      maxLoggedPain: maxRating(pains),
       unsettledPain: pains.filter((p) => p.settled === 'no').length,
       tapeWornMin: tapeDay?.wornMinutes ?? '',
       tapeActiveMin: tapeDay?.activeMinutes ?? '',
@@ -236,4 +287,4 @@ export function tapeMinutesCsv(exp: TrialExport): string {
 }
 
 /** File-name stem like reco-trial-2026-10-27. */
-export const exportStem = (exp: TrialExport): string => `reco-trial-${exp.exportedAt.slice(0, 10)}`
+export const exportStem = (exp: TrialExport): string => `reco-trial-${localDateKey(Date.parse(exp.exportedAt))}`

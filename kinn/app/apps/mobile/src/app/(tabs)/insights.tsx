@@ -79,8 +79,25 @@ function ContrastBar({ value, max, label, strong }: { readonly value: number; re
 
 const CONDITION_WORD: Readonly<Record<string, string>> = { 'after-game': 'Game', 'after-practice': 'Practice', 'after-gym': 'Gym', 'after-pt': 'PT' }
 
+const MIN_FLARES_FOR_PATTERN = 2
+
+/** Early days say what is true now, and what would change it. */
+function EmptyInsights({ flares, days }: { readonly flares: number; readonly days: number }) {
+  const e = copy.insightsEmpty
+  const title = days === 0 ? e.noLogsTitle : flares < MIN_FLARES_FOR_PATTERN ? e.noPatternTitle : e.nothingTitle
+  const body = days === 0 ? e.noLogsBody : flares < MIN_FLARES_FOR_PATTERN ? e.noPatternBody(flares, days) : e.nothingBody(flares, days)
+  return (
+    <Card index={0}>
+      <Txt kind="bodyStrong">{title}</Txt>
+      <Txt kind="small" color="textSecondary">
+        {body}
+      </Txt>
+    </Card>
+  )
+}
+
 export default function InsightsScreen() {
-  const { view, state } = useStore()
+  const { view, state, mode } = useStore()
   const colors = useColors()
   const top = view.insights[0]
   const matchedLabel = top ? CONDITION_WORD[top.id] : undefined
@@ -90,7 +107,7 @@ export default function InsightsScreen() {
   const maxLoad = Math.max(1, ...view.loads.map((l) => l.score))
 
   return (
-    <Screen title={copy.insights.title} subtitle={copy.insights.subtitle} right={<SampleTag />}>
+    <Screen eyebrow={copy.insightsEmpty.eyebrow} title={copy.insights.title} {...(mode === 'sample' ? { right: <SampleTag /> } : {})}>
       {top ? (
         <Card raised index={0} style={{ padding: space.lg, gap: space.md }}>
           <Txt kind="title">{top.text}</Txt>
@@ -100,9 +117,7 @@ export default function InsightsScreen() {
           </Txt>
         </Card>
       ) : (
-        <Card index={0}>
-          <Txt color="textSecondary">{copy.insights.empty}</Txt>
-        </Card>
+        <EmptyInsights flares={view.flares.length} days={view.loggedDayCount} />
       )}
 
       {view.insights.slice(1).map((i, idx) => (
@@ -122,9 +137,11 @@ export default function InsightsScreen() {
         </Card>
       ) : null}
 
-      <Txt kind="small" color="textMuted">
-        {copy.insights.observationNote}
-      </Txt>
+      {top ? (
+        <Txt kind="small" color="textMuted">
+          {copy.insights.observationNote}
+        </Txt>
+      ) : null}
 
       {view.flares.length > 0 ? (
         <Card index={3}>
