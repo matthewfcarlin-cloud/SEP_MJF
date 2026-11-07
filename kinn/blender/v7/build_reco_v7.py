@@ -642,6 +642,40 @@ else:   # floating tape: film (fiber -> whole strip) and flex (bends over an inv
             surf.location.z = -0.02 * MM - SHADOW_DROP * ease(u / SHADOW_GONE_BY); surf.hide_render = u >= SHADOW_GONE_BY
             ring_glow(1.5 + 4.0 * ease((math.degrees(phi) - 105) / 10))
             shot(os.path.join(OUT, f"k_{f + 1:03d}.png"))
+    elif MODE == "lineup":
+        # the preorder page's graphic: the same tape from flat to a full bend, standing in a row on a ceramic surface
+        SOLO = os.environ.get("RECO_SOLO")   # one tape at this bend, close up, instead of the row
+        LINEUP_BENDS = (float(SOLO),) if SOLO else (0, 35, 70, 100, 130)
+        LINEUP_X = (0.0,) if SOLO else (-0.335, -0.135, 0.02, 0.165, 0.30)   # metres. A flatter tape takes up more of the row
+        LINEUP_TURN, LINEUP_RING = math.radians(128), 2.8
+        LIGHTS["Key"].data.energy *= 2.2; LIGHTS["Fill"].data.energy *= 3.0   # the film is lit for a dark page; on ceramic the tape has to hold its grey
+        LIGHTS["Rim"].visible_glossy = False   # it leaves a hot spot on the steepest coin's glass
+        scn.render.resolution_x, scn.render.resolution_y = 2400, 1200
+        bpy.ops.mesh.primitive_plane_add(size=8, location=(0, 0, 0)); floor = bpy.context.active_object; floor.data.materials.append(M_SURF); floor.is_shadow_catcher = True
+
+        def copy_tree(ob, parent, local=None):
+            c = ob.copy()
+            if ob.data: c.data = ob.data.copy()
+            link(c); c.parent = parent
+            if local is not None: c.matrix_parent_inverse = Matrix.Identity(4); c.matrix_local = local
+            for child in ob.children: copy_tree(child, c)
+            return c
+
+        for i, deg in enumerate(LINEUP_BENDS):
+            pose(math.radians(deg), level=0.0); ring_glow(1.5); bpy.context.view_layer.update()
+            group = link(bpy.data.objects.new(f"Lineup {deg}", None))
+            for o in objs: copy_tree(o, group, Matrix.Identity(4))
+            copy_tree(puck, group, puck.matrix_world @ Matrix.Rotation(-LINEUP_TURN, 4, 'Z'))   # turned back, so RECO reads level to the camera
+            lowest = min(v.co.z for v in tape.data.vertices)
+            group.rotation_euler = (0, 0, LINEUP_TURN)
+            group.location = (LINEUP_X[i], 0, -lowest + 0.2 * MM)
+        for o in objs + [puck] + list(puck.children): o.hide_render = True
+        ring_glow(LINEUP_RING)
+        cam_x = 0.0 if SOLO else -0.046
+        tg = Vector((cam_x, 0.005, 0.03)); aim(cam, Vector((cam_x, -1.15, 0.62)), tg)
+        cd.lens = 150.0 if SOLO else 54.0; foc.location = tg; cd.dof.aperture_fstop = 22
+        LIGHTS["Graze"].data.energy = 14
+        shot(os.path.join(OUT, "lineup.png"))
     elif MODE in ("dump", "wrap"):
         exec(open(os.path.join(D, "reco_flow.py")).read())
     elif MODE == "film":

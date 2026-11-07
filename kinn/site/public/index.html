@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>RECO · Smart knee tape for ACL recovery | Trust your comeback.</title>
-<meta name="description" content="RECO is a smart tape and app that tracks your injured knee every day, shows your progress and what comes before your pain, and gives your PT the full picture between visits. Join the waitlist.">
+<meta name="description" content="RECO is a smart knee tape and app for your recovery. Track every bend, see your progress and what comes before your pain, and share your week with your PT in one tap. Join the waitlist.">
 <meta property="og:title" content="RECO · Trust your comeback.">
-<meta property="og:description" content="A PT sees your knee 1 to 3 hours a week. RECO is a smart tape and coin that makes the other 160+ visible. Join the waitlist.">
+<meta property="og:description" content="A smart knee tape and app for your recovery. Track every bend and see your progress. Join the waitlist, or hold your place in line.">
 <meta property="og:image" content="https://recotape.co/flow/hero.jpg">
 <meta property="og:url" content="https://recotape.co/">
 <meta property="og:type" content="website">
@@ -41,7 +41,7 @@
 <circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
 <path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#3DDBB8" stroke-width="101.4" stroke-linecap="round"/>
 </svg></a>
-  <nav aria-label="Main"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a></nav>
+  <nav aria-label="Main"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a><a href="/preorder" data-preorder-link hidden>Preorder</a></nav>
 </header>
 
 <section class="flow" id="top" aria-label="One continuous film. The RECO coin turns, drops and twists into the tape. The view pulls back to the whole strip. The tape bends from flat to a deep bend while the angle reads out, then relaxes onto a seated person's knee as light spreads from the coin's ring. The leg moves aside as a signal travels from the coin to a phone showing recovery progress and a plan for today, sample data. Then the waitlist.">
@@ -49,18 +49,19 @@
     <canvas id="flowCv" aria-hidden="true"></canvas>
     <div class="veil" aria-hidden="true"></div>
     <div class="words gut" id="words">
-      <div class="w low on" data-a="hero 0" data-b="hero .3"><h1>Measure your<br>comeback.</h1></div>
+      <div class="w low on" data-a="hero 0" data-b="hero .3"><h1>Measure your<br>comeback.</h1><p>A smart knee tape and app for your recovery.</p></div>
       <div class="w low" data-a="hero .3" data-b="hero .62"><h2>One coin.<br>Twist to lock.</h2></div>
       <div class="w low" data-a="hero .62" data-b="bend .05"><h2>Wear it<br>all day.</h2></div>
       <div class="w side" data-a="reveal .62" data-b="signal .08"><span class="eyebrow">Recovery, with you.</span><h2 class="huge">A little<br>more <em>you.</em></h2><p>Smart knee tape. A personal app.<br>A clearer way through recovery.</p></div>
-      <div class="w low up right" data-a="bend .07" data-b="wrap .45"><h2>Every bend.<br>Every straighten.</h2></div>
-      <div class="w low up" data-a="signal .12" data-b="signal .96"><h2>All of it, sent<br>to <em>your phone.</em></h2></div>
+      <div class="w low up right" data-a="bend .07" data-b="wrap .45"><h2>Every bend.<br>Every movement.</h2></div>
+      <div class="w low up" data-a="signal .12" data-b="signal .96"><h2>Your recovery data,<br><em>in your hand.</em></h2><p>See your progress clearly, and work toward getting back sooner.</p></div>
       <div class="w low up" data-a="phone .02" data-b="phone .42"><h2>Your recovery,<br><em>at a glance.</em></h2></div>
-      <div class="w low up" data-a="phone .42" data-b="close .3"><h2>Your plan<br><em>for today.</em></h2></div>
+      <div class="w low up" data-a="phone .42" data-b="phone .76"><h2>Your plan<br><em>for today.</em></h2></div>
+      <div class="w low up" data-a="phone .76" data-b="close .3"><h2>Share your week<br>with your PT, <em>in one tap.</em></h2></div>
       <div class="w join" id="join" data-a="close .55" data-b="join 2">
         <div class="join-in"><h2>Be first<br>to <em>wear it.</em></h2>
-        <a class="cta" id="joinCta" href="#join" data-join><span class="cta-fill" aria-hidden="true"></span><span class="cta-label">Join the waitlist</span><span class="arrow" aria-hidden="true">→</span></a></div>
-        <p>Free. We only write when there's a tape for you to try. <span id="count"></span></p>
+        <div class="cta-row"><a class="cta" id="joinCta" href="#join" data-join><span class="cta-fill" aria-hidden="true"></span><span class="cta-label">Join the waitlist</span><span class="arrow" aria-hidden="true">→</span></a><a class="cta ghost" href="/preorder" data-preorder-link hidden><span class="cta-label">Preorder</span></a></div></div>
+        <p id="joinLine">Free. We only write when there's a tape for you to try. <span id="count"></span></p>
         <p class="tester">Early testers wanted: athletes coming back from an ACL or meniscus injury, and their PTs.</p>
       </div>
     </div>
@@ -128,6 +129,7 @@
       <span class="caps small">You're in</span>
       <h2 class="big" id="pos">Thank you.</h2>
       <p class="small" style="max-width:420px">We'll keep in touch. Know a teammate coming back from a knee injury? Send them this page.</p>
+      <p class="small" data-preorder-link hidden style="max-width:420px">Want yours first? <a href="/preorder" style="text-decoration:underline;text-underline-offset:3px">Hold your place in line.</a> Non-binding, refundable anytime.</p>
       <button type="button" class="go" data-close>Back to the site <span aria-hidden="true">→</span></button>
     </div>
   </div>
@@ -143,11 +145,12 @@
 <circle cx="2509.2" cy="456.2" r="320.3" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-width="101.4"/>
 <path class="arc" pathLength="1" d="M2509.2 135.9 A320.3 320.3 0 1 1 2188.9 456.2" fill="none" stroke="#3DDBB8" stroke-width="101.4" stroke-linecap="round"/>
 </svg></a>
-  <nav aria-label="Footer"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a><a class="mail" href="mailto:recowearable@gmail.com">recowearable@gmail.com</a></nav>
+  <nav aria-label="Footer"><a href="/try/?tape=demo">Try the app</a><a href="#join" data-join>Join</a><a href="/preorder" data-preorder-link hidden>Preorder</a><a class="mail" href="mailto:recowearable@gmail.com">recowearable@gmail.com</a></nav>
   <p class="small">RECO tracks and shows. Your PT makes the calls. © 2026 RECO. In development. Not a medical device.</p>
 </footer>
 
 <script src="/home.js"></script>
+<script src="/preorder.js"></script>
 <script src="/flow.js"></script>
 </body>
 </html>
