@@ -27,7 +27,7 @@ form.addEventListener('submit', async e => {
     const res = await fetch('/api/waitlist', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)});
     const j = await res.json().catch(() => ({}));
     if (!res.ok || !j.ok) throw new Error(j.error || 'Something went wrong. Try again in a minute.');
-    form.hidden = true; document.getElementById('done').hidden = false;
+    form.hidden = true; dlg.classList.add('is-done'); document.getElementById('done').hidden = false;
         dlg.querySelector('.done .go').focus();
   } catch (err) { msg.className = 'msg err'; msg.textContent = err.message === 'Failed to fetch' ? "Couldn't reach the server. Check your connection and try again." : err.message; }
 });
