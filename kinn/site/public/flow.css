@@ -1,4 +1,7 @@
 /* RECO home: one pinned film. The page holds still and scrolling only moves the film forward. */
+/* proximity: the page only settles on a stop when a scroll ends near it, so everywhere else scrolls freely */
+html{scroll-snap-type:y proximity}
+.pause{position:absolute;left:0;width:1px;height:1px;pointer-events:none;scroll-snap-align:start;scroll-snap-stop:always}
 .flow{position:relative;height:1000vh;background:var(--bg)}
 .flow .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg)}
 #flowCv{position:absolute;inset:0;width:100%;height:100%}
