@@ -61,6 +61,7 @@ export default function RootLayout() {
             <Stack.Screen name="delete" options={sheet} />
             <Stack.Screen name="settle" options={{ presentation: 'modal' }} />
             <Stack.Screen name="checkin" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="add" options={{ presentation: 'modal' }} />
             <Stack.Screen name="add-day" options={{ presentation: 'modal' }} />
             <Stack.Screen name="guidance" options={{ presentation: 'modal' }} />
             <Stack.Screen name="red-flags" options={{ presentation: 'modal' }} />

@@ -1,6 +1,6 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { Switch, View } from 'react-native'
+import { View } from 'react-native'
 import { DEFAULT_SECTIONS, addDays, reportHtml, weekChange, weekHeadline, weeklySummary } from '@reco/core'
 import type { MorningMark, ReportSections } from '@reco/core'
 
@@ -21,7 +21,6 @@ import type { ColorToken } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
 const MORNING_COLOR: Record<MorningMark, ColorToken> = { clear: 'good', some: 'caution', flare: 'warn', none: 'textMuted' }
-const SECTION_ORDER: readonly (keyof ReportSections)[] = ['headline', 'days', 'range', 'pain', 'plan', 'notes']
 const LITTLE_DATA_DAYS = 3
 const LEGEND: readonly MorningMark[] = ['clear', 'some', 'flare']
 
@@ -77,45 +76,6 @@ function VisitCard() {
   )
 }
 
-function Picker({ sections, onChange, onPreview, little, planLine }: { readonly sections: ReportSections; readonly onChange: (s: ReportSections) => void; readonly onPreview: () => void; readonly little: number | undefined; readonly planLine: string }) {
-  const { state, mode } = useStore()
-  const colors = useColors()
-  const { profile } = state.data
-  const sub = (k: keyof ReportSections): string => (k === 'plan' ? planLine : copy.reportFlow.sections[k].sub)
-  return (
-    <>
-      <VisitCard />
-      {little !== undefined ? (
-        <Card raised>
-          <Txt kind="bodyStrong">{copy.reportFlow.littleTitle(little)}</Txt>
-          <Txt kind="small" color="textSecondary">
-            {copy.reportFlow.littleBody}
-          </Txt>
-        </Card>
-      ) : null}
-      <Card style={{ gap: 0 }}>
-        <SectionLabel spaced>{copy.reportFlow.whatGoesIn}</SectionLabel>
-        {SECTION_ORDER.map((k) => (
-          <ListRow key={k} title={copy.reportFlow.sections[k].title} sub={sub(k)} right={<Switch accessibilityLabel={copy.reportFlow.sections[k].title} trackColor={{ true: colors.accent }} value={sections[k]} onValueChange={(on) => onChange({ ...sections, [k]: on })} />} />
-        ))}
-      </Card>
-      <Card raised>
-        <SectionLabel>{profile.ptName ? copy.reportFlow.shareWithPt : copy.reportFlow.shareIt}</SectionLabel>
-        <Txt kind="bodyStrong">{profile.ptName ?? copy.reportFlow.noPtTitle}</Txt>
-        <Txt kind="small" color="textSecondary">
-          {profile.ptName ? copy.reportFlow.seeFirst : copy.reportFlow.noPtBody}
-        </Txt>
-        <Button label={copy.reportFlow.preview} onPress={onPreview} />
-      </Card>
-      {mode === 'sample' ? (
-        <Txt kind="small" color="textMuted" style={{ textAlign: 'center' }}>
-          {copy.sampleData}
-        </Txt>
-      ) : null}
-    </>
-  )
-}
-
 function Tile({ label, value, delta }: { readonly label: string; readonly value: string; readonly delta?: string }) {
   return (
     <Card style={{ flexBasis: '47%', flexGrow: 1 }}>
@@ -134,7 +94,7 @@ function Tile({ label, value, delta }: { readonly label: string; readonly value:
   )
 }
 
-function Preview({ sections, onBack }: { readonly sections: ReportSections; readonly onBack: () => void }) {
+function Preview({ sections }: { readonly sections: ReportSections }) {
   const colors = useColors()
   const report = useReport(sections)
   const { summary, change, data } = report
@@ -255,7 +215,6 @@ function Preview({ sections, onBack }: { readonly sections: ReportSections; read
           </Txt>
         ) : null}
       </Card>
-      <Button label={copy.reportFlow.backToPicker} variant="ghost" onPress={onBack} />
       <Txt kind="small" color="textMuted" style={{ textAlign: 'center' }}>
         {copy.inDevelopment}
       </Txt>
@@ -263,17 +222,30 @@ function Preview({ sections, onBack }: { readonly sections: ReportSections; read
   )
 }
 
+/** The week's report, ready to send. What goes in is fixed, so there is nothing to set each time. */
 export default function ReportScreen() {
-  const [sections, setSections] = useState<ReportSections>(DEFAULT_SECTIONS)
-  const [previewing, setPreviewing] = useState(false)
-  const report = useReport(sections)
+  const { mode } = useStore()
+  const report = useReport(DEFAULT_SECTIONS)
   const { summary } = report
   const eyebrow = `${shortDate(summary.weekStart)} – ${shortDate(summary.weekEnd)}`
-  const little = report.loggedDaysThisWeek < LITTLE_DATA_DAYS ? report.loggedDaysThisWeek : undefined
-  const planLine = report.hasPlan ? copy.reportFlow.planCount(report.plan.done, report.plan.planned) : copy.reportFlow.sections.plan.sub
+  const isThin = report.loggedDaysThisWeek < LITTLE_DATA_DAYS
   return (
-    <Screen key={previewing ? 'preview' : 'picker'} eyebrow={eyebrow} title={previewing ? copy.reportFlow.previewTitle : copy.reportFlow.title}>
-      {previewing ? <Preview sections={sections} onBack={() => setPreviewing(false)} /> : <Picker sections={sections} onChange={setSections} onPreview={() => setPreviewing(true)} little={little} planLine={planLine} />}
+    <Screen eyebrow={eyebrow} title={copy.reportFlow.title}>
+      <VisitCard />
+      {isThin ? (
+        <Card raised>
+          <Txt kind="bodyStrong">{copy.reportFlow.littleTitle(report.loggedDaysThisWeek)}</Txt>
+          <Txt kind="small" color="textSecondary">
+            {copy.reportFlow.littleBody}
+          </Txt>
+        </Card>
+      ) : null}
+      <Preview sections={DEFAULT_SECTIONS} />
+      {mode === 'sample' ? (
+        <Txt kind="small" color="textMuted" style={{ textAlign: 'center' }}>
+          {copy.sampleData}
+        </Txt>
+      ) : null}
     </Screen>
   )
 }

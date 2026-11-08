@@ -796,7 +796,25 @@ export const copy = {
     saveNote: 'Keep as a note',
     savedNote: 'Saved.',
     byHand: 'Add by hand',
-    wordsNote: 'Your words stay with the day. They reach your report only if you turn notes on.',
+    wordsNote: 'Your words stay with the day, on this phone.',
+  },
+
+  /** The simpler Today, Log and add sheet: one score, one next step, a few rows. */
+  simple: {
+    checkIn: 'Check in',
+    settle: 'Did last night’s pain settle?',
+    load: 'Load',
+    loadValue: (score: number, usual: number) => (usual > 0 ? `${score} · usual ${usual}` : `${score}`),
+    range: 'Range',
+    rangeValue: (bend: number, straight: string) => `${bend}° bend · ${straight}`,
+    plan: 'Plan',
+    planValue: (done: number, planned: number) => `${done} of ${planned} this week`,
+    logTitle: 'Log',
+    add: 'Add to today',
+    sayOrType: 'Say or type',
+    byHand: 'By hand',
+    todaySoFar: 'Today',
+    nothingYet: 'Nothing added yet.',
   },
 
   disclaimerShort: 'Not a medical device.',

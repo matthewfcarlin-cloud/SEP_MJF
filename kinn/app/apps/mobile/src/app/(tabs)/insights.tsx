@@ -58,25 +58,6 @@ function Legend({ color, label, dot = false }: { readonly color: string; readonl
   )
 }
 
-function ContrastBar({ value, max, label, strong }: { readonly value: number; readonly max: number; readonly label: string; readonly strong: boolean }) {
-  const colors = useColors()
-  return (
-    <View style={{ gap: 4 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Txt kind="small" color="textSecondary">
-          {label}
-        </Txt>
-        <Txt kind="bodyStrong" color={strong ? 'text' : 'textSecondary'}>
-          {value}
-        </Txt>
-      </View>
-      <View style={{ height: 10, borderRadius: radius.pill, backgroundColor: colors.track, overflow: 'hidden' }}>
-        <View style={{ width: `${Math.max(2, (100 * value) / max)}%`, height: '100%', backgroundColor: strong ? colors.warn : colors.textMuted, borderRadius: radius.pill }} />
-      </View>
-    </View>
-  )
-}
-
 const CONDITION_WORD: Readonly<Record<string, string>> = { 'after-game': 'Game', 'after-practice': 'Practice', 'after-gym': 'Gym', 'after-pt': 'PT' }
 
 const MIN_FLARES_FOR_PATTERN = 2
@@ -107,13 +88,13 @@ export default function InsightsScreen() {
   const maxLoad = Math.max(1, ...view.loads.map((l) => l.score))
 
   return (
-    <Screen eyebrow={copy.insightsEmpty.eyebrow} title={copy.insights.title} {...(mode === 'sample' ? { right: <SampleTag /> } : {})}>
+    <Screen title={copy.insights.title} {...(mode === 'sample' ? { right: <SampleTag /> } : {})}>
       {top ? (
         <Card raised index={0} style={{ padding: space.lg, gap: space.md }}>
           <Txt kind="title">{top.text}</Txt>
           <Timeline days={view.timeline} matchedLabel={matchedLabel} />
           <Txt kind="small" color="textMuted">
-            {copy.insights.prevalenceNote(Math.round(top.prevalence * 100))}
+            {`${copy.insights.prevalenceNote(Math.round(top.prevalence * 100))} ${copy.insights.observationNote}`}
           </Txt>
         </Card>
       ) : (
@@ -128,20 +109,6 @@ export default function InsightsScreen() {
           </Txt>
         </Card>
       ))}
-
-      {view.loadContrast ? (
-        <Card index={2}>
-          <SectionLabel>{copy.insights.loadContrastTitle}</SectionLabel>
-          <ContrastBar value={view.loadContrast.beforeFlareAvg} max={100} label={copy.insights.beforeFlare} strong />
-          <ContrastBar value={view.loadContrast.otherDaysAvg} max={100} label={copy.insights.beforeOthers} strong={false} />
-        </Card>
-      ) : null}
-
-      {top ? (
-        <Txt kind="small" color="textMuted">
-          {copy.insights.observationNote}
-        </Txt>
-      ) : null}
 
       {view.flares.length > 0 ? (
         <Card index={3}>

@@ -36,9 +36,6 @@ export function WarningCard({ index }: { readonly index: number }) {
         <Button label={copy.warning.wrong} variant="secondary" onPress={() => answer('wrong')} style={{ flex: 1, paddingHorizontal: space.sm }} />
         <Button label={copy.warning.helpful} variant="secondary" onPress={() => answer('helpful')} style={{ flex: 1, paddingHorizontal: space.sm }} />
       </View>
-      <Txt kind="small" color="textMuted">
-        {copy.inDevelopment}
-      </Txt>
     </Card>
   )
 }

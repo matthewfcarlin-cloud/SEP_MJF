@@ -97,6 +97,7 @@ function ShownMeter({ meter }: { readonly meter: Extract<MeterState, { kind: 'no
 }
 
 function RangeCards({ rom, faded }: { readonly rom: readonly RomDay[]; readonly faded: boolean }) {
+  const colors = useColors()
   const first = rom[0]
   const latest = rom.at(-1)
   if (!first || !latest) {
@@ -123,16 +124,9 @@ function RangeCards({ rom, faded }: { readonly rom: readonly RomDay[]; readonly 
           ) : null}
         </View>
         {rom.length > 1 ? <LineChart values={rom.map((d) => d.flexionDeg)} min={Math.min(90, ...rom.map((d) => d.flexionDeg))} max={ROM_TARGETS.fullFlexionDeg} unit="°" area reference={ROM_TARGETS.bikeFlexionDeg} referenceLabel={copy.progress.bikeLine} xLabels={xLabels} /> : null}
-      </Card>
-      <Card index={2}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <View style={{ gap: 2 }}>
-            <SectionLabel>{copy.progress.extension}</SectionLabel>
-            <Txt kind="number" style={{ fontSize: 36, lineHeight: 42, letterSpacing: -1 }}>{`${latest.extensionDeficitDeg}°`}</Txt>
-          </View>
-          <Txt kind="small" color="textSecondary">
-            {copy.read.straightValue(latest.extensionDeficitDeg)}
-          </Txt>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: space.sm, borderTopWidth: 1, borderTopColor: colors.border }}>
+          <Txt kind="bodyStrong">{copy.progress.extension}</Txt>
+          <Txt kind="small" color="textSecondary">{`${latest.extensionDeficitDeg}° · ${copy.read.straightValue(latest.extensionDeficitDeg)}`}</Txt>
         </View>
       </Card>
     </View>
@@ -180,9 +174,8 @@ export default function ProgressScreen() {
   const { view, state, mode } = useStore()
   const rom = [...state.data.romDays].sort((a, b) => a.date.localeCompare(b.date))
   const { meter } = view
-  const eyebrow = view.firstDay ? copy.today.dayOne : copy.today.weekLabel(view.weeksSinceInjury)
   return (
-    <Screen eyebrow={eyebrow} title={copy.progress.title}>
+    <Screen title={copy.progress.title}>
       {meter.kind === 'building' ? <BuildingMeter meter={meter} /> : <ShownMeter meter={meter} />}
       <RangeCards rom={rom} faded={meter.kind === 'stale'} />
       {mode === 'real' && meter.kind !== 'stale' ? <Button label={copy.meter.add} variant="secondary" onPress={() => router.push('/measure')} /> : null}

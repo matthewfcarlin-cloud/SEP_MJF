@@ -5,23 +5,20 @@ import { Pressable, View } from 'react-native'
 
 import { Txt } from '@/components/ui/txt'
 import { copy } from '@/copy'
-import { dayLine } from '@/format'
 import { useStore } from '@/store/provider'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
+/** Greeting and settings. The week strip under it already says the date. */
 export function TodayHeader() {
-  const { view, state, today } = useStore()
+  const { view, state } = useStore()
   const colors = useColors()
   const { profile } = state.data
   const [hour] = useState(() => new Date().getHours())
   const week = view.firstDay ? copy.today.dayOne : copy.today.weekLabel(view.weeksSinceInjury)
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: space.sm }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.sm }}>
       <View style={{ flex: 1, gap: 2 }}>
-        <Txt kind="label" color="textMuted">
-          {dayLine(today)}
-        </Txt>
         <Txt kind="title" style={{ fontSize: 24, lineHeight: 30 }}>
           {copy.today.timeGreeting(hour, profile.name)}
         </Txt>
