@@ -18,7 +18,7 @@
   const sec = document.getElementById('top'), cv = document.getElementById('flowCv'), ctx = cv.getContext('2d');
   const off = document.createElement('canvas'), octx = off.getContext('2d');
   const veil = sec.querySelector('.veil'), deg = document.getElementById('fDeg'), bar = document.getElementById('fBar'), degWrap = document.getElementById('fDegWrap');
-  const device = document.getElementById('device'), scrToday = document.getElementById('scrToday'), scrPlan = document.getElementById('scrPlan');
+  const device = document.getElementById('device'), scrPlan = document.getElementById('scrPlan'), scrShare = document.getElementById('scrShare');
   const smooth = x => { x = cl(x); return x * x * (3 - 2 * x); };
 
   /* the film strips */
@@ -41,7 +41,31 @@
   const from = {}; let SPAN = 0; for (const [n, vh] of shots) { from[n] = [SPAN, vh]; SPAN += vh; }
   sec.style.height = SPAN + 100 + 'vh';
   const mark = s => { const [n, t] = s.split(' '); return from[n][0] + parseFloat(t) * from[n][1]; };   // 'shot t'
+  /* soft stops: if a scroll ends near one of these, the page settles on it, and a quick flick stops there instead of skipping past.
+     Nothing is timed or locked; the next scroll carries on. Each is a point on the film, in the same 'shot t' terms as the captions */
+  const PAUSES = ['signal .72', 'phone .22', 'phone .6', 'phone .9'];
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
+  /* a film position in vh is also how far into the section the page has scrolled, so each stop sits at that depth */
+  PAUSES.forEach(at => { const stop = document.createElement('i'); stop.className = 'pause'; stop.setAttribute('aria-hidden', 'true'); stop.style.top = mark(at) + 'vh'; sec.append(stop); });
+  /* the CSS stops above cover touch. A wheel or trackpad sends a stream of events, so: when one motion crosses a stop going down,
+     rest on it and let the rest of that motion go. A new motion carries on: a gap in the stream, a swipe that speeds up again,
+     or HOLD_MAX_MS at the most, so it never feels stuck */
+  const GESTURE_GAP_MS = 160, SPEED_UP = 1.4, SPEED_UP_MIN = 6, HOLD_MAX_MS = 1100, PAUSE_REACH = 2;
+  const stopsPx = () => [...sec.querySelectorAll('.pause')].map(el => el.getBoundingClientRect().top + scrollY);
+  let heldAt = 0, held = false, lastWheel = 0, lastDelta = 0;
+  addEventListener('wheel', e => {
+    const now = performance.now(), dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1);
+    const newMotion = now - lastWheel > GESTURE_GAP_MS || Math.abs(dy) > Math.abs(lastDelta) * SPEED_UP + SPEED_UP_MIN;
+    lastWheel = now; lastDelta = dy;
+    if (held) {
+      if (!newMotion && now - heldAt < HOLD_MAX_MS) { e.preventDefault(); return; }
+      held = false;
+    }
+    if (reduce || dy <= 0 || e.ctrlKey) return;
+    const stop = stopsPx().find(s => s > scrollY + PAUSE_REACH && s <= scrollY + dy);
+    if (stop === undefined) return;
+    e.preventDefault(); scrollTo({top: stop}); held = true; heldAt = now;
+  }, {passive: false});
 
   /* loading. Every shot gets a rough pass first, every 8th frame, so whatever the reader scrolls to is already there.
      Then the frames nearest the reader fill in. Phones and data-saver skip every second frame */
@@ -232,10 +256,11 @@
   const bendZ = () => Math.min(1, W * BEND_FILL / (BEND_TAPE_W * S));
   const bendView = t => { const k = smooth(t / BEND_OPENS_BY); return {z: 1 + (bendZ() - 1) * k, px: STAGE_W / 2 + (BEND_PX - STAGE_W / 2) * k}; };
   const wrapView = t => { const k = smooth(t); return {z: bendZ() + (1 - bendZ()) * k, px: BEND_PX + (TAPE_X - BEND_PX) * k}; };
-  function phone(rise, a, plan) {
+  /* the screens are stacked: Today underneath, the plan over it, then sending the week to a PT */
+  function phone(rise, a, plan, share) {
     const on = a > .001;
     device.style.visibility = on ? 'visible' : 'hidden'; if (!on) return;
-    device.style.opacity = a.toFixed(3); device.style.setProperty('--rise', (rise * innerHeight).toFixed(1) + 'px'); scrToday.style.opacity = cl(1 - plan * 2).toFixed(3); scrPlan.style.opacity = cl(plan * 2 - 1).toFixed(3);
+    device.style.opacity = a.toFixed(3); device.style.setProperty('--rise', (rise * innerHeight).toFixed(1) + 'px'); scrPlan.style.opacity = plan.toFixed(3); scrShare.style.opacity = share.toFixed(3);
   }
 
   /* the end of the film: the app's tick dial around the words. It lights clockwise to 9 o'clock with the scroll, as the logo's arc does.
@@ -281,7 +306,7 @@
     const ox = originX(cx);
     shiftX = shiftY = 0;
     ctx.globalAlpha = 1; ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
-    let phoneRise = 1, phoneA = 0, plan = 0;
+    let phoneRise = 1, phoneA = 0, plan = 0, share = 0;
     switch (name) {
       case 'hero': {
         /* at rest the coin follows the cursor, with a little depth. Once it leaves, the film takes over from the same pose */
@@ -307,17 +332,17 @@
         break;
       }
       case 'phone': {
-        phoneRise = 0; phoneA = 1; plan = smooth((t - .41) / .04);
+        phoneRise = 0; phoneA = 1; plan = smooth((t - .41) / .04); share = smooth((t - .74) / .04);
         const f = photoAside(1, ox);
         if (n) { drawAside(f, 1 - smooth(t / .1)); link(1, 1 - smooth(t / .08), ox, f.coin); }
         else { drawAside(f); link(1, 1 - smooth((t - .25) / .2), ox, f.coin); }
         break;
       }
-      case 'close': if (!n) drawAside(photoAside(1, ox), 1 - smooth(t)); phoneRise = -.02 * t; phoneA = 1 - smooth(t); plan = 1; break;
+      case 'close': if (!n) drawAside(photoAside(1, ox), 1 - smooth(t)); phoneRise = -.02 * t; phoneA = 1 - smooth(t); plan = 1; share = 1; break;
       case 'join': break;
     }
     dial(smooth((pos - dialOpens()) / (dialOpen() - dialOpens())), performance.now());
-    phone(phoneRise, phoneA, plan);
+    phone(phoneRise, phoneA, plan, share);
     words.forEach(w => w.el.classList.toggle('on', pos >= w.a && pos < w.b));
     const reading = pos >= mark('bend .03') && pos < mark('wrap .7');
     degWrap.classList.toggle('on', reading);
