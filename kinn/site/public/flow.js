@@ -42,8 +42,10 @@
   sec.style.height = SPAN + 100 + 'vh';
   const mark = s => { const [n, t] = s.split(' '); return from[n][0] + parseFloat(t) * from[n][1]; };   // 'shot t'
   /* soft stops: if a scroll ends near one of these, the page settles on it, and a quick flick stops there instead of skipping past.
-     Nothing is timed or locked; the next scroll carries on. Each is a point on the film, in the same 'shot t' terms as the captions */
-  const PAUSES = ['signal .72', 'phone .22', 'phone .6', 'phone .9'];
+     Nothing is timed or locked; the next scroll carries on. Each is a point on the film, in the same 'shot t' terms as the captions.
+     The last is where the dial is fully lit, so the waitlist is never skipped on the way to the footer */
+  const DIAL_LIT_AT = 'join .8';
+  const PAUSES = ['signal .72', 'phone .22', 'phone .6', 'phone .9', DIAL_LIT_AT];
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
   /* a film position in vh is also how far into the section the page has scrolled, so each stop sits at that depth */
   PAUSES.forEach(at => { const stop = document.createElement('i'); stop.className = 'pause'; stop.setAttribute('aria-hidden', 'true'); stop.style.top = mark(at) + 'vh'; sec.append(stop); });
@@ -266,7 +268,7 @@
   /* the end of the film: the app's tick dial around the words. It lights clockwise to 9 o'clock with the scroll, as the logo's arc does.
      The ticks rise toward the cursor, and the button sweeps the arc almost closed */
   const DIAL_TICKS = 108, NARROW_DIAL_Y = .42, DIAL_W = .47, DIAL_H = .43, DIAL_TICK = 16, DIAL_RISE = 30, DIAL_REACH = .3, DIAL_LIT = .75, DIAL_NEARLY_CLOSED = .985, DIAL_WAVE_MS = 1100, DIAL_EASE_MS = 150, DIAL_SWEEP_MS = 320;
-  const dialOpens = () => mark('close .4'), dialOpen = () => mark('join .8');
+  const dialOpens = () => mark('close .4'), dialOpen = () => mark(DIAL_LIT_AT);
   let dialX = 0, dialY = 0, dialCursor = 0, dialHover = 0, ctaHovered = false;
   function dial(k, now) {
     if (k <= 0) return;

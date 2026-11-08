@@ -72,9 +72,14 @@
 
 <dialog class="intake" id="intake" aria-labelledby="intakeTitle">
   <div class="sheet gut">
-    <div class="bar"><span class="small">Waitlist</span><button type="button" class="close" data-close>Close <span aria-hidden="true">✕</span></button></div>
+    <div class="bar"><span class="eyebrow">Waitlist</span><button type="button" class="close" data-close>Close <span aria-hidden="true">✕</span></button></div>
+    <div class="sheet-body">
+    <div class="intro">
+      <h2 class="big" id="intakeTitle">Be first<br>to <em>try it.</em></h2>
+      <p>Free. We only write when there's a tape for you to try.</p>
+      <p class="small">Early testers wanted: athletes coming back from an ACL or meniscus injury, and their PTs.</p>
+    </div>
     <form id="form" novalidate>
-      <h2 class="big" id="intakeTitle">Be first<br>to try it.</h2>
       <label class="hp" for="company">Company</label><input class="hp" id="company" name="company" tabindex="-1" autocomplete="off">
       <div class="q"><span class="n">01</span><label for="email">Email</label>
         <div class="field"><input id="email" name="email" type="email" placeholder="you@email.com" autocomplete="email" required></div></div>
@@ -122,15 +127,17 @@
           <label for="c6"><input type="radio" id="c6" name="channel" value="other"><span>Somewhere else</span></label>
         </div></fieldset>
       <div class="q"><span class="n">07</span><label for="note">Anything we should know? <span class="small">(optional)</span></label>
-        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, club soccer, PT once a week"></div></div>
+        <div class="field"><input id="note" name="note" type="text" placeholder="e.g. ACL in March, club soccer"></div></div>
       <div class="send"><button type="submit" class="go">Join the waitlist <span aria-hidden="true">→</span></button><p class="msg" id="msg" aria-live="polite"></p></div>
     </form>
     <div class="done" id="done" hidden aria-live="polite">
-      <span class="caps small">You're in</span>
+      <svg class="done-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="50"/><circle class="arc-done" cx="60" cy="60" r="50" pathLength="1"/></svg>
+      <span class="eyebrow">You're in</span>
       <h2 class="big" id="pos">Thank you.</h2>
-      <p class="small" style="max-width:420px">We'll keep in touch. Know a teammate coming back from a knee injury? Send them this page.</p>
-      <p class="small" data-preorder-link hidden style="max-width:420px">Want yours first? <a href="/preorder" style="text-decoration:underline;text-underline-offset:3px">Hold your place in line.</a> Non-binding, refundable anytime.</p>
+      <p>We'll keep in touch. Know a teammate coming back from a knee injury? Send them this page.</p>
+      <p class="small" data-preorder-link hidden>Want yours first? <a href="/preorder">Hold your place in line.</a> Non-binding, refundable anytime.</p>
       <button type="button" class="go" data-close>Back to the site <span aria-hidden="true">→</span></button>
+    </div>
     </div>
   </div>
 </dialog>
