@@ -673,7 +673,7 @@ export const copy = {
     noPtBody: 'Save the PDF, or share it with anyone you see.',
     preview: 'Preview report',
     backToPicker: 'Change what goes in',
-    includes: (notesOn: boolean) => `Includes what you picked. Your notes are ${notesOn ? 'on' : 'off'}.`,
+    includes: (notesOn: boolean) => (notesOn ? 'Everything above, as a PDF, including your notes.' : 'Everything above, as a PDF. Your notes stay on this phone.'),
     email: (name: string) => `Email to ${name}`,
     emailGeneric: 'Email it',
     savePdf: 'Save PDF',
@@ -815,6 +815,7 @@ export const copy = {
     byHand: 'By hand',
     todaySoFar: 'Today',
     nothingYet: 'Nothing added yet.',
+    seeSample: 'See it with sample data',
   },
 
   disclaimerShort: 'Not a medical device.',

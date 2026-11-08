@@ -14,7 +14,8 @@ import { CardLeadContext } from '@/components/ui/card'
 import { Screen } from '@/components/ui/screen'
 import { Txt } from '@/components/ui/txt'
 import { copy } from '@/copy'
-import { successFeedback } from '@/haptics'
+import { Button } from '@/components/ui/button'
+import { successFeedback, tapFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
@@ -38,6 +39,26 @@ function PainButton() {
         {copy.today.painButton}
       </Txt>
     </Pressable>
+  )
+}
+
+/**
+ * Before there is a score, Today is mostly empty. One quiet button shows the whole app filled in
+ * with the sample athlete; the banner on every tab brings the person straight back to their own data.
+ */
+function SampleButton() {
+  const { mode, view, setMode } = useStore()
+  const hasScore = !view.firstDay && view.meter.kind !== 'building'
+  if (Platform.OS === 'web' || mode !== 'real' || hasScore) return null
+  return (
+    <Button
+      label={copy.simple.seeSample}
+      variant="ghost"
+      onPress={() => {
+        tapFeedback()
+        setMode('sample')
+      }}
+    />
   )
 }
 
@@ -70,6 +91,7 @@ export default function TodayScreen() {
         {Platform.OS === 'web' ? <TapeLiveCard index={1} /> : null}
         {view.firstDay ? null : <Contributors index={2} />}
         <PainButton />
+        <SampleButton />
         <BackupCard />
       </CardLeadContext>
     </Screen>
