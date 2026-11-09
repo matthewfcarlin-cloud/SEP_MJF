@@ -1,0 +1,73 @@
+/* RECO app page: the phone, the four things it does, and the TestFlight invite. Builds on /home.css */
+.top nav a[aria-current="page"]{opacity:1}
+/* no film behind the bar here, so it needs its own ground */
+.app-page .top{background:rgba(13,18,18,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.app-page{overflow-x:clip}
+.app-page em{font-style:normal;color:var(--mint)}
+/* the same label as on the home page's film */
+.eyebrow{display:block;margin-bottom:22px;font:400 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.72)}
+.lede b{font-weight:500;color:var(--fg)}
+
+/* the invite: words on the left, the phone on the right */
+.invite{min-height:100svh;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:clamp(32px,6vw,96px);max-width:1240px;margin:0 auto;padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:56px}
+.invite-copy{max-width:34em;animation:rise .9s var(--out) both}
+.invite h1{margin:0;font-size:clamp(2.8rem,6vw,5.6rem);font-weight:420;letter-spacing:-.022em;line-height:1.02;text-wrap:balance}
+.lede{margin-top:22px;font-size:clamp(1.05rem,1.4vw,1.25rem);line-height:1.45;color:rgba(242,241,236,.8);text-wrap:pretty}
+
+/* the way in: a code to scan on a computer, a button on a phone */
+.get{display:flex;align-items:center;gap:22px;margin-top:clamp(28px,4.4vh,44px)}
+.qr{flex:none;width:clamp(132px,11vw,158px);padding:10px;border-radius:20px;background:var(--fg)}
+.qr svg{display:block;width:100%;height:auto}
+.get-words{display:grid;gap:12px;justify-items:start}
+.get-words .small{font-size:14px;color:var(--dim)}
+.get-words .link{font-size:13px;color:var(--faint);text-decoration:underline;text-underline-offset:3px;word-break:break-all}
+.get-words .link:hover{color:var(--fg)}
+.tf{display:inline-flex;align-items:center;gap:.6em;padding:15px 24px;border-radius:999px;background:var(--fg);color:#0d1212;font:500 15px/1 var(--sans);transition:background-color .25s var(--out),transform .2s}
+.tf span{transition:transform .3s var(--out)}
+.tf:hover{background:var(--teal)}
+.tf:hover span{transform:translateX(.25em)}
+.tf:active{transform:scale(.98)}
+.steps{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:8px;counter-reset:step;font-size:14.5px;line-height:1.4;color:var(--dim)}
+.steps li{display:grid;grid-template-columns:28px minmax(0,1fr);counter-increment:step}
+.steps li::before{content:counter(step,decimal-leading-zero);font:400 12px/1.7 var(--mono);color:var(--faint)}
+.steps b{font-weight:500;color:var(--fg)}
+.aside{margin-top:22px;font-size:13.5px;line-height:1.45;color:var(--faint)}
+.aside a{color:var(--dim);text-decoration:underline;text-underline-offset:3px}
+.aside a:hover{color:var(--fg)}
+
+/* a phone: the app's own screen, straight on */
+.phone{position:relative;aspect-ratio:390/844;padding:8px;border-radius:46px;background:#0a0b0b;box-shadow:0 0 0 1.5px #55595a,0 0 0 3px #1c1e1f,0 40px 100px rgba(0,0,0,.6)}
+.phone::after{content:"";position:absolute;left:50%;top:19px;width:27%;height:3.2%;border-radius:20px;background:#050505;transform:translateX(-50%)}
+.phone img{width:100%;height:100%;object-fit:cover;border-radius:38px;background:#f2f1ec}
+.invite .phone{height:min(80svh,740px);animation:rise 1.1s var(--out) .12s both}
+
+/* the four things it does */
+.inside{max-width:1240px;margin:0 auto;padding-top:clamp(56px,10vh,120px);padding-bottom:clamp(72px,12vh,140px)}
+.inside h2{margin:0 0 clamp(32px,6vh,64px);font-size:clamp(2.2rem,4.4vw,4rem);font-weight:420;letter-spacing:-.022em;line-height:1.04;text-wrap:balance}
+.screens{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,44px)}
+.screens li{display:grid;gap:22px;align-content:start}
+.screens .phone{width:100%;border-radius:clamp(30px,3.2vw,44px);padding:clamp(5px,.55vw,8px)}
+.screens .phone img{border-radius:clamp(25px,2.7vw,36px)}
+.screens .phone::after{top:clamp(12px,1.3vw,18px)}
+.screens h3{margin:0 0 6px;font-size:17px;font-weight:500}
+.screens p{font-size:14.5px;line-height:1.45;color:var(--dim);text-wrap:pretty}
+.again{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:clamp(48px,8vh,88px)}
+.again .small{font-size:14px}
+
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+
+/* nobody scans their own phone's screen: on touch devices the button leads */
+@media (hover:none) and (pointer:coarse){
+  .qr,.get-words .scan{display:none}
+}
+@media (max-width:900px){
+  .invite{grid-template-columns:minmax(0,1fr);min-height:0;padding-top:calc(104px + env(safe-area-inset-top,0px));padding-bottom:0}
+  /* the swipe row below starts with the same Today screen, so the big phone steps aside */
+  .invite .phone{display:none}
+  /* the four screens become a row to swipe through */
+  .screens{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:18px;margin-inline:calc(-1 * max(22px,env(safe-area-inset-left,0px)));padding-inline:max(22px,env(safe-area-inset-left,0px));scrollbar-width:none}
+  .screens::-webkit-scrollbar{display:none}
+  .screens li{flex:0 0 min(64vw,280px);scroll-snap-align:center}
+}
+@media (max-width:420px){.get{flex-direction:column;align-items:flex-start}}
+@media (prefers-reduced-motion:reduce){.invite-copy,.invite .phone{animation:none}.tf,.tf span{transition:none}}
