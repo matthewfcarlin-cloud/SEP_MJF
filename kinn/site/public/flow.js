@@ -286,16 +286,18 @@
       ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner); ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer); ctx.stroke();
     }
   }
-  /* the button leans a little toward the cursor. The fill starts from where the cursor came in */
-  const CTA_PULL = .16, cta = document.getElementById('joinCta');
-  const ctaAt = e => { const b = cta.getBoundingClientRect(); return {x: e.clientX - b.left, y: e.clientY - b.top, w: b.width, h: b.height}; };
-  if (canHover) {
-    cta.addEventListener('pointerenter', e => { const c = ctaAt(e); cta.style.setProperty('--in-x', c.x + 'px'); cta.style.setProperty('--in-y', c.y + 'px'); ctaHovered = true; dirty = true; });
-    cta.addEventListener('pointermove', e => { const c = ctaAt(e); cta.style.setProperty('--pull-x', ((c.x - c.w / 2) * CTA_PULL).toFixed(1) + 'px'); cta.style.setProperty('--pull-y', ((c.y - c.h / 2) * CTA_PULL).toFixed(1) + 'px'); });
-    cta.addEventListener('pointerleave', () => { cta.style.setProperty('--pull-x', '0px'); cta.style.setProperty('--pull-y', '0px'); ctaHovered = false; });
-  }
-  cta.addEventListener('focus', () => { ctaHovered = true; dirty = true; });
-  cta.addEventListener('blur', () => { ctaHovered = false; });
+  /* the buttons lean a little toward the cursor. The fill starts from where the cursor came in */
+  const CTA_PULL = .16;
+  const ctaAt = (cta, e) => { const b = cta.getBoundingClientRect(); return {x: e.clientX - b.left, y: e.clientY - b.top, w: b.width, h: b.height}; };
+  document.querySelectorAll('.join .cta').forEach(cta => {
+    if (canHover) {
+      cta.addEventListener('pointerenter', e => { const c = ctaAt(cta, e); cta.style.setProperty('--in-x', c.x + 'px'); cta.style.setProperty('--in-y', c.y + 'px'); ctaHovered = true; dirty = true; });
+      cta.addEventListener('pointermove', e => { const c = ctaAt(cta, e); cta.style.setProperty('--pull-x', ((c.x - c.w / 2) * CTA_PULL).toFixed(1) + 'px'); cta.style.setProperty('--pull-y', ((c.y - c.h / 2) * CTA_PULL).toFixed(1) + 'px'); });
+      cta.addEventListener('pointerleave', () => { cta.style.setProperty('--pull-x', '0px'); cta.style.setProperty('--pull-y', '0px'); ctaHovered = false; });
+    }
+    cta.addEventListener('focus', () => { ctaHovered = true; dirty = true; });
+    cta.addEventListener('blur', () => { ctaHovered = false; });
+  });
 
   function draw(pos) {
     let name = shots[shots.length - 1][0]; for (const [n, vh] of shots) { if (pos < from[n][0] + vh) { name = n; break; } }
