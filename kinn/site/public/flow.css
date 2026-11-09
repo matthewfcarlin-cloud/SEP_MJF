@@ -44,9 +44,11 @@ footer{scroll-snap-align:end}
 .cta-fill{position:absolute;inset:-1px;background:var(--teal);clip-path:circle(0 at var(--in-x,50%) var(--in-y,50%));transition:clip-path .5s var(--out)}
 .cta-label,.join .arrow{position:relative}
 .join .arrow{line-height:1;transition:transform .35s var(--out)}
-.join .cta.ghost{border-color:transparent;color:var(--dim)}
-.join .cta.ghost:is(:hover,:focus-visible){color:var(--fg);border-color:rgba(242,241,236,.34)}
-.join .cta:not(.ghost):is(:hover,:focus-visible){color:#0d1212;border-color:var(--teal)}
+.join .cta:is(:hover,:focus-visible){color:#0d1212;border-color:var(--teal)}
+/* once preorders are open, Preorder is the pill and the waitlist sits beside it as a quieter link */
+.cta-row:has([data-preorder-link]:not([hidden])) #joinCta{border-color:transparent;color:var(--dim)}
+.cta-row:has([data-preorder-link]:not([hidden])) #joinCta:is(:hover,:focus-visible){color:var(--fg);border-color:rgba(242,241,236,.34)}
+.cta-row:has([data-preorder-link]:not([hidden])) #joinCta :is(.cta-fill,.arrow){display:none}
 .join .cta:is(:hover,:focus-visible) .cta-fill{clip-path:circle(150% at var(--in-x,50%) var(--in-y,50%))}
 .join .cta:is(:hover,:focus-visible) .arrow{transform:translateX(.3em)}
 .join .cta:focus-visible{outline:2px solid var(--teal);outline-offset:4px}
