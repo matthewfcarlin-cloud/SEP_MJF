@@ -22,6 +22,8 @@ export interface RingProps {
   readonly delayMs?: number
   /** Called once the arc reaches its value (straight away when it does not sweep). */
   readonly onLanded?: () => void
+  /** The faint full circle under the arc. Off for the wordmark O, which is only the arc. */
+  readonly showTrack?: boolean
 }
 
 function clampPercent(value: number): number {
@@ -32,7 +34,7 @@ function clampPercent(value: number): number {
  * The one RECO shape: the O in the wordmark, the coin, the morning score and the live gauge.
  * A faint full track with an arc on top. The arc runs on the UI thread.
  */
-export function Ring({ value, color, size, stroke, sweep = false, delayMs = 0, onLanded }: RingProps) {
+export function Ring({ value, color, size, stroke, sweep = false, delayMs = 0, onLanded, showTrack = true }: RingProps) {
   const colors = useColors()
   const reduceMotion = useReducedMotion()
   const target = clampPercent(value)
@@ -67,7 +69,7 @@ export function Ring({ value, color, size, stroke, sweep = false, delayMs = 0, o
 
   return (
     <Svg width={size} height={size}>
-      <Circle cx={cx} cy={cx} r={r} stroke={colors.track} strokeWidth={stroke} fill="none" />
+      {showTrack ? <Circle cx={cx} cy={cx} r={r} stroke={colors.track} strokeWidth={stroke} fill="none" /> : null}
       <AnimatedCircle
         cx={cx}
         cy={cx}

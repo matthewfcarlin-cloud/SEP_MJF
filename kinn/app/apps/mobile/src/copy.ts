@@ -314,9 +314,9 @@ export const copy = {
 
   setup: {
     welcomeTagline: 'Trust your comeback.',
-    welcomeBody: 'Built for the days your PT doesn’t see.',
+    welcomeBody: 'Smart PT tape that learns your injury, every day of the journey back. Built for the movement your physio doesn’t see.',
     getStarted: 'Get started',
-    lookAround: 'Look around with sample data',
+    lookAround: 'Use the sample athlete',
     next: 'Continue',
     back: 'Back',
     skip: 'Skip for now',
