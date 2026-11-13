@@ -5,6 +5,7 @@
  */
 import { containsBannedWord, findBannedWords } from '../../src/copy/banned'
 import { copy } from '../../../../apps/mobile/src/copy'
+import { fromPtCopy, pathCopy, sampleMenuCopy, selfTestCopy, strokeCopy } from '../../../../apps/mobile/src/copy-path'
 
 const SAMPLE_ARGS: Record<number, unknown[]> = {
   0: [],
@@ -41,6 +42,13 @@ describe('mobile copy', () => {
   test('contains no banned words anywhere', () => {
     const offenders = [...strings(copy, 'copy')].filter(([, s]) => containsBannedWord(s)).map(([p, s]) => `${p}: "${s}" -> ${findBannedWords(s).join(', ')}`)
     expect(offenders).toEqual([])
+  })
+
+  test('path, self-test and PT sheet copy contains no banned words, and never clears anyone', () => {
+    const all = [...strings({ pathCopy, selfTestCopy, fromPtCopy, sampleMenuCopy, strokeCopy }, 'path')]
+    const offenders = all.filter(([, s]) => containsBannedWord(s) || /\b(safe|cleared?|clears|re-?injur\w*|at risk|allowed)\b/i.test(s)).map(([p, s]) => `${p}: "${s}"`)
+    expect(offenders).toEqual([])
+    expect(all.length).toBeGreaterThan(40)
   })
 
   test('has at least one string per screen', () => {

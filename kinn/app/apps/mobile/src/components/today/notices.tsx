@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Txt } from '@/components/ui/txt'
 import { copy } from '@/copy'
+import { pathCopy } from '@/copy-path'
 import { useStore } from '@/store/provider'
 import { space } from '@/theme/tokens'
 
@@ -44,6 +45,22 @@ export function BackupCard() {
         {copy.read.backupBody}
       </Txt>
       <Button label={copy.read.backupOpen} variant="secondary" onPress={() => router.push('/backup')} />
+    </Card>
+  )
+}
+
+/** Bends past the limit today. Sample data until the tape's bend reading is in degrees. */
+export function BendAlertCard() {
+  const { view } = useStore()
+  const limit = view.path?.limits.flexionMaxDeg
+  if (view.bendAlertsToday === 0 || limit === null || limit === undefined) return null
+  return (
+    <Card>
+      <Txt kind="bodyStrong">{pathCopy.alertsToday(view.bendAlertsToday, limit)}</Txt>
+      <Txt kind="small" color="textSecondary">
+        {pathCopy.alertsTodaySub}
+      </Txt>
+      <Button label={pathCopy.cardOpen} variant="secondary" onPress={() => router.push('/path')} />
     </Card>
   )
 }

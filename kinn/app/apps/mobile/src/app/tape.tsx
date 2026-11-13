@@ -2,10 +2,15 @@
 // until native Bluetooth lands) and show the live signal. The session lives in TapeProvider,
 // so it keeps streaming on Today after this sheet closes.
 import { router } from 'expo-router'
+import { useState } from 'react'
 import { View } from 'react-native'
 import { RESULT_NAME } from '@reco/core'
 
 import { copy } from '@/copy'
+import { tapeBendCopy } from '@/copy-path'
+import { Field } from '@/components/ui/field'
+import { useStore } from '@/store/provider'
+import { useLiveBend } from '@/tape/bend-watch'
 import { LiveGauge, LiveTrace } from '@/components/tape/live-gauge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -18,6 +23,59 @@ import { useColors } from '@/theme/use-tokens'
 
 const WINDOW_MS = 10_000
 const DEFAULT_THRESHOLD_PCT = 30
+const MIN_MAX_DEG = 30
+const MAX_MAX_DEG = 150
+
+/** What the max calibration means in degrees. With it, every reading becomes a bend and the limit can be watched. */
+function BendSetup() {
+  const { state, setBendMaxDeg } = useStore()
+  const saved = state.data.bendCalibration?.maxDeg
+  const [text, setText] = useState(saved !== undefined ? String(saved) : '')
+  const [invalid, setInvalid] = useState(false)
+  const save = () => {
+    const n = Number(text)
+    const ok = Number.isInteger(n) && n >= MIN_MAX_DEG && n <= MAX_MAX_DEG
+    setInvalid(!ok)
+    if (ok) setBendMaxDeg(n)
+  }
+  return (
+    <Card index={4}>
+      <SectionLabel>{tapeBendCopy.title}</SectionLabel>
+      <Txt color="textSecondary">{tapeBendCopy.body}</Txt>
+      <Field label={tapeBendCopy.field} value={text} onChangeText={setText} keyboardType="number-pad" maxLength={3} placeholder="80" />
+      <View style={{ flexDirection: 'row', gap: space.sm }}>
+        <Button label={tapeBendCopy.save} onPress={save} style={{ flex: 1 }} />
+        {saved !== undefined ? (
+          <Button
+            label={tapeBendCopy.clear}
+            variant="ghost"
+            onPress={() => {
+              setText('')
+              setBendMaxDeg(undefined)
+            }}
+            style={{ flex: 1 }}
+          />
+        ) : null}
+      </View>
+      <Txt kind="small" color={invalid ? 'warn' : 'textMuted'}>
+        {invalid ? tapeBendCopy.invalid : saved !== undefined ? tapeBendCopy.saved(saved) : ''}
+      </Txt>
+    </Card>
+  )
+}
+
+function BendStat() {
+  const { view } = useStore()
+  const bend = useLiveBend()
+  const limit = view.path?.limits.flexionMaxDeg ?? null
+  return (
+    <Stat
+      label={tapeBendCopy.label}
+      value={bend === null ? '—' : tapeBendCopy.now(bend)}
+      foot={bend === null ? tapeBendCopy.notSet : limit !== null ? tapeBendCopy.limitFoot(limit) : tapeBendCopy.noLimitFoot}
+    />
+  )
+}
 
 function Stat({ label, value, foot }: { readonly label: string; readonly value: string; readonly foot?: string }) {
   return (
@@ -125,6 +183,7 @@ export default function TapeScreen() {
 
       <Card index={2}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
+          <BendStat />
           <Stat label={t.repsHere} value={String(tape.reps.length)} foot={t.repsHereFoot} />
           <Stat label={t.repsToday} value={tape.status ? String(tape.status.repsToday) : '—'} foot={t.repsTodayFoot} />
           <Stat label={t.peak} value={`${Math.round(peak)}%`} />
@@ -149,6 +208,8 @@ export default function TapeScreen() {
           </Txt>
         ) : null}
       </Card>
+
+      <BendSetup />
 
       <View style={{ flexDirection: 'row', gap: space.sm }}>
         <Button label={tape.busy === 'identify' ? t.blinking : t.blink} variant="secondary" disabled={!connected || tape.busy !== null} onPress={() => void tape.identify()} style={{ flex: 1 }} />

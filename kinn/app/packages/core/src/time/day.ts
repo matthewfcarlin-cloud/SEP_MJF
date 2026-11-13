@@ -52,3 +52,8 @@ export function weeksSince(surgeryDate: string, now: number): number {
   const start = startOfDay(surgeryDate, 12)
   return (now - start) / (7 * 24 * HOUR_MS)
 }
+
+/** Whole calendar days from date key a to date key b (negative when b is earlier). */
+export function daysBetween(a: string, b: string): number {
+  return Math.round((startOfDay(b, 12) - startOfDay(a, 12)) / (24 * HOUR_MS))
+}

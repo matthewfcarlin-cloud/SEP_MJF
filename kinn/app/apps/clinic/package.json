@@ -1,0 +1,29 @@
+{
+  "name": "reco-clinic",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RECO clinician view: a PT's caseload, progress, next steps, weekly update and check-in flags. Sample data only.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@expo-google-fonts/geist": "^0.4.2",
+    "@expo-google-fonts/geist-mono": "^0.4.3",
+    "@expo-google-fonts/instrument-serif": "^0.4.1",
+    "@reco/core": "*",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.3.0",
+    "@types/react-dom": "~19.3.0",
+    "typescript": "~6.0.3",
+    "vite": "^7.3.7",
+    "vitest": "^3.2.4"
+  }
+}

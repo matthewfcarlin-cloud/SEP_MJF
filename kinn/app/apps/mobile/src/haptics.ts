@@ -14,3 +14,9 @@ export function successFeedback(): void {
   if (!canBuzz) return
   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined)
 }
+
+/** A bend past the limit: a firm double-buzz the person feels without looking. */
+export function warningFeedback(): void {
+  if (!canBuzz) return
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => undefined)
+}

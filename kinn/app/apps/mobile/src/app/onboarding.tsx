@@ -12,6 +12,7 @@ import type { Draft, DraftField } from '@/components/setup/parts'
 import { RangeFields, parseRange } from '@/components/setup/range-fields'
 import type { RangeText } from '@/components/setup/range-fields'
 import { VoiceBox } from '@/components/setup/voice-box'
+import { WelcomeIntro } from '@/components/setup/welcome-intro'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CheckRow } from '@/components/ui/check'
@@ -140,21 +141,7 @@ export default function OnboardingScreen() {
 
   switch (step) {
     case 'welcome':
-      return (
-        <Screen variant="fullscreen">
-          <View style={{ marginTop: 160, gap: space.sm, marginBottom: space.xxl }}>
-            <Txt kind="label" color="textMuted">
-              {copy.appName}
-            </Txt>
-            <Txt kind="serif" style={{ fontSize: 52, lineHeight: 56 }}>
-              {copy.setup.welcomeTagline}
-            </Txt>
-            <Txt color="textSecondary">{copy.setup.welcomeBody}</Txt>
-          </View>
-          <Button label={copy.setup.getStarted} onPress={() => setStep('consent')} />
-          <Button label={copy.setup.lookAround} variant="ghost" onPress={lookAround} />
-        </Screen>
-      )
+      return <WelcomeIntro onStart={() => setStep('consent')} onSample={lookAround} />
     case 'consent':
       return (
         <Screen variant="fullscreen" eyebrow={copy.setup.consentEyebrow} title={copy.setup.consentTitle}>

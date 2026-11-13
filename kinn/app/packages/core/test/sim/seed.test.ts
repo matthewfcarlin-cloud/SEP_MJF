@@ -45,6 +45,10 @@ describe('seedDataset', () => {
     expect(before.filter((d) => d.activities.includes('game'))).toHaveLength(3)
   })
 
+  test('an unknown persona falls back to Maya instead of throwing', () => {
+    expect(seedDataset(TODAY, { personaId: 'renamed-later', day: 30 }).profile.name).toBe('Maya')
+  })
+
   test('is deterministic', () => {
     expect(seedDataset(TODAY)).toEqual(seedDataset(TODAY))
   })

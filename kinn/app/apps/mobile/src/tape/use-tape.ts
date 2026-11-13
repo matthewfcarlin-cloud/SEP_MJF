@@ -62,6 +62,7 @@ const WINDOW_MS = 10_000
 const FRAME_MS = 80
 const DEMO_NAME = 'RECO tape (demo)'
 const DEMO_QUERY = 'tape=demo'
+const DEMO_MAX_RAW = 2400
 /** How often to pull new minute records from a connected real tape. */
 const RESYNC_MS = 5 * 60_000
 
@@ -179,7 +180,9 @@ function useTapeSession(): TapeSession {
   }, [attach, support])
 
   const startDemo = useCallback(async () => {
-    const transport = new SimulatedTransport({ name: DEMO_NAME, calibrated: true, restRaw: 310, maxRaw: 3300 })
+    // Max is calibrated short of the sensor's full range, like a max taken under a bend limit,
+    // so the demo's deepest bends read past the max point (see protocol/bend.ts).
+    const transport = new SimulatedTransport({ name: DEMO_NAME, calibrated: true, restRaw: 310, maxRaw: DEMO_MAX_RAW })
     await attach(new DeviceClient(transport, new MemorySyncStore()), 'demo')
   }, [attach])
 

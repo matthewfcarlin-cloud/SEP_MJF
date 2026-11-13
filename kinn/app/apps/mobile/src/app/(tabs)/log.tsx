@@ -1,113 +1,89 @@
-import { useState } from 'react'
+import { router } from 'expo-router'
 import { Pressable, View } from 'react-native'
 import { MANUAL_UNITS, addDays, scoreFromUnits } from '@reco/core'
 
-import { DiaryCard } from '@/components/log/diary-card'
-import type { Intensity, ManualActivity } from '@reco/core'
-
 import { copy } from '@/copy'
 import { weekday } from '@/format'
-import { successFeedback, tapFeedback } from '@/haptics'
+import { tapFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Chip, ChipRow } from '@/components/ui/chip'
 import { Screen } from '@/components/ui/screen'
 import { SectionLabel } from '@/components/ui/section-label'
 import { Txt } from '@/components/ui/txt'
 import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
-const ACTIVITIES: readonly ManualActivity[] = ['practice', 'game', 'gym', 'pt', 'walking', 'rest']
-const INTENSITIES: readonly Intensity[] = ['light', 'moderate', 'hard']
 const RECENT_DAYS = 7
+const BAR_HEADROOM = 1.5
 
 /** Today's load against the athlete's usual, with a tick at the usual value. */
-function LoadVersusUsual({ score, usual, max }: { readonly score: number; readonly usual: number; readonly max: number }) {
+function LoadVersusUsual({ score, usual }: { readonly score: number; readonly usual: number }) {
   const colors = useColors()
+  const max = Math.max(100, score, usual * BAR_HEADROOM)
   const pct = (v: number): number => Math.max(0, Math.min(100, (100 * v) / max))
   return (
-    <View style={{ gap: space.xs }}>
-      <View style={{ height: 14, borderRadius: radius.pill, backgroundColor: colors.track, overflow: 'hidden' }}>
-        <View style={{ width: `${pct(score)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: radius.pill }} />
-        {usual > 0 ? <View style={{ position: 'absolute', left: `${pct(usual)}%`, top: 0, bottom: 0, width: 2, backgroundColor: colors.textSecondary }} /> : null}
-      </View>
-      {usual > 0 ? (
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ width: `${pct(usual)}%` }} />
-          <Txt kind="label" color="textMuted" style={{ marginLeft: -12 }}>
-            {copy.log.usualMarker} {Math.round(usual)}
-          </Txt>
-        </View>
-      ) : null}
+    <View style={{ height: 10, borderRadius: radius.pill, backgroundColor: colors.track, overflow: 'hidden' }}>
+      <View style={{ width: `${pct(score)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: radius.pill }} />
+      {usual > 0 ? <View style={{ position: 'absolute', left: `${pct(usual)}%`, top: 0, bottom: 0, width: 2, backgroundColor: colors.textSecondary }} /> : null}
     </View>
   )
 }
 
-export default function LogScreen() {
-  const { state, today, addActivity, removeActivity, view } = useStore()
+function RemoveButton({ onPress }: { readonly onPress: () => void }) {
   const colors = useColors()
-  const [activity, setActivity] = useState<ManualActivity | undefined>(undefined)
-  const [intensity, setIntensity] = useState<Intensity>('moderate')
-  const [justSaved, setJustSaved] = useState(false)
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={copy.log.remove}
+      hitSlop={10}
+      onPress={() => {
+        tapFeedback()
+        onPress()
+      }}
+      style={({ pressed }) => ({ width: 26, height: 26, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surfaceRaised, opacity: pressed ? 0.6 : 1 })}>
+      <Txt kind="small" color="textSecondary">
+        ×
+      </Txt>
+    </Pressable>
+  )
+}
 
+/** Today's load and what made it, one button to add more, and the week behind it. */
+export default function LogScreen() {
+  const { state, today, removeActivity, view } = useStore()
+  const colors = useColors()
+  const usual = Math.round(view.baselineScore)
   const todays = state.data.activityLogs.filter((l) => l.date === today)
-  const previewUnits = activity ? MANUAL_UNITS[activity][intensity] : 0
-  const previewScore = scoreFromUnits(view.todayLoad.units + previewUnits)
-  const barMax = Math.max(100, previewScore, view.baselineScore * 1.5)
-
-  const recent = Array.from({ length: RECENT_DAYS }, (_, i) => addDays(today, -(RECENT_DAYS - i)))
-    .map((date) => ({
-      date,
-      load: view.loads.find((l) => l.date === date),
-      activities: state.data.activityLogs.filter((l) => l.date === date),
-    }))
-
-  const save = () => {
-    if (!activity) return
-    addActivity(activity, intensity)
-    successFeedback()
-    setActivity(undefined)
-    setJustSaved(true)
-    setTimeout(() => setJustSaved(false), 1200)
-  }
+  const recent = Array.from({ length: RECENT_DAYS }, (_, i) => addDays(today, -(RECENT_DAYS - i))).map((date) => ({
+    date,
+    load: view.loads.find((l) => l.date === date),
+    activities: state.data.activityLogs.filter((l) => l.date === date),
+  }))
 
   return (
-    <Screen title={copy.log.title}>
-      <DiaryCard />
-
-      <Card index={0}>
-        <SectionLabel>{copy.logFlow.byHand}</SectionLabel>
-        <Txt kind="bodyStrong">{copy.log.activityTitle}</Txt>
-        <ChipRow>
-          {ACTIVITIES.map((a) => (
-            <Chip key={a} label={copy.log.activity[a]} selected={activity === a} onPress={() => setActivity(activity === a ? undefined : a)} />
-          ))}
-        </ChipRow>
-        <SectionLabel>{copy.log.intensityTitle}</SectionLabel>
-        <ChipRow>
-          {INTENSITIES.map((i) => (
-            <Chip key={i} label={copy.log.intensity[i]} selected={intensity === i} onPress={() => setIntensity(i)} />
-          ))}
-        </ChipRow>
-        <Txt kind="small" color={activity ? 'textSecondary' : 'textMuted'} style={{ marginTop: space.xs }}>
-          {activity ? copy.log.preview(previewScore - view.todayLoad.score, previewScore) : copy.log.previewHint}
-        </Txt>
-        <Button label={justSaved ? copy.log.saved : copy.log.save} disabled={!activity} onPress={save} />
-      </Card>
-
-      <Card index={1}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <SectionLabel>{copy.log.todaySoFar}</SectionLabel>
-          <Txt kind="heading">{view.todayLoad.score}</Txt>
+    <Screen title={copy.simple.logTitle}>
+      <Card index={0} style={{ gap: space.md, padding: space.lg }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <View style={{ gap: 2 }}>
+            <Txt kind="small" color="textSecondary">
+              {copy.today.loadTodayLabel}
+            </Txt>
+            <Txt kind="number" style={{ fontSize: 44, lineHeight: 48 }}>
+              {view.todayLoad.score}
+            </Txt>
+          </View>
+          {usual > 0 ? (
+            <Txt kind="small" color="textSecondary">
+              {copy.today.yourUsual(usual)}
+            </Txt>
+          ) : null}
         </View>
-        <LoadVersusUsual score={view.todayLoad.score} usual={view.baselineScore} max={barMax} />
+        <LoadVersusUsual score={view.todayLoad.score} usual={usual} />
         {todays.length === 0 ? (
-          <Txt color="textMuted" style={{ marginTop: space.xs }}>
-            {copy.log.nothingYet}
-          </Txt>
+          <Txt color="textMuted">{copy.simple.nothingYet}</Txt>
         ) : (
-          <View style={{ gap: space.xs, marginTop: space.xs }}>
+          <View style={{ gap: space.sm }}>
             {todays.map((l) => (
               <View key={l.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Txt>
@@ -117,35 +93,16 @@ export default function LogScreen() {
                   <Txt kind="small" color="textMuted">
                     +{scoreFromUnits(MANUAL_UNITS[l.activity][l.intensity])}
                   </Txt>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={copy.log.remove}
-                    hitSlop={10}
-                    onPress={() => {
-                      tapFeedback()
-                      removeActivity(l.id)
-                    }}
-                    style={({ pressed }) => ({
-                      width: 26,
-                      height: 26,
-                      borderRadius: radius.pill,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: colors.surfaceRaised,
-                      opacity: pressed ? 0.6 : 1,
-                    })}>
-                    <Txt kind="small" color="textSecondary">
-                      ×
-                    </Txt>
-                  </Pressable>
+                  <RemoveButton onPress={() => removeActivity(l.id)} />
                 </View>
               </View>
             ))}
           </View>
         )}
+        <Button label={copy.simple.add} onPress={() => router.push('/add')} />
       </Card>
 
-      <Card index={2}>
+      <Card index={1}>
         <SectionLabel>{copy.log.recentTitle}</SectionLabel>
         {recent.map((r) => (
           <View key={r.date} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
@@ -157,9 +114,6 @@ export default function LogScreen() {
             </View>
             <Txt kind="small" style={{ width: 28, textAlign: 'right' }}>
               {r.load?.score ?? 0}
-            </Txt>
-            <Txt kind="small" color="textMuted" style={{ width: 110 }} numberOfLines={1}>
-              {r.activities.length ? r.activities.map((l) => `${copy.log.activity[l.activity].split(' ')[0]}`).join(', ') : copy.report.none}
             </Txt>
           </View>
         ))}

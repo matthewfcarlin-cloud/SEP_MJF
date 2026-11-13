@@ -3,12 +3,18 @@
   "private": true,
   "version": "0.1.0",
   "description": "RECO prototype: pure TypeScript core plus Expo mobile app. Simulated sensor data only.",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
-    "test": "npm run test -w @reco/core",
+    "test": "npm run test -w @reco/core && npm run test -w reco-clinic",
     "test:watch": "npm run test:watch -w @reco/core",
-    "typecheck": "npm run typecheck -w @reco/core",
-    "mobile": "npm run start -w reco-mobile"
+    "typecheck": "npm run typecheck -w @reco/core && npm run typecheck -w reco-clinic",
+    "mobile": "npm run start -w reco-mobile",
+    "clinic": "npm run dev -w reco-clinic"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }

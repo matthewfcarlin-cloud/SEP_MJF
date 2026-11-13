@@ -19,6 +19,9 @@ import { weeksSince } from '../time/day'
 import { tapeDays } from '../tape/days'
 import type { TapeDay } from '../tape/days'
 import type { StoredRecord } from '../tape/types'
+import { pathView } from '../protocol/inputs'
+import type { PathView } from '../protocol/progress'
+import { bendAlertsOn } from '../protocol/bend'
 
 export type TimelineMark = 'flare' | 'before-flare' | 'matched' | 'none'
 
@@ -39,6 +42,10 @@ export interface TodayView {
   /** Change over the last 7 days and the reason, for the line under the meter. */
   readonly progressChange: ProgressChange
   readonly plan: PlanView
+  /** Criterion-based recovery path, for ACL reconstruction and meniscus repair only. */
+  readonly path: PathView | undefined
+  /** Bends past the limit today, from the live tape. */
+  readonly bendAlertsToday: number
   readonly line: PersonalLine
   readonly warning: Warning | undefined
   /** A pain log today that should stop normal advice. */
@@ -126,6 +133,7 @@ export function deriveToday(data: Dataset, today: string, tape: readonly StoredR
   const enoughForWarning = logged.length >= MIN_LOGGED_DAYS_FOR_WARNING
   const lastLogged = logged.at(-1)
   const quiet = lastLogged !== undefined && lastLogged < addDays(today, -QUIET_AFTER_DAYS)
+  const path = pathView(data, today)
   const lastNightRatings = yesterdaysPain.map((p) => p.pain).filter((p): p is number => p !== undefined)
   return {
     date: today,
@@ -133,7 +141,9 @@ export function deriveToday(data: Dataset, today: string, tape: readonly StoredR
     suggestion: suggestionFor(status),
     progressPercent: percentNow,
     progressChange: progressChange(percentNow, percentWeekAgo, romGain, flares.filter((f) => f.date > weekAgo).length),
-    plan: buildPlan({ profile: data.profile, today, status: status.status, flares, marks: data.planMarks ?? [] }),
+    plan: buildPlan({ profile: data.profile, today, status: status.status, flares, marks: data.planMarks ?? [], ...(path ? { protocolPhase: path.phase.n } : {}) }),
+    path,
+    bendAlertsToday: bendAlertsOn(data.bendAlerts ?? [], today),
     line,
     warning: enoughForWarning && !quiet ? warningFor({ todayScore: todayLoad.score, line, signalOk: true, dismissedToday }) : undefined,
     redFlag: redFlag(data.painLogs, today),
