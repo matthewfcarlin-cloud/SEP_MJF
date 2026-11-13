@@ -3,9 +3,11 @@ import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import Svg, { Ellipse } from 'react-native-svg'
 import { statusFor, suggestionFor, wordFor } from '@reco/core'
-import type { Swelling } from '@reco/core'
+import type { EffusionGrade, Swelling } from '@reco/core'
 
 import { copy } from '@/copy'
+import { strokeCopy } from '@/copy-path'
+import { Chip, ChipRow } from '@/components/ui/chip'
 import { successFeedback, tapFeedback } from '@/haptics'
 import { useStore } from '@/store/provider'
 import { Button } from '@/components/ui/button'
@@ -19,6 +21,24 @@ import { radius, space } from '@/theme/tokens'
 import { useColors } from '@/theme/use-tokens'
 
 const LEVELS: readonly Swelling[] = ['none', 'some', 'a-lot']
+const GRADES: readonly EffusionGrade[] = ['zero', 'trace', '1+', '2+', '3+']
+
+/** Optional guided stroke test (Sturgill 2009). Only offered when the injury has a protocol path. */
+function StrokeTest({ value, onChange }: { readonly value: EffusionGrade | undefined; readonly onChange: (g: EffusionGrade | undefined) => void }) {
+  return (
+    <Card>
+      <SectionLabel>{strokeCopy.title}</SectionLabel>
+      <Txt kind="small" color="textSecondary">
+        {strokeCopy.how}
+      </Txt>
+      <ChipRow>
+        {GRADES.map((g) => (
+          <Chip key={g} label={strokeCopy.grades[g]} selected={value === g} onPress={() => onChange(value === g ? undefined : g)} />
+        ))}
+      </ChipRow>
+    </Card>
+  )
+}
 const KNEE_RX: Record<Swelling, number> = { none: 18, some: 24, 'a-lot': 30 }
 
 /** Picture scale: a kneecap outline that gets puffier. */
@@ -38,6 +58,7 @@ export default function CheckInScreen() {
   const colors = useColors()
   const [pain, setPain] = useState<number | undefined>(undefined)
   const [swelling, setSwelling] = useState<Swelling | undefined>(undefined)
+  const [effusion, setEffusion] = useState<EffusionGrade | undefined>(undefined)
 
   const complete = pain !== undefined && swelling !== undefined
   const preview = complete
@@ -51,7 +72,7 @@ export default function CheckInScreen() {
 
   const save = () => {
     if (pain === undefined || !swelling) return
-    setCheckIn(pain, swelling)
+    setCheckIn(pain, swelling, effusion)
     successFeedback()
     router.back()
   }
@@ -102,6 +123,7 @@ export default function CheckInScreen() {
           })}
         </View>
       </Card>
+      {view.path ? <StrokeTest value={effusion} onChange={setEffusion} /> : null}
       {view.firstDay || view.redFlag ? null : (
         <Card raised style={{ alignItems: 'center', gap: space.sm, minHeight: 120, justifyContent: 'center' }}>
           <SectionLabel>{copy.checkIn.previewLabel}</SectionLabel>

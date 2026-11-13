@@ -6,7 +6,7 @@ import { Contributors } from '@/components/today/contributors'
 import { TodayHeader } from '@/components/today/header'
 import { TodayHero } from '@/components/today/hero'
 import { REVEAL_CARDS_LEAD_MS, useMorningReveal } from '@/components/today/morning-reveal'
-import { BackupCard, QuietCard } from '@/components/today/notices'
+import { BackupCard, BendAlertCard, QuietCard } from '@/components/today/notices'
 import { RedFlagCard } from '@/components/today/red-flag'
 import { WarningCard } from '@/components/today/warning-card'
 import { WeekStrip } from '@/components/today/week-strip'
@@ -88,6 +88,7 @@ export default function TodayScreen() {
       <TodayHero reveal={revealing} />
       <CardLeadContext value={revealing ? REVEAL_CARDS_LEAD_MS : 0}>
         <WarningCard index={1} />
+        <BendAlertCard />
         {Platform.OS === 'web' ? <TapeLiveCard index={1} /> : null}
         {view.firstDay ? null : <Contributors index={2} />}
         <PainButton />

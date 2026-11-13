@@ -1,5 +1,7 @@
 /**
- * The adaptive plan. Phase comes from time since surgery or injury, then holds
+ * The adaptive plan. Phase comes from the protocol checkpoints when the injury has a
+ * criterion-based protocol (ACL reconstruction, meniscus repair), otherwise from time
+ * since surgery or injury. Either way it then holds
  * back when recent flare-ups disagree. Today's sessions follow the day's status:
  * Keep going gets the full dose, Steady the lighter dose with sport skipped,
  * Ease off a recovery day. It never pushes when the signals disagree.
@@ -9,6 +11,7 @@ import type { FlareDay, PlanMark, Profile, Status } from '../manual/types'
 import { jointOf } from '../manual/types'
 import { LIBRARY, PHASE_NAMES, PHASE_WEEKS, RECOVERY_DAY, TYPICAL_RETURN_WEEKS, WEEK_TEMPLATE } from './library'
 import type { Exercise, Phase } from './library'
+import { libraryPhaseFor } from '../protocol/phase-map'
 
 export const PLAN_RULES = {
   /** Flare-ups within this many days that hold the phase back by one. */
@@ -36,6 +39,8 @@ export interface PlanView {
   readonly phaseName: string
   /** Set when recent flare-ups held the phase back. */
   readonly heldBack: boolean
+  /** Where the phase came from before any hold-back. */
+  readonly phaseFrom: 'checkpoints' | 'time'
   readonly source: 'with-pt' | 'protocol'
   readonly today: DayPlan
   readonly week: readonly DayPlan[]
@@ -76,13 +81,15 @@ export interface PlanInput {
   readonly status: Status
   readonly flares: readonly FlareDay[]
   readonly marks: readonly PlanMark[]
+  /** Current phase on the criterion-based protocol path (1..6), when there is one. */
+  readonly protocolPhase?: number
 }
 
 export function buildPlan(input: PlanInput): PlanView {
   const { profile, today, status } = input
   const joint = jointOf(profile)
   const weeks = Math.max(0, weeksSince(profile.injuryDate, startOfDay(today, 12)))
-  const timePhase = phaseForWeeks(weeks, PHASE_WEEKS[profile.injury])
+  const timePhase = input.protocolPhase !== undefined ? libraryPhaseFor(input.protocolPhase) : phaseForWeeks(weeks, PHASE_WEEKS[profile.injury])
   const heldBack = timePhase > 1 && recentFlares(input.flares, today) >= PLAN_RULES.holdBackFlares
   const phase = (heldBack ? timePhase - 1 : timePhase) as Phase
   const library = LIBRARY[joint][phase]
@@ -104,6 +111,7 @@ export function buildPlan(input: PlanInput): PlanView {
     phase,
     phaseName: PHASE_NAMES[phase],
     heldBack,
+    phaseFrom: input.protocolPhase !== undefined ? 'checkpoints' : 'time',
     source: profile.hasPt ? 'with-pt' : 'protocol',
     today: todayPlan,
     week,

@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import { LogBox, useColorScheme } from 'react-native'
 
 import { installDevLogMirror } from '@/dev-log-mirror'
+import { BendWatch } from '@/tape/bend-watch'
 import { StoreProvider } from '@/store/provider'
 import { TapeProvider } from '@/tape/use-tape'
 import { palette } from '@/theme/tokens'
@@ -51,6 +52,7 @@ export default function RootLayout() {
   return (
     <StoreProvider>
       <TapeProvider>
+        <BendWatch />
         <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
@@ -66,6 +68,9 @@ export default function RootLayout() {
             <Stack.Screen name="guidance" options={{ presentation: 'modal' }} />
             <Stack.Screen name="red-flags" options={{ presentation: 'modal' }} />
             <Stack.Screen name="tape" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="path" />
+            <Stack.Screen name="self-test" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="from-pt" options={{ presentation: 'modal' }} />
           </Stack>
         </ThemeProvider>
       </TapeProvider>

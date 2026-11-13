@@ -4,6 +4,7 @@
  * All records are immutable.
  */
 import type { Swelling } from '../domain/types'
+import type { EffusionGrade, MeasuredBy, Metric } from '../protocol/protocols'
 
 export type ManualActivity = 'practice' | 'game' | 'gym' | 'pt' | 'walking' | 'rest'
 export type Intensity = 'light' | 'moderate' | 'hard'
@@ -66,6 +67,8 @@ export interface MorningCheckIn {
   /** 0..10 */
   readonly pain: number
   readonly swelling: Swelling
+  /** Optional guided self stroke test (Sturgill 2009). When missing, swelling is mapped conservatively. */
+  readonly effusion?: EffusionGrade
 }
 
 /** Who measured a range day. 'reco-tape-sim' only ever appears in sample data. */
@@ -135,6 +138,46 @@ export interface Profile {
   readonly ptEmail?: string
   /** ISO date of the next PT visit, for schedule send. */
   readonly nextVisit?: string
+  /** The uninjured knee, measured once ("Measure your good knee first"). Protocol checkpoints compare against it. */
+  readonly otherKnee?: OtherKnee
+}
+
+export interface OtherKnee {
+  readonly flexionDeg: number
+  readonly extensionDeficitDeg: number
+}
+
+/** One checkpoint value from a self-test, a check-in or the PT ("From my PT"). */
+export interface PathMeasurement {
+  readonly metric: Metric
+  readonly value: number | boolean | EffusionGrade
+  readonly date: string
+  readonly by: MeasuredBy
+}
+
+/** Where the person is on the protocol path. Completed phases are sticky. */
+export interface PathRecord {
+  readonly completed: readonly { readonly phase: number; readonly date: string }[]
+  /** PT puts the person in this phase regardless of checkpoints. */
+  readonly ptPhase?: number
+  /** PT or surgeon bend limit for the tape. null = they lifted it. Missing = protocol default. */
+  readonly ptFlexionMaxDeg?: number | null
+}
+
+/** What the tape's max calibration means in degrees. Rest is always the leg straight (0°). */
+export interface BendCalibration {
+  readonly maxDeg: number
+  /** Date key the person entered it. */
+  readonly date: string
+}
+
+/** A bend past the limit in force, from the live tape (or the simulator in sample data). */
+export interface BendAlert {
+  readonly date: string
+  readonly t: number
+  readonly angleDeg: number
+  readonly limitDeg: number
+  readonly loaded: boolean
 }
 
 export const jointOf = (p: Pick<Profile, 'joint'>): Joint => p.joint ?? 'knee'
@@ -165,4 +208,8 @@ export interface Dataset {
   readonly warningFeedback?: readonly WarningFeedback[]
   readonly exercises?: readonly PlanExercise[]
   readonly eveningChecks?: readonly EveningCheck[]
+  readonly path?: PathRecord
+  readonly measurements?: readonly PathMeasurement[]
+  readonly bendAlerts?: readonly BendAlert[]
+  readonly bendCalibration?: BendCalibration
 }

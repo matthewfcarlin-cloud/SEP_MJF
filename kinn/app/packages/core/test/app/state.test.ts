@@ -150,3 +150,53 @@ describe('deleting and logging', () => {
     expect(active(rootReducer(edited, { type: 'removeExercise', id: 'q' })).data.exercises).toEqual([])
   })
 })
+
+describe('protocol path state', () => {
+  const sample = (): RootState => rootReducer(fresh(), { type: 'setMode', mode: 'sample' })
+
+  test('the sample opens on Maya and the debug menu switches persona and day', () => {
+    const start = sample()
+    expect(active(start).data.profile.name).toBe('Maya')
+    const priya = rootReducer(start, { type: 'setSample', today: TODAY, choice: { personaId: 'priya-meniscus', day: 20 } })
+    expect(active(priya).sample).toEqual({ personaId: 'priya-meniscus', day: 20 })
+    expect(active(priya).data.profile).toMatchObject({ name: 'Priya', injury: 'meniscus', hadSurgery: true })
+    expect(priya.real).toBe(start.real)
+    const reseeded = rootReducer(priya, { type: 'reseedSample', today: '2026-11-07' })
+    expect(active(reseeded).sample?.personaId).toBe('priya-meniscus')
+  })
+
+  test('PT overrides merge, and undefined goes back to the protocol default while null lifts the limit', () => {
+    const s1 = rootReducer(fresh(), { type: 'setPathOverrides', overrides: { ptPhase: 3, ptFlexionMaxDeg: null } })
+    expect(active(s1).data.path).toEqual({ completed: [], ptPhase: 3, ptFlexionMaxDeg: null })
+    const s2 = rootReducer(s1, { type: 'setPathOverrides', overrides: { ptPhase: undefined, ptFlexionMaxDeg: 110 } })
+    expect(active(s2).data.path).toEqual({ completed: [], ptFlexionMaxDeg: 110 })
+    const s3 = rootReducer(s2, { type: 'setPath', path: { completed: [{ phase: 1, date: TODAY }], ptFlexionMaxDeg: 110 } })
+    expect(active(s3).data.path?.completed).toHaveLength(1)
+  })
+
+  test('a re-entered value replaces the same-day one, other days stay', () => {
+    const add = (root: RootState, value: number, date: string) =>
+      rootReducer(root, { type: 'addPathMeasurements', measurements: [{ metric: 'quadIndexPct', value, date, by: 'pt' }] })
+    const s = add(add(add(fresh(), 70, '2026-11-01'), 75, TODAY), 78, TODAY)
+    expect(active(s).data.measurements?.map((m) => m.value)).toEqual([70, 78])
+  })
+
+  test('the check-in keeps an optional stroke-test grade', () => {
+    const s = rootReducer(fresh(), { type: 'setCheckIn', date: TODAY, pain: 2, swelling: 'some', effusion: 'trace' })
+    expect(active(s).data.checkIns[0]).toEqual({ date: TODAY, pain: 2, swelling: 'some', effusion: 'trace' })
+    const plain = rootReducer(fresh(), { type: 'setCheckIn', date: TODAY, pain: 2, swelling: 'none' })
+    expect(active(plain).data.checkIns[0]).not.toHaveProperty('effusion')
+  })
+})
+
+describe('tape bend', () => {
+  test('the bend calibration is set and cleared, and alerts append', () => {
+    const set = rootReducer(fresh(), { type: 'setBendCalibration', calibration: { maxDeg: 80, date: TODAY } })
+    expect(active(set).data.bendCalibration).toEqual({ maxDeg: 80, date: TODAY })
+    const cleared = rootReducer(set, { type: 'setBendCalibration', calibration: undefined })
+    expect(active(cleared).data).not.toHaveProperty('bendCalibration')
+    const alert = { date: TODAY, t: 1, angleDeg: 97, limitDeg: 90, loaded: false }
+    const two = rootReducer(rootReducer(fresh(), { type: 'addBendAlert', alert }), { type: 'addBendAlert', alert: { ...alert, t: 2 } })
+    expect(active(two).data.bendAlerts?.map((a) => a.t)).toEqual([1, 2])
+  })
+})

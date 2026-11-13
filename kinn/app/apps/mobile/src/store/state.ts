@@ -1,7 +1,10 @@
 import type {
   ActivityLog,
+  BendAlert,
+  BendCalibration,
   Dataset,
   Doing,
+  EffusionGrade,
   EveningWord,
   GuidanceLevel,
   Intensity,
@@ -9,14 +12,17 @@ import type {
   ManualActivity,
   MorningCheckIn,
   PainLog,
+  PathMeasurement,
+  PathRecord,
   PlanExercise,
   Profile,
   RomDay,
+  SampleChoice,
   Settled,
   Swelling,
   WarningFeedback,
 } from '@reco/core'
-import { emptyDataset, seedDataset, SEED_PROFILE } from '@reco/core'
+import { DEFAULT_SAMPLE, EMPTY_PATH, emptyDataset, seedDataset, SEED_PROFILE } from '@reco/core'
 
 export type DataMode = 'real' | 'sample'
 export type NotificationMode = 'morning' | 'morning-evening' | 'visits' | 'off'
@@ -34,6 +40,14 @@ export interface AppState {
   readonly lastExportAt?: number
   /** "Not now" on the weekly backup prompt. */
   readonly backupDismissedAt?: number
+  /** Sample mode only: which persona, and how many days after surgery today is. */
+  readonly sample?: SampleChoice
+}
+
+/** PT overrides on the path. A field set to undefined goes back to the protocol default. */
+export interface PathOverrides {
+  readonly ptPhase?: number | undefined
+  readonly ptFlexionMaxDeg?: number | null | undefined
 }
 
 /** Real and sample data are separate states, saved under separate keys, so they can never mix. */
@@ -47,6 +61,12 @@ export type Action =
   | { type: 'hydrate'; root: RootState }
   | { type: 'setMode'; mode: DataMode }
   | { type: 'reseedSample'; today: string }
+  | { type: 'setSample'; today: string; choice: SampleChoice }
+  | { type: 'setPath'; path: PathRecord }
+  | { type: 'setPathOverrides'; overrides: PathOverrides }
+  | { type: 'addPathMeasurements'; measurements: readonly PathMeasurement[] }
+  | { type: 'setBendCalibration'; calibration: BendCalibration | undefined }
+  | { type: 'addBendAlert'; alert: BendAlert }
   | { type: 'completeOnboarding'; profile: Profile; notifications: NotificationMode; consentAt: number; rom?: RomDay; exercises?: readonly PlanExercise[] }
   | { type: 'updateProfile'; patch: Partial<Profile> }
   | { type: 'deleteMyData'; today: string }
@@ -61,7 +81,7 @@ export type Action =
   | { type: 'updatePain'; id: string; patch: PainPatch }
   | { type: 'removePain'; id: string }
   | { type: 'answerSettle'; id: string; settled: Settled; t: number }
-  | { type: 'setCheckIn'; date: string; pain: number; swelling: Swelling }
+  | { type: 'setCheckIn'; date: string; pain: number; swelling: Swelling; effusion?: EffusionGrade }
   | { type: 'setEvening'; id: string; date: string; t: number; word: EveningWord }
   | { type: 'addMeasurement'; rom: RomDay }
   | { type: 'upsertExercise'; exercise: PlanExercise }
@@ -78,12 +98,13 @@ export const initialReal = (today: string): AppState => ({
   notifications: 'off',
 })
 
-export const initialSample = (today: string): AppState => ({
+export const initialSample = (today: string, sample: SampleChoice = DEFAULT_SAMPLE): AppState => ({
   onboarded: true,
   seededFor: today,
-  data: seedDataset(today),
+  data: seedDataset(today, sample),
   guidance: 'descriptive',
   notifications: 'off',
+  sample,
 })
 
 export const initialRoot = (today: string, mode: DataMode): RootState => ({ mode, real: initialReal(today), sample: initialSample(today) })
@@ -162,6 +183,18 @@ function upsertExercise(state: AppState, exercise: PlanExercise): AppState {
   return withData(state, { exercises: next })
 }
 
+/** Same-day, same-metric entries are replaced, so editing the PT sheet twice keeps one value. */
+function addPathMeasurements(state: AppState, added: readonly PathMeasurement[]): AppState {
+  const replaced = (m: PathMeasurement): boolean => added.some((a) => a.metric === m.metric && a.date === m.date && a.by === m.by)
+  return withData(state, { measurements: [...(state.data.measurements ?? []).filter((m) => !replaced(m)), ...added] })
+}
+
+function setPathOverrides(state: AppState, overrides: PathOverrides): AppState {
+  const merged: Record<string, unknown> = { ...(state.data.path ?? EMPTY_PATH), ...overrides }
+  const path = Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== undefined)) as unknown as PathRecord
+  return withData(state, { path })
+}
+
 function completeOnboarding(state: AppState, action: Extract<Action, { type: 'completeOnboarding' }>): AppState {
   const romDays = action.rom ? [...state.data.romDays.filter((r) => r.date !== action.rom?.date), action.rom] : state.data.romDays
   const exercises = [...(state.data.exercises ?? []), ...(action.exercises ?? [])]
@@ -203,10 +236,22 @@ export function reducer(state: AppState, action: Action): AppState {
       return withData(state, {
         painLogs: state.data.painLogs.map((p) => (p.id === action.id ? { ...p, settled: action.settled, settledAt: action.t } : p)),
       })
-    case 'setCheckIn':
-      return withData(state, {
-        checkIns: upsertCheckIn(state.data.checkIns, { date: action.date, pain: action.pain, swelling: action.swelling }),
-      })
+    case 'setCheckIn': {
+      const { date, pain, swelling, effusion } = action
+      return withData(state, { checkIns: upsertCheckIn(state.data.checkIns, { date, pain, swelling, ...(effusion ? { effusion } : {}) }) })
+    }
+    case 'setPath':
+      return withData(state, { path: action.path })
+    case 'setPathOverrides':
+      return setPathOverrides(state, action.overrides)
+    case 'addPathMeasurements':
+      return addPathMeasurements(state, action.measurements)
+    case 'setBendCalibration': {
+      const { bendCalibration: _old, ...rest } = state.data
+      return { ...state, data: action.calibration ? { ...rest, bendCalibration: action.calibration } : rest }
+    }
+    case 'addBendAlert':
+      return withData(state, { bendAlerts: [...(state.data.bendAlerts ?? []), action.alert] })
     case 'setEvening':
       return setEvening(state, action)
     case 'addMeasurement':
@@ -233,7 +278,9 @@ export function rootReducer(root: RootState, action: Action): RootState {
     case 'setMode':
       return { ...root, mode: action.mode }
     case 'reseedSample':
-      return { ...root, sample: initialSample(action.today) }
+      return { ...root, sample: initialSample(action.today, root.sample.sample) }
+    case 'setSample':
+      return { ...root, sample: initialSample(action.today, action.choice) }
     case 'deleteMyData':
       return { ...root, mode: 'real', real: initialReal(action.today) }
     default:

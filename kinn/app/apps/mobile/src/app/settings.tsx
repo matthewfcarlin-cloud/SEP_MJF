@@ -5,6 +5,7 @@ import { Platform, View } from 'react-native'
 import { DISCLAIMER, localDateKey } from '@reco/core'
 import Constants from 'expo-constants'
 
+import { SampleMenu } from '@/components/settings/sample-menu'
 import { ChoiceCard, FieldEditor } from '@/components/setup/parts'
 import type { Draft, DraftField } from '@/components/setup/parts'
 import { Button } from '@/components/ui/button'
@@ -108,6 +109,7 @@ export default function SettingsScreen() {
 
   return (
     <Screen variant="fullscreen" back={copy.settingsFlow.back} title={copy.settingsFlow.title}>
+      <SampleMenu />
       <Card style={{ gap: 0 }}>
         <SectionLabel spaced>{copy.settingsFlow.comeback}</SectionLabel>
         <ListRow title={profile.goal || copy.settingsFlow.comeback} sub={copy.settingsFlow.comebackSub(injury, profile.side, profile.hadSurgery, view.weeksSinceInjury)} onPress={() => toggle('comeback')} />
