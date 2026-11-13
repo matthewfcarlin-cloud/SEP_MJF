@@ -7,8 +7,8 @@ function Checkpoint({ item }: { readonly item: CriterionView }) {
   const projection = item.blockedByLimit ? copy.blocked : projectionWords(item.projection, 'clinician')
   return (
     <li className="checkpoint">
-      <span className={`dot dot-${item.status}`} />
-      <span className="stack-xs grow">
+      <span className={`cp-mark cp-${item.status}`} aria-hidden="true" />
+      <span className="stack" style={{ gap: 2 }}>
         <span>{item.criterion.label}</span>
         <span className="small muted">{criterionValueWords(item, 'clinician')}</span>
         {projection ? <span className="small muted">{projection}</span> : null}
@@ -24,9 +24,9 @@ export function NextStepsSection({ patient }: { readonly patient: PatientSummary
   const athome = open.filter((c) => c.criterion.measuredBy !== 'pt')
   return (
     <section className="panel" aria-labelledby="next-title">
-      <h3 id="next-title" className="label">{copy.nextTitle}</h3>
+      <h2 id="next-title">{copy.nextTitle}</h2>
       <p>{phaseLine}</p>
-      {patient.path && open.length === 0 ? <p className="muted small">{copy.allMet}</p> : null}
+      {patient.path && open.length === 0 ? <p className="small muted">{copy.allMet}</p> : null}
       {athome.length > 0 ? (
         <ul className="checkpoints">
           {athome.map((c) => (
@@ -36,7 +36,7 @@ export function NextStepsSection({ patient }: { readonly patient: PatientSummary
       ) : null}
       {forClinic.length > 0 ? (
         <div className="for-clinic">
-          <span className="label">{copy.forClinic}</span>
+          <h3>{copy.forClinic}</h3>
           <ul className="checkpoints">
             {forClinic.map((c) => (
               <Checkpoint key={c.criterion.id} item={c} />

@@ -1,25 +1,26 @@
 /**
- * The patient app's three faces (Geist, Geist Mono, Instrument Serif), loaded from the same
- * font packages so nothing is fetched from a third party. Text falls back to the system face
- * until they arrive.
+ * Atkinson Hyperlegible Next for the interface and its Mono for every number and time,
+ * self-hosted from the font packages (nothing fetched from a third party). Built by the Braille
+ * Institute for legibility, which a projected demo and a clinic screen both need. The RECO
+ * wordmark is the brand SVG, never retyped.
  */
-import geist400 from '@expo-google-fonts/geist/400Regular/Geist_400Regular.ttf'
-import geist500 from '@expo-google-fonts/geist/500Medium/Geist_500Medium.ttf'
-import mono400 from '@expo-google-fonts/geist-mono/400Regular/GeistMono_400Regular.ttf'
-import mono500 from '@expo-google-fonts/geist-mono/500Medium/GeistMono_500Medium.ttf'
-import serif400 from '@expo-google-fonts/instrument-serif/400Regular/InstrumentSerif_400Regular.ttf'
+import sans400 from '@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-400-normal.woff2'
+import sans500 from '@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-500-normal.woff2'
+import sans700 from '@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-700-normal.woff2'
+import mono400 from '@fontsource/atkinson-hyperlegible-mono/files/atkinson-hyperlegible-mono-latin-400-normal.woff2'
+import mono500 from '@fontsource/atkinson-hyperlegible-mono/files/atkinson-hyperlegible-mono-latin-500-normal.woff2'
 
 const FACES: readonly { family: string; url: string; weight: string }[] = [
-  { family: 'Geist', url: geist400, weight: '400' },
-  { family: 'Geist', url: geist500, weight: '500' },
-  { family: 'Geist Mono', url: mono400, weight: '400' },
-  { family: 'Geist Mono', url: mono500, weight: '500' },
-  { family: 'Instrument Serif', url: serif400, weight: '400' },
+  { family: 'Atkinson Hyperlegible Next', url: sans400, weight: '400' },
+  { family: 'Atkinson Hyperlegible Next', url: sans500, weight: '500' },
+  { family: 'Atkinson Hyperlegible Next', url: sans700, weight: '700' },
+  { family: 'Atkinson Hyperlegible Mono', url: mono400, weight: '400' },
+  { family: 'Atkinson Hyperlegible Mono', url: mono500, weight: '500' },
 ]
 
 export function loadFonts(): void {
   for (const f of FACES) {
-    const face = new FontFace(f.family, `url(${f.url})`, { weight: f.weight, display: 'swap' })
+    const face = new FontFace(f.family, `url(${f.url}) format('woff2')`, { weight: f.weight, display: 'swap' })
     face.load().then((loaded) => document.fonts.add(loaded)).catch((error: unknown) => console.warn('RECO: a font did not load.', error))
   }
 }

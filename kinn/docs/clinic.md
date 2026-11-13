@@ -15,7 +15,9 @@ Import the GitHub repo as a new Vercel project and set **Root Directory** to `ki
 - The patient app stays the patient's own. The vision says the record belongs to the patient and must never feel like policing, so a clinician role doesn't live inside it.
 - Nothing is duplicated: both apps call the same `@reco/core` functions (`deriveToday`, the protocol path, the weekly report), so they can't disagree.
 
-Vite + React rather than Expo web, because the patient app's components are phone-first and a dashboard wants wide layouts. The colours mirror `apps/mobile/src/theme/tokens.ts` and the fonts load from the same packages; change the palette in both places together.
+Vite + React rather than Expo web, because the patient app's components are phone-first and a dashboard wants wide layouts.
+
+**Design (Nov 12 redesign, "The Week Ring").** Each patient's last seven days are drawn as one 168-hour ring, opened out from RECO's Sensor O: clinic visits are an ink sliver, and the centre pairs "the hours you never see" with the hour in clinic. Its own palette (a stepped green-grey ramp, graphite rail, live teal) and Atkinson Hyperlegible Next and Mono, chosen for legibility on projectors and clinic screens; the RECO wordmark is the brand SVG. The design system is recorded in `apps/clinic/DESIGN.md`, the product context in `apps/clinic/PRODUCT.md`, and the direction in `apps/clinic/.impeccable/surfaces/`. Built with the Impeccable and Emil Kowalski design skills.
 
 ## What it shows
 

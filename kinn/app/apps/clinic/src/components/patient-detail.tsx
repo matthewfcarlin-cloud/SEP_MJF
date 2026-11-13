@@ -1,28 +1,40 @@
+import { RING_DAYS } from '@reco/core'
 import type { PatientSummary } from '@reco/core'
+import { useState } from 'react'
 
-import { copy } from '../copy'
 import { FlagList } from './flags'
 import { NextStepsSection } from './next-steps'
 import { ProgressSection } from './progress'
+import { RingPanel } from './ring-panel'
 import { WeekSection } from './week'
 
-/** One patient: flags first (so nothing alarming sits below the fold), then progress, next steps and the week. */
-export function PatientDetail({ patient, today }: { readonly patient: PatientSummary; readonly today: string }) {
+interface PatientDetailProps {
+  readonly patient: PatientSummary
+  readonly today: string
+  readonly nowHour: number
+  readonly animateRing: boolean
+}
+
+/** The open patient: the week as a ring (held in view) beside flags, progress and next steps; the days below. */
+export function PatientDetail({ patient, today, nowHour, animateRing }: PatientDetailProps) {
+  const [selectedDay, setSelectedDay] = useState(RING_DAYS - 1)
   return (
-    <article className="detail" aria-labelledby="patient-name">
-      <header className="detail-head">
-        <h2 id="patient-name">{patient.name}</h2>
-        <span className="muted">{`${patient.surgeryLabel} · week ${Math.floor(patient.weeksIn)} · ${patient.sport}`}</span>
+    <article className="main" aria-labelledby="patient-name">
+      <header className="patient-head">
+        <h1 id="patient-name">{patient.name}</h1>
+        <p className="patient-facts">{`${patient.surgeryLabel} · week ${Math.floor(patient.weeksIn)} · ${patient.sport}`}</p>
       </header>
-      <section className="stack-sm" aria-labelledby="flags-title">
-        <h3 id="flags-title" className="label">{copy.flagsTitle}</h3>
-        <FlagList flags={patient.flags} today={today} />
-      </section>
-      <div className="detail-grid">
-        <ProgressSection patient={patient} today={today} />
-        <NextStepsSection patient={patient} />
+      <div className="body">
+        <div className="ring-col">
+          <RingPanel ring={patient.ring} nowHour={nowHour} selectedDay={selectedDay} onSelectDay={setSelectedDay} animate={animateRing} patientId={patient.id} />
+        </div>
+        <div className="side">
+          <FlagList flags={patient.flags} today={today} />
+          <ProgressSection patient={patient} today={today} />
+          <NextStepsSection patient={patient} />
+        </div>
       </div>
-      <WeekSection patient={patient} today={today} />
+      <WeekSection patient={patient} />
     </article>
   )
 }
