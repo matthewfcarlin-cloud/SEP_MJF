@@ -1,4 +1,4 @@
-import { emptyDataset, findBannedWords, patientSummary } from '@reco/core'
+import { emptyDataset, findBannedWords, patientSummary, ringHours } from '@reco/core'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 import { buildCaseload, Clinic } from './App'
@@ -9,7 +9,7 @@ import { idFromHash } from './use-selection'
 const TODAY = '2026-11-12'
 const patients = buildCaseload(TODAY)
 const page = (selectedId?: string): string =>
-  renderToStaticMarkup(<Clinic today={TODAY} patients={patients} selectedId={selectedId} onSelect={() => undefined} />)
+  renderToStaticMarkup(<Clinic today={TODAY} nowHour={10} patients={patients} selectedId={selectedId} onSelect={() => undefined} />)
 const text = (html: string): string => html.replace(/<[^>]+>/g, ' ').replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ')
 
 describe('patient list', () => {
@@ -39,7 +39,7 @@ describe('patient detail', () => {
     expect(t).toContain('Ava ACL reconstruction · week 10 · Netball')
     expect(t).toContain('In their words: "Knee gave way on the stairs".')
     expect(html).toContain('role="alert"')
-    expect(t.indexOf('Contact soon')).toBeLessThan(t.indexOf(copy.progressTitle))
+    expect(t.indexOf('Contact soon ·')).toBeLessThan(t.indexOf(copy.progressTitle))
   })
 
   test('shows progress, next steps and the week for the picked patient', () => {
@@ -47,6 +47,7 @@ describe('patient detail', () => {
     expect(t).toContain('Leo ACL reconstruction · week 7 · Football')
     expect(t).toContain('3 · Build strength')
     expect(t).toContain(copy.heldBack)
+    expect(t).toContain(copy.unseenLabel)
     expect(t).toContain('No pain or swelling after workouts')
     expect(t).toContain('A reaction in the last 7 days')
     expect(t).toContain('4 flare-up mornings')
@@ -60,8 +61,28 @@ describe('patient detail', () => {
     expect(forClinic).toContain(copy.by.pt)
   })
 
-  test('shows the bend limit while one is in force', () => {
-    expect(text(page('priya-meniscus'))).toContain(copy.bendLimit(90))
+  test('shows the bend limit while one is in force, and the tape readings on the day table', () => {
+    const t = text(page('priya-meniscus'))
+    expect(t).toContain(`${copy.bendLimit} 90°`)
+    expect(t).toMatch(/bend 9\d° past 90°/)
+  })
+
+  test('the week ring pairs the hours the PT never sees with the hour in clinic, and names every day', () => {
+    const html = page('leo-flare')
+    const leo = patients.find((p) => p.id === 'leo-flare')!
+    const hours = ringHours(leo.ring, 10)
+    const t = text(html)
+    expect(t).toContain(`${hours.unseen} h ${copy.unseenLabel}`)
+    expect(t).toContain(`${hours.inClinic} h ${copy.inClinic}`)
+    expect(html.match(/class="ring-sector/g)).toHaveLength(7)
+    expect(html.match(/class="ring-day-label/g)).toHaveLength(7)
+    expect(html).toContain(`aria-label="${copy.ringLabel(hours.unseen, hours.inClinic)}"`)
+  })
+
+  test('the ring, the summary and the table count the same seven days', () => {
+    const ava = patients.find((p) => p.id === 'ava-gave-way')!
+    expect(ava.week.summary.weekEnd).toBe(TODAY)
+    expect(ava.week.summary.painLogCount).toBe(ava.ring.painLogs)
   })
 
   test('an unknown link falls back to the most urgent patient', () => {
@@ -71,7 +92,7 @@ describe('patient detail', () => {
   test('a patient without a checkpoint protocol still shows', () => {
     const base = emptyDataset(TODAY)
     const other = patientSummary('x', { ...base, profile: { ...base.profile, name: 'Kai', injury: 'tennis-elbow', injuryDate: '2026-10-01' } }, TODAY)
-    const html = renderToStaticMarkup(<Clinic today={TODAY} patients={[other]} selectedId="x" onSelect={() => undefined} />)
+    const html = renderToStaticMarkup(<Clinic today={TODAY} nowHour={10} patients={[other]} selectedId="x" onSelect={() => undefined} />)
     expect(text(html)).toContain(copy.noProtocol)
     expect(text(html)).toContain(copy.noRange)
   })

@@ -3,13 +3,14 @@
  * same functions the patient app uses (deriveToday, the protocol path, the weekly report),
  * so the two never disagree.
  */
-import { addDays } from '../time/day'
 import { deriveToday } from '../manual/derive'
 import type { Dataset, MorningCheckIn, OtherKnee, RomDay } from '../manual/types'
 import type { CriterionView, PathView } from '../protocol/progress'
 import { weekChange, weekHeadline, weeklySummary } from '../report/weekly'
 import type { WeekChange, WeeklySummary } from '../report/weekly'
 import { flagsFor, TIER_ORDER } from './flags'
+import { weekRing } from './ring'
+import type { WeekRing } from './ring'
 import type { ClinicFlag, FlagTier } from './flags'
 
 export interface NextSteps {
@@ -39,6 +40,8 @@ export interface PatientSummary {
   readonly topTier: FlagTier | undefined
   readonly nextSteps: NextSteps
   readonly week: { readonly summary: WeeklySummary; readonly change: WeekChange; readonly headline: string }
+  /** The last seven days, ending today, for the Week Ring. */
+  readonly ring: WeekRing
 }
 
 const INJURY_LABEL: Readonly<Record<string, string>> = {
@@ -71,9 +74,9 @@ function phaseLine(path: PathView | undefined, planName: string): string {
   }
 }
 
-/** The patient's week, ending yesterday: the last day with a full set of logs and a next-morning check-in. */
+/** The patient's last seven days ending today, the same window as the Week Ring, so every count agrees. */
 function weekFor(data: Dataset, today: string): PatientSummary['week'] {
-  const weekEnd = addDays(today, -1)
+  const weekEnd = today
   const summary = weeklySummary(data, weekEnd)
   const change = weekChange(data, weekEnd)
   return { summary, change, headline: weekHeadline(summary, change) }
@@ -101,6 +104,7 @@ export function patientSummary(id: string, data: Dataset, today: string): Patien
     topTier: flags[0]?.tier,
     nextSteps: { phaseLine: phaseLine(path, view.plan.phaseName), open, forClinic: open.filter((c) => c.criterion.measuredBy === 'pt') },
     week: weekFor(data, today),
+    ring: weekRing(data, today),
   }
 }
 

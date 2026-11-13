@@ -1,52 +1,52 @@
-import { addDays } from '@reco/core'
 import type { ManualActivity, PatientSummary } from '@reco/core'
 
 import { copy } from '../copy'
-import { relativeDay, shortDate, weekday } from '../format'
+import { SeverityMark } from './severity'
+import { clockTime, shortDate, weekday } from '../format'
 
-const ACTIVITY: Readonly<Record<ManualActivity, string>> = { practice: 'practice', game: 'game', gym: 'gym', pt: 'PT', walking: 'walking', rest: 'rest' }
+const ACTIVITY: Readonly<Record<ManualActivity, string>> = { practice: 'practice', game: 'game', gym: 'gym', pt: 'clinic visit', walking: 'walking', rest: 'rest' }
 
-function Mornings({ patient }: { readonly patient: PatientSummary }) {
-  return (
-    <ol className="mornings" aria-label="Mornings this week">
-      {patient.week.summary.rows.map((row) => {
-        const morningOf = addDays(row.load.date, 1)
-        return (
-          <li key={row.load.date} className={`morning morning-${row.morning}`} title={`${weekday(morningOf)}: ${copy.morning[row.morning]}`}>
-            <span className="morning-dot" />
-            <span className="small muted">{weekday(morningOf)}</span>
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
-
-function logged(counts: Partial<Record<ManualActivity, number>>): string {
-  const parts = (Object.entries(counts) as [ManualActivity, number][]).map(([a, n]) => `${n} ${ACTIVITY[a]}`)
-  return parts.length ? parts.join(', ') : copy.nothingLogged
-}
-
-/** The patient's week as their own PT report shows it: one headline, the mornings, the numbers. */
-export function WeekSection({ patient, today }: { readonly patient: PatientSummary; readonly today: string }) {
+/** The ring as a table, day by day, with the same week summary the patient's PT report uses. */
+export function WeekSection({ patient }: { readonly patient: PatientSummary }) {
   const { summary, headline } = patient.week
-  const last = patient.lastCheckIn
+  const days = [...patient.ring.days].reverse()
+  const last = patient.ring.days.at(-1)?.date
   return (
     <section className="panel" aria-labelledby="week-title">
-      <div className="split">
-        <h3 id="week-title" className="label">{copy.weekTitle}</h3>
-        <span className="small muted">{copy.weekRange(shortDate(summary.weekStart), shortDate(summary.weekEnd))}</span>
+      <div className="week-head">
+        <h2 id="week-title">{copy.weekTitle}</h2>
+        <span className="small muted">{copy.weekSummaryRange(shortDate(summary.weekStart), shortDate(summary.weekEnd))}</span>
       </div>
       <p className="headline">{headline}</p>
-      <Mornings patient={patient} />
-      <dl className="facts">
-        <div><dt>{copy.peakBend}</dt><dd>{summary.peakFlexionDeg !== undefined ? `${summary.peakFlexionDeg}°` : '–'}</dd></div>
-        <div><dt>{copy.bestStraight}</dt><dd>{summary.bestExtensionDeficitDeg !== undefined ? (summary.bestExtensionDeficitDeg <= 0 ? copy.fullyStraight : copy.shortOf(summary.bestExtensionDeficitDeg)) : '–'}</dd></div>
-        <div><dt>{copy.flareMornings}</dt><dd>{summary.flares.length}</dd></div>
-        <div><dt>{copy.painLogs}</dt><dd>{summary.painLogCount}</dd></div>
+      <dl className="facts facts-week">
+        <dt>{copy.peakBend}</dt><dd className="num">{summary.peakFlexionDeg !== undefined ? `${summary.peakFlexionDeg}°` : '–'}</dd>
+        <dt>{copy.bestStraight}</dt>{summary.bestExtensionDeficitDeg === undefined ? <dd>–</dd> : summary.bestExtensionDeficitDeg <= 0 ? <dd>{copy.fullyStraight}</dd> : <dd className="num">{copy.shortOf(summary.bestExtensionDeficitDeg)}</dd>}
+        <dt>{copy.flareMornings}</dt><dd className="num">{summary.flares.length}</dd>
+        <dt>{copy.painLogs}</dt><dd className="num">{summary.painLogCount}</dd>
       </dl>
-      <p className="small"><span className="muted">{`${copy.logged}: `}</span>{logged(summary.activityCounts)}</p>
-      {last ? <p className="small muted">{copy.lastCheckIn(relativeDay(last.date, today), last.pain, copy.swelling[last.swelling])}</p> : null}
+      <table className="days">
+        <colgroup><col className="w-day" /><col className="w-morning" /><col className="col-activity w-activity" /><col /></colgroup>
+        <thead>
+          <tr><th scope="col">{copy.colDay}</th><th scope="col">{copy.colMorning}</th><th scope="col" className="col-activity">{copy.colActivity}</th><th scope="col">{copy.colPain}</th></tr>
+        </thead>
+        <tbody>
+          {days.map((d) => {
+            const acts = [...(d.ptVisit ? ['clinic visit'] : []), ...d.activities.map((a) => ACTIVITY[a])]
+            const entries = [
+              ...d.pain.map((p) => (p.note ? `${clockTime(p.hour)} "${p.note}"` : copy.painEntry(clockTime(p.hour), p.pain, p.didNotSettle))),
+              ...d.bends.map((b) => copy.bendEntry(clockTime(b.hour), b.angleDeg, b.limitDeg)),
+            ]
+            return (
+              <tr key={d.date} className={d.date === last ? 'today' : undefined}>
+                <td>{`${weekday(d.date)} ${shortDate(d.date)}`}</td>
+                <td><span className="day-morning">{d.morning === 'flare' ? <SeverityMark tier="contact-soon" size={11} /> : d.morning === 'some' ? <SeverityMark tier="worth-a-look" size={11} /> : <i className={`dot dot-${d.morning}`} aria-hidden="true" />}{copy.morningWords(d.morning, d.checkInPain)}</span></td>
+                <td className="col-activity">{acts.length ? acts.join(', ') : '–'}</td>
+                <td>{entries.length ? entries.join('; ') : '–'}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </section>
   )
 }

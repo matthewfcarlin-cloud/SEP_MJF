@@ -1,6 +1,7 @@
 import { findBannedWords } from '../../src/copy/banned'
 import { caseloadOrder, patientSummary } from '../../src/clinic/summary'
 import { FLAG_RULES, flagsFor } from '../../src/clinic/flags'
+import { ringHours, WEEK_HOURS, weekRing } from '../../src/clinic/ring'
 import { emptyDataset } from '../../src/manual/derive'
 import type { Dataset, MorningCheckIn, PainLog } from '../../src/manual/types'
 import { pathView } from '../../src/protocol/inputs'
@@ -150,5 +151,50 @@ describe('the sample caseload', () => {
     const offenders = list.flatMap((p) => p.flags.flatMap((f) => [f.title, f.detail, p.nextSteps.phaseLine]))
       .filter((t) => findBannedWords(t).some((w) => w !== 'patient'))
     expect(offenders).toEqual([])
+  })
+})
+
+describe('week ring', () => {
+  const ring = (data: Dataset) => weekRing(data, TODAY)
+
+  test('covers the seven days ending today, oldest first', () => {
+    const r = ring(patient())
+    expect(r.days.map((d) => d.date)).toEqual([addDays(TODAY, -6), addDays(TODAY, -5), addDays(TODAY, -4), addDays(TODAY, -3), addDays(TODAY, -2), YESTERDAY, TODAY])
+    expect(r).toMatchObject({ visits: 0, hoursInClinic: 0, hoursBetween: WEEK_HOURS, checkIns: 0, painLogs: 0, bendAlerts: 0 })
+  })
+
+  test('puts pain logs and bend alerts at their hour, and counts clinic visits as an hour each', () => {
+    const data = patient({
+      activityLogs: [
+        { id: 'a', date: YESTERDAY, activity: 'pt', intensity: 'moderate' },
+        { id: 'b', date: YESTERDAY, activity: 'gym', intensity: 'light' },
+        { id: 'c', date: TODAY, activity: 'pt', intensity: 'light' },
+      ],
+      painLogs: [pain(YESTERDAY, { pain: 6, settled: 'no' }), { ...pain(TODAY, { note: 'knee gave way' }), t: startOfDay(TODAY, 8) + 30 * 60_000 }],
+      bendAlerts: [{ date: YESTERDAY, t: startOfDay(YESTERDAY, 18), angleDeg: 97, limitDeg: 90, loaded: false }],
+      checkIns: [checkIn(TODAY, 2)],
+    })
+    const r = ring(data)
+    const y = r.days.at(-2)!
+    const t = r.days.at(-1)!
+    expect(y).toMatchObject({ ptVisit: true, activities: ['gym'], bends: [{ hour: 18, angleDeg: 97, limitDeg: 90 }] })
+    expect(y.pain[0]).toMatchObject({ hour: 19, pain: 6, didNotSettle: true, redFlag: false })
+    expect(t.pain[0]).toMatchObject({ hour: 8.5, redFlag: true })
+    expect(t.checkInPain).toBe(2)
+    expect(r).toMatchObject({ visits: 2, hoursInClinic: 2, hoursBetween: 166, checkIns: 1, painLogs: 2, bendAlerts: 1 })
+  })
+
+  test('the centre counts only hours that have passed, minus the clinic hours, so it matches the arc', () => {
+    const r = ring(patient({ activityLogs: [{ id: 'a', date: YESTERDAY, activity: 'pt', intensity: 'moderate' }] }))
+    expect(ringHours(r, 10.5)).toEqual({ elapsed: 154, inClinic: 1, unseen: 153 })
+    expect(ringHours(r, 30).elapsed).toBe(WEEK_HOURS)
+    expect(ringHours(ring(patient()), 0)).toEqual({ elapsed: 144, inClinic: 0, unseen: 144 })
+  })
+
+  test('marks each morning the way the weekly report does', () => {
+    const r = ring(patient({ checkIns: [checkIn(YESTERDAY, 5), checkIn(TODAY, 1)] }))
+    expect(r.days.at(-2)?.morning).toBe('flare')
+    expect(r.days.at(-1)?.morning).toBe('clear')
+    expect(r.days[0]?.morning).toBe('none')
   })
 })
