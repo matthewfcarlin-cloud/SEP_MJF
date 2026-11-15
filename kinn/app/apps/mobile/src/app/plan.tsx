@@ -76,7 +76,11 @@ export default function PlanScreen() {
   if (plan.kind === 'guided' && view.redFlag) return <PlanPaused />
 
   const { ptName } = state.data.profile
-  const eyebrow = plan.kind === 'guided' ? copy.plan.generated : ptName ? copy.plan.fromName(ptName) : copy.plan.fromYourPt
+  const author = plan.plan?.author
+  const eyebrow =
+    plan.kind === 'guided' ? copy.plan.generated
+      : author?.kind === 'pt' && plan.plan ? copy.plan.ptVersion(author.name, plan.plan.version)
+        : ptName ? copy.plan.fromName(ptName) : copy.plan.fromYourPt
   const exercises = state.data.exercises ?? []
   const typed = plan.kind === 'typed'
   const open = (id: string) => router.push({ pathname: '/exercise', params: { id } })
@@ -113,7 +117,7 @@ export default function PlanScreen() {
         <SectionLabel spaced>{copy.plan.today}</SectionLabel>
         {plan.today.rest ? <ListRow title={copy.plan.rest} sub={copy.plan.restSub} /> : null}
         {plan.today.rows.map((row) => (
-          <ListRow key={row.id} title={row.name} sub={detailOf(row.id, row.detail)} right={<CheckCircle done={row.done} label={row.name} onPress={() => togglePlanMark(row.id)} />} />
+          <ListRow key={row.id} title={row.name} sub={row.lighter ? copy.plan.lighterToday(detailOf(row.id, row.detail)) : detailOf(row.id, row.detail)} right={<CheckCircle done={row.done} label={row.name} onPress={() => togglePlanMark(row.id)} />} />
         ))}
       </Card>
       {plan.tomorrow && !plan.tomorrow.rest ? (
@@ -133,10 +137,15 @@ export default function PlanScreen() {
         </Card>
       ) : null}
       {typed ? <Button label={copy.plan.add} variant="secondary" onPress={() => router.push('/exercise')} /> : null}
+      {plan.lighterToday ? (
+        <Txt kind="small" color="textSecondary">
+          {copy.plan.lighterNote}
+        </Txt>
+      ) : null}
       <Txt kind="small" color="textSecondary">
-        {typed ? copy.plan.ptCanChange : copy.plan.guidedNote}
+        {plan.kind === 'pt' ? copy.plan.ptPlanNote : typed ? copy.plan.ptCanChange : copy.plan.guidedNote}
       </Txt>
-      {typed ? null : (
+      {plan.kind !== 'guided' ? null : (
         <Txt kind="small" color="textMuted">
           {copy.inDevelopment}
         </Txt>

@@ -128,6 +128,12 @@ describe('the sample caseload', () => {
     expect(byName('Sam').nextSteps.phaseLine).not.toContain('not before')
   })
 
+  test('carries the written plan: the PT’s where there is one, else what the patient typed', () => {
+    expect(byName('Maya').writtenPlan.source).toBe('pt')
+    expect(byName('Leo').writtenPlan.plan?.adaptation).toBe('lighter-on-flare')
+    expect(byName('Sam').writtenPlan.source).toBe('typed')
+  })
+
   test('without a checkpoint protocol, the phase line says so', () => {
     const data = patient({ profile: { ...patient().profile, injury: 'rotator-cuff' } })
     const s = patientSummary('x', data, TODAY)

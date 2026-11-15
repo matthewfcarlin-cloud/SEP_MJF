@@ -1,3 +1,6 @@
 export * from './library'
 export * from './build'
 export * from './typed'
+export * from './recovery'
+export * from './resolve'
+export * from './catalog'

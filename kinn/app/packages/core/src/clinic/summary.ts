@@ -10,6 +10,8 @@ import { weekChange, weekHeadline, weeklySummary } from '../report/weekly'
 import type { WeekChange, WeeklySummary } from '../report/weekly'
 import { flagsFor, TIER_ORDER } from './flags'
 import { weekRing } from './ring'
+import { planFromTyped } from '../plan/recovery'
+import type { RecoveryPlan } from '../plan/recovery'
 import type { WeekRing } from './ring'
 import type { ClinicFlag, FlagTier } from './flags'
 
@@ -42,6 +44,8 @@ export interface PatientSummary {
   readonly week: { readonly summary: WeeklySummary; readonly change: WeekChange; readonly headline: string }
   /** The last seven days, ending today, for the Week Ring. */
   readonly ring: WeekRing
+  /** The plan the patient follows from a PT: one written on the clinic site, or one they typed in. */
+  readonly writtenPlan: { readonly source: 'pt' | 'typed' | 'none'; readonly plan: RecoveryPlan | undefined }
 }
 
 const INJURY_LABEL: Readonly<Record<string, string>> = {
@@ -105,6 +109,11 @@ export function patientSummary(id: string, data: Dataset, today: string): Patien
     nextSteps: { phaseLine: phaseLine(path, view.plan.phaseName), open, forClinic: open.filter((c) => c.criterion.measuredBy === 'pt') },
     week: weekFor(data, today),
     ring: weekRing(data, today),
+    writtenPlan: data.ptPlan
+      ? { source: 'pt', plan: data.ptPlan }
+      : (data.exercises ?? []).length > 0
+        ? { source: 'typed', plan: planFromTyped(data.exercises ?? [], today) }
+        : { source: 'none', plan: undefined },
   }
 }
 

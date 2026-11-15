@@ -1,59 +1,45 @@
-import { typedPlan } from '@reco/core'
+import { addDays, doseText, planDay, planFromTyped, resolvePlan } from '@reco/core'
+import type { PlanDayView, RecoveryPlan } from '@reco/core'
 
 import { useStore } from './provider'
 
-export interface PlanRow {
-  readonly id: string
-  readonly name: string
-  readonly detail: string
-  readonly done: boolean
-}
-
-export interface PlanDayModel {
-  readonly date: string
-  readonly rows: readonly PlanRow[]
-  readonly rest: boolean
-  readonly allDone: boolean
-}
+export type PlanRow = PlanDayView['rows'][number]
+export type PlanDayModel = PlanDayView
 
 export interface PlanModel {
-  /** typed: the PT's exercises. guided: generated, after review only. none: no PT and below Guided. */
-  readonly kind: 'typed' | 'guided' | 'none'
+  /** pt: written by their PT on the clinic site. typed: typed in from their PT. guided: RECO's, at Guided only. none: no plan. */
+  readonly kind: 'pt' | 'typed' | 'guided' | 'none'
+  readonly plan: RecoveryPlan | undefined
   readonly empty: boolean
   readonly today: PlanDayModel
   readonly tomorrow: PlanDayModel | undefined
   readonly week: readonly PlanDayModel[]
   readonly done: number
   readonly planned: number
+  /** Today shows lighter doses because of a flare-up morning (only when the PT allowed it). */
+  readonly lighterToday: boolean
 }
 
-/** One shape for both plan sources, so the screens only draw it once. */
+const KIND = { pt: 'pt', typed: 'typed', reco: 'guided', none: 'none' } as const
+
+/** One shape for every plan source, from the shared resolver in core, so the screens only draw it once. */
 export function usePlan(): PlanModel {
   const { state, today, view } = useStore()
-  const exercises = state.data.exercises ?? []
-  if (state.guidance === 'guided') {
-    const toDay = (d: (typeof view.plan.week)[number]): PlanDayModel => ({
-      date: d.date,
-      rows: d.items.map((i) => ({ id: i.id, name: i.exercise.name, detail: i.dose, done: i.done })),
-      rest: d.rest,
-      allDone: d.items.length > 0 && d.items.every((i) => i.done),
-    })
-    return { kind: 'guided', empty: false, today: toDay(view.plan.today), tomorrow: undefined, week: view.plan.week.map(toDay), done: view.plan.doneThisWeek, planned: view.plan.plannedThisWeek }
-  }
-  const plan = typedPlan(exercises, state.data.planMarks ?? [], today)
-  const toDay = (d: (typeof plan.week)[number]): PlanDayModel => ({
-    date: d.date,
-    rows: d.items.map((i) => ({ id: i.id, name: i.name, detail: i.detail, done: i.done })),
-    rest: d.rest,
-    allDone: d.allDone,
-  })
+  const r = resolvePlan({ data: state.data, guidance: state.guidance, reco: view.plan, today, status: view.status.status })
+  const written = r.source === 'pt' ? state.data.ptPlan : r.source === 'typed' ? planFromTyped(state.data.exercises ?? [], today) : undefined
+  const next = written ? planDay(written, addDays(today, 1), 'planned', state.data.planMarks ?? []) : undefined
+  const tomorrow = next
+    ? { date: next.date, rows: next.entries.map((e) => ({ id: e.entry.id, name: e.entry.name, detail: doseText(e.dose), done: e.done, lighter: false })), rest: next.rest, allDone: next.allDone }
+    : undefined
   return {
-    kind: state.data.profile.hasPt || exercises.length > 0 ? 'typed' : 'none',
-    empty: exercises.length === 0,
-    today: toDay(plan.today),
-    tomorrow: toDay(plan.tomorrow),
-    week: plan.week.map(toDay),
-    done: plan.doneThisWeek,
-    planned: plan.plannedThisWeek,
+    kind: KIND[r.source],
+    plan: r.plan,
+    empty: r.empty,
+    today: r.today,
+    tomorrow,
+    week: r.week,
+    done: r.done,
+    planned: r.planned,
+    lighterToday: r.source === 'pt' && r.today.rows.some((row) => row.lighter),
   }
 }

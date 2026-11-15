@@ -17,6 +17,8 @@ import { EFFUSION_ORDER } from '../protocol/protocols'
 import type { EffusionGrade, Metric } from '../protocol/protocols'
 import { PERSONAS, simulate } from '../protocol/simulate'
 import type { DaySnapshot, Persona, SimResult } from '../protocol/simulate'
+import { catalogFor, entryFromLibrary } from '../plan/catalog'
+import type { RecoveryPlan } from '../plan/recovery'
 
 export const SEED_DAYS = 21
 export const SAMPLE_BEND_MAX_DEG = 85
@@ -116,6 +118,26 @@ const CALM_WEEK: readonly DayLog[] = [
   { activity: 'walking', intensity: 'moderate' },
   { activity: 'gym', intensity: 'light' },
 ]
+
+/** Sample PT plans, written by a sample PT on the clinic site. Maya's as written; Leo's lighter on flare-up mornings. */
+const SAMPLE_PT = 'Dana Ruiz, PT (sample)'
+const SAMPLE_PLAN_EXERCISES: Readonly<Record<string, { readonly ids: readonly string[]; readonly adaptation: RecoveryPlan['adaptation'] }>> = {
+  'maya-on-track': { ids: ['quad-set', 'heel-slide', 'slr', 'bike', 'single-leg-balance'], adaptation: 'as-written' },
+  'leo-flare': { ids: ['mini-squat', 'step-up', 'bridge', 'bike', 'single-leg-balance'], adaptation: 'lighter-on-flare' },
+}
+
+function samplePtPlan(f: Frame): RecoveryPlan | undefined {
+  const spec = SAMPLE_PLAN_EXERCISES[f.persona.id]
+  if (!spec) return undefined
+  const catalog = catalogFor('knee')
+  const entries = spec.ids.flatMap((id, i) => {
+    const found = catalog.find((c) => c.exercise.id === id)
+    return found ? [entryFromLibrary(found.exercise, `seed-plan-${i}`, id === 'bike' || id === 'single-leg-balance' ? 3 : 5)] : []
+  })
+  return { id: `seed-plan-${f.persona.id}`, version: 2, author: { kind: 'pt', name: SAMPLE_PT }, adaptation: spec.adaptation, publishedOn: addDays(f.today, -6), entries }
+}
+
+const withPtPlan = (plan: RecoveryPlan | undefined): { ptPlan?: RecoveryPlan } => (plan ? { ptPlan: plan } : {})
 
 const EXERCISES: readonly PlanExercise[] = [
   { id: 'seed-ex-quad', name: 'Quad sets', sets: 3, reps: 10, daysPerWeek: 5 },
@@ -250,6 +272,7 @@ export function seedDataset(today: string, choice: SampleChoice = DEFAULT_SAMPLE
     ...logLayer(f),
     ...recoveryLayer(f, simFor(f.persona)),
     exercises: EXERCISES,
+    ...withPtPlan(samplePtPlan(f)),
     planMarks: [],
     // The demo tape's max point read as this bend, so its deepest bends land past a 90° limit.
     bendCalibration: { maxDeg: SAMPLE_BEND_MAX_DEG, date: f.dateAt(0) },

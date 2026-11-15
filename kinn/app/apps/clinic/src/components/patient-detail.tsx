@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { FlagList } from './flags'
 import { NextStepsSection } from './next-steps'
+import { PlanSection } from './plan-section'
 import { ProgressSection } from './progress'
 import { RingPanel } from './ring-panel'
 import { WeekSection } from './week'
@@ -13,10 +14,11 @@ interface PatientDetailProps {
   readonly today: string
   readonly nowHour: number
   readonly animateRing: boolean
+  readonly onEditPlan: () => void
 }
 
 /** The open patient: the week as a ring (held in view) beside flags, progress and next steps; the days below. */
-export function PatientDetail({ patient, today, nowHour, animateRing }: PatientDetailProps) {
+export function PatientDetail({ patient, today, nowHour, animateRing, onEditPlan }: PatientDetailProps) {
   const [selectedDay, setSelectedDay] = useState(RING_DAYS - 1)
   return (
     <article className="main" aria-labelledby="patient-name">
@@ -32,6 +34,7 @@ export function PatientDetail({ patient, today, nowHour, animateRing }: PatientD
           <FlagList flags={patient.flags} today={today} />
           <ProgressSection patient={patient} today={today} />
           <NextStepsSection patient={patient} />
+          <PlanSection patient={patient} onEdit={onEditPlan} />
         </div>
       </div>
       <WeekSection patient={patient} />

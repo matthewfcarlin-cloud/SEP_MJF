@@ -5,6 +5,7 @@
  */
 import type { Swelling } from '../domain/types'
 import type { EffusionGrade, MeasuredBy, Metric } from '../protocol/protocols'
+import type { RecoveryPlan } from '../plan/recovery'
 
 export type ManualActivity = 'practice' | 'game' | 'gym' | 'pt' | 'walking' | 'rest'
 export type Intensity = 'light' | 'moderate' | 'hard'
@@ -212,4 +213,6 @@ export interface Dataset {
   readonly measurements?: readonly PathMeasurement[]
   readonly bendAlerts?: readonly BendAlert[]
   readonly bendCalibration?: BendCalibration
+  /** The plan the patient's PT wrote on the clinic site (synced by the backend once it exists). */
+  readonly ptPlan?: RecoveryPlan
 }
