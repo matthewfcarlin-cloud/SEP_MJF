@@ -14,8 +14,10 @@ import type {
   PainLog,
   PathMeasurement,
   PathRecord,
+  PhoneSync,
   PlanExercise,
   Profile,
+  RecoveryPlan,
   RomDay,
   SampleChoice,
   Settled,
@@ -42,6 +44,8 @@ export interface AppState {
   readonly backupDismissedAt?: number
   /** Sample mode only: which persona, and how many days after surgery today is. */
   readonly sample?: SampleChoice
+  /** Real mode only, and only once the person has turned on sharing: who is signed in and the last revision sent. */
+  readonly sync?: PhoneSync
 }
 
 /** PT overrides on the path. A field set to undefined goes back to the protocol default. */
@@ -62,6 +66,9 @@ export type Action =
   | { type: 'setMode'; mode: DataMode }
   | { type: 'reseedSample'; today: string }
   | { type: 'setSample'; today: string; choice: SampleChoice }
+  | { type: 'setSync'; sync: PhoneSync | undefined }
+  | { type: 'syncedTo'; accountId: string; revision: number }
+  | { type: 'setPtPlan'; accountId: string; plan: RecoveryPlan | undefined }
   | { type: 'setPath'; path: PathRecord }
   | { type: 'setPathOverrides'; overrides: PathOverrides }
   | { type: 'addPathMeasurements'; measurements: readonly PathMeasurement[] }
@@ -283,6 +290,19 @@ export function rootReducer(root: RootState, action: Action): RootState {
       return { ...root, sample: initialSample(action.today, action.choice) }
     case 'deleteMyData':
       return { ...root, mode: 'real', real: initialReal(action.today) }
+    // Sharing belongs to the person's own record, whichever mode happens to be showing.
+    case 'setSync': {
+      const { sync: _old, ...rest } = root.real
+      return { ...root, real: action.sync ? { ...rest, sync: action.sync } : rest }
+    }
+    // A sync result is for the account that asked. If that account has since signed out, it is dropped.
+    case 'syncedTo':
+      return root.real.sync?.account.id === action.accountId ? { ...root, real: { ...root.real, sync: { ...root.real.sync, revision: action.revision } } } : root
+    case 'setPtPlan': {
+      if (root.real.sync?.account.id !== action.accountId) return root
+      const { ptPlan: _old, ...data } = root.real.data
+      return { ...root, real: { ...root.real, data: action.plan ? { ...data, ptPlan: action.plan } : data } }
+    }
     default:
       return { ...root, [root.mode]: reducer(active(root), action) }
   }

@@ -51,8 +51,8 @@ function Legend() {
         <span className="legend-title">{copy.legendMorningsTitle}</span>
         <span className="legend-items">
         <Key label={copy.legendClear}><circle cx="7" cy="7" r="5" fill="var(--teal)" /></Key>
-        <Key label={copy.legendSome}><path d={DIAMOND} fill="none" stroke="var(--amber)" strokeWidth="1.5" /><path d={HALF} fill="var(--amber)" /></Key>
-        <Key label={copy.legendFlare}><path d={DIAMOND} fill="var(--red)" /></Key>
+        <Key label={copy.legendSome}><path d={DIAMOND} fill="none" stroke="var(--r5)" strokeWidth="1.5" /></Key>
+        <Key label={copy.legendFlare}><path d={DIAMOND} fill="none" stroke="var(--amber)" strokeWidth="1.5" /><path d={HALF} fill="var(--amber)" /></Key>
         <Key label={copy.legendNone}><circle cx="7" cy="7" r="4.5" fill="none" stroke="var(--r4)" strokeWidth="2" /></Key>
         </span>
       </div>

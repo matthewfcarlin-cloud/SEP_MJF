@@ -101,3 +101,19 @@ PTs get a website (`app/apps/clinic`), not a PT mode in the patient app: they wo
 
 ## 2026-11-15 · How recovery plans are made (Matthew)
 A plan a person wrote is a stored, versioned fact; RECO's own plan is derived and never stored. Both apps resolve which plan applies the same way: the PT's plan, then one the patient typed in, then RECO's protocol plan at the Guided level only, otherwise none. On the clinic site a PT types their own exercises or picks from the library and edits them, and chooses per plan whether RECO may lighten it on flare-up mornings (default: exactly as written). RECO's plan progresses by protocol phase only, with doses fixed within a phase; dose progression and sport-specific drills are declined for now. Details in [recovery-plan.md](recovery-plan.md). Would change our mind: regulatory review of the Guided plan, or PTs asking for dose progression.
+
+## 2026-11-15 · A server, for people who choose to share with a PT (Matthew)
+RECO now has a backend (`app/apps/api`): accounts, a sealed copy of the record, patient-controlled sharing with a named PT, and published plans. This reverses the Oct 19 "local-first, no backend, no accounts" and "physio side is report-only" decisions for anyone who turns sharing on, and takes the decision the Nov 12 entry left open. For everyone else nothing changes: the record stays on the phone and no account exists. The server stores facts and derives nothing, so both apps still work everything out with `@reco/core`. Details in [how-reco-works.md](how-reco-works.md) and [backend.md](backend.md). Would change our mind: legal advice that RECO cannot hold this data yet, or PTs preferring the emailed report.
+
+## 2026-11-15 · How sharing works (Claude, open to being overruled)
+- **The patient starts it and can end it.** A PT's code only names the PT. The patient sees who it is, picks what is shared, and can change that or stop at any time. Stopping cuts the PT off at once.
+- **What is shared.** Always: name, sport and goal, injury and dates, morning check-ins, where they are on the protocol, a typed-in plan. The patient's choice: range and checkpoints, pain logs, activity, tape alerts, and notes in their own words (off by default).
+- **Exercise check-offs are never shared,** with any setting. The PT side is about the knee, not about checking up (Oct 16, "policing device").
+- **The patient sees every time a PT looked.**
+- **Sign-in is an emailed 8-digit code, no passwords.** PT accounts are an allowlist during the pilot.
+- **One phone per person.** The phone is the source of truth and saves over the server's copy.
+- **Records and plans are encrypted** with a key kept outside the database.
+Would change our mind: PTs needing check-offs to do their job (ask them), patients wanting two devices, or a clinic needing its own sign-in system.
+
+## 2026-11-15 · A wider exercise library for PTs, unreviewed (Claude, open to being overruled)
+The clinic editor's library went from 18 to 85 knee exercises, the extra 67 taken from the exercises the Mass General Brigham ACL and meniscus protocols name, each with a conservative starting dose a PT edits. RECO's own Guided plan still draws only from the original 18, so the generated plan did not change. None of the 67 has been reviewed by a PT; that is the first ask of a design-partner PT. Would change our mind: a PT's corrections, or a PT handing us their own protocol sheet.

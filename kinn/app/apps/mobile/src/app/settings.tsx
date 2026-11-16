@@ -116,6 +116,7 @@ export default function SettingsScreen() {
         {open === 'comeback' ? <ComebackEditor /> : null}
         <ListRow title={copy.settingsFlow.yourPt} sub={profile.hasPt && profile.ptName ? copy.settingsFlow.ptSub(profile.ptName, profile.nextVisit ? shortDate(profile.nextVisit) : undefined) : copy.settingsFlow.ptNone} onPress={() => toggle('pt')} />
         {open === 'pt' ? <PtEditor /> : null}
+        {isReal ? <ListRow title={copy.sharing.row} sub={real.sync ? copy.sharing.rowSignedIn : copy.sharing.rowOff} onPress={() => router.push('/share')} /> : null}
       </Card>
 
       <Card>

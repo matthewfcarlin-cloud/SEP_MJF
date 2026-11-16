@@ -1,10 +1,10 @@
-import { catalogFor, libraryPhaseFor } from '@reco/core'
-import type { Exercise, Metric, PathView, RecoveryPlan } from '@reco/core'
+import { catalogFor, CATEGORY_ORDER, libraryPhaseFor, searchCatalog } from '@reco/core'
+import type { Exercise, ExerciseCategory, Metric, PathView, Phase, RecoveryPlan } from '@reco/core'
 import { useState } from 'react'
 
 import { copy } from '../copy'
 
-const PHASES = [1, 2, 3, 4] as const
+const PHASES: readonly Phase[] = [1, 2, 3, 4]
 
 /** This patient's checkpoint labels for the metrics an exercise trains, from their own protocol. */
 function towardLabels(metrics: readonly Metric[], path: PathView | undefined): readonly string[] {
@@ -20,41 +20,71 @@ interface LibraryPickerProps {
   readonly onAdd: (exercise: Exercise) => void
 }
 
-/** Every knee exercise by phase, with what it works toward on this patient's protocol. Starts on their own phase. */
+/**
+ * The knee library: search by name, narrow by phase and kind. It opens on the patient's own
+ * phase, and each exercise names the checkpoints it works toward on that patient's protocol.
+ */
 export function LibraryPicker({ draft, path, onAdd }: LibraryPickerProps) {
   const catalog = catalogFor('knee')
-  const [phase, setPhase] = useState<number | 'all'>(path ? libraryPhaseFor(path.phase.n) : 'all')
+  const [phase, setPhase] = useState<Phase | 'all'>(path ? libraryPhaseFor(path.phase.n) : 'all')
+  const [category, setCategory] = useState<ExerciseCategory | 'all'>('all')
+  const [query, setQuery] = useState('')
   const inPlan = new Set(draft.entries.flatMap((e) => (e.source.kind === 'library' ? [e.source.exerciseId] : [])))
-  const shown = catalog.filter((c) => phase === 'all' || c.phase === phase)
+  // A search looks through every phase: a PT typing "nordic" wants it wherever it lives.
+  const searching = query.trim() !== ''
+  const shown = searchCatalog(catalog, {
+    query,
+    ...(phase !== 'all' && !searching ? { phase } : {}),
+    ...(category !== 'all' ? { category } : {}),
+  })
   return (
-    <section className="panel" aria-labelledby="library-title">
+    <section className="panel library-panel" aria-labelledby="library-title">
       <h2 id="library-title">{copy.libraryTitle}</h2>
-      <div className="seg" role="radiogroup" aria-label={copy.libraryTitle}>
-        <button type="button" role="radio" aria-checked={phase === 'all'} className="seg-btn" onClick={() => setPhase('all')}>{copy.libraryAll}</button>
+      <div className="library-filters">
+        <label className="field">
+          <span className="sr-only">{copy.librarySearch}</span>
+          <input type="search" value={query} placeholder={copy.librarySearchPlaceholder} onChange={(e) => setQuery(e.target.value)} />
+        </label>
+        <label className="field field-kind">
+          <span className="sr-only">{copy.libraryKind}</span>
+          <select value={category} onChange={(e) => setCategory(e.target.value as ExerciseCategory | 'all')}>
+            <option value="all">{copy.libraryAllKinds}</option>
+            {CATEGORY_ORDER.map((c) => (
+              <option key={c} value={c}>{copy.category[c]}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div className="seg" role="group" aria-label={copy.libraryPhaseLabel}>
+        <button type="button" aria-pressed={phase === 'all' || searching} className="seg-btn" onClick={() => setPhase('all')}>{copy.libraryAll}</button>
         {PHASES.map((n) => (
-          <button key={n} type="button" role="radio" aria-checked={phase === n} className="seg-btn" onClick={() => setPhase(n)}>
+          <button key={n} type="button" aria-pressed={phase === n && !searching} className="seg-btn" onClick={() => { setPhase(n); setQuery('') }}>
             {copy.libraryPhase(n, catalog.find((c) => c.phase === n)?.phaseName ?? '')}
           </button>
         ))}
       </div>
+      <p className="small muted" aria-live="polite">{copy.libraryCount(shown.length, catalog.length)}</p>
+      {shown.length === 0 ? <p className="muted">{copy.libraryEmpty}</p> : null}
       <ul className="library">
         {shown.map((c) => {
           const added = inPlan.has(c.exercise.id)
           const toward = towardLabels(c.worksToward, path)
           return (
             <li key={c.exercise.id} className="library-item">
-              <div className="stack" style={{ gap: 2 }}>
+              <div className="library-text">
                 <span className="library-name">{c.exercise.name}</span>
-                <span className="small muted">{`${c.exercise.dose} · ${c.exercise.how}`}</span>
+                <span className="small muted"><span className="num">{c.exercise.dose}</span>{` · ${c.exercise.how}`}</span>
                 {toward.length > 0 ? <span className="small toward">{`${copy.worksToward}: ${toward.join('; ')}`}</span> : null}
+                {c.caution ? <span className="small caution">{`${copy.libraryCaution}: ${c.caution}`}</span> : null}
               </div>
-              <button type="button" className="btn btn-secondary" disabled={added} onClick={() => onAdd(c.exercise)}>
+              <button type="button" className="btn btn-secondary" disabled={added} onClick={() => onAdd(c.exercise)} aria-label={`${added ? copy.libraryAdded : copy.libraryAdd}: ${c.exercise.name}`}>
                 {added ? copy.libraryAdded : copy.libraryAdd}
               </button>
             </li>
           )
         })}
       </ul>
+      <p className="small muted">{copy.librarySource}</p>
     </section>
   )
 }

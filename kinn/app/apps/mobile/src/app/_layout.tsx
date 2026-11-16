@@ -69,6 +69,7 @@ export default function RootLayout() {
             <Stack.Screen name="red-flags" options={{ presentation: 'modal' }} />
             <Stack.Screen name="tape" options={{ presentation: 'modal' }} />
             <Stack.Screen name="path" />
+            <Stack.Screen name="share" />
             <Stack.Screen name="self-test" options={{ presentation: 'modal' }} />
             <Stack.Screen name="from-pt" options={{ presentation: 'modal' }} />
           </Stack>

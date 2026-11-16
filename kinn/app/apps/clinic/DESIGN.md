@@ -254,7 +254,7 @@ Quiet until chosen. Full-width button on the rail: 48px mini-ring column plus te
 - The top flag shows as a severity diamond (11px) plus its title, with the tier word for screen readers.
 
 ### Mini Ring
-The week in the caseload. 44px SVG, radius 17, stroke 5 with round caps, seven segments clockwise from 12 o'clock with 6° gaps, each coloured by that morning: Live Teal clear, amber some, red flare-up, r8 no check-in.
+The week in the caseload. 44px SVG, radius 17, stroke 5 with round caps, seven segments clockwise from 12 o'clock with 6° gaps, each coloured by that morning: Live Teal clear, on-rail-2 some pain or swelling, amber flare-up, r8 no check-in. Red never appears here: a flare-up morning is a worth-a-look flag, so it is amber wherever it is drawn.
 
 ### The Week Ring (signature)
 The patient's last seven days as one ring, drawn on a 700-unit viewBox, max 520px wide.
@@ -280,7 +280,7 @@ Six equal phase bars (6px, 3px radius, 6px gaps): teal done, r10 current, r2 ahe
 Ruled rows (r2 between), 12px circle mark (r4 outline open, r10 outline not met, solid teal met), title with small muted value beneath, badge at the end.
 
 ### Day Table
-Fixed-layout table, head in 13px r6 over an r3 rule, rows ruled r2. Day column in Mono r7, today in r10 500. Morning column leads with a 10px dot or 11px diamond.
+Fixed-layout table, head in 13px r6 over an r3 rule, rows ruled r2. Day column in Mono r7, today in r10 500. Morning column leads with a 10px dot or 11px diamond: a teal dot for a clear morning, an outline diamond for some pain or swelling, the worth-a-look half diamond for a flare-up morning.
 
 ## Do's and Don'ts
 
@@ -303,3 +303,17 @@ Fixed-layout table, head in 13px r6 over an r3 rule, rows ruled r2. Day column i
 - **Don't** typeset the RECO wordmark.
 - **Don't** set words in Mono, or numbers in a proportional face inside facts and readouts.
 - **Don't** introduce KPI tiles or line charts for the week; the week is the ring.
+
+## The plan editor (Nov 15)
+
+The exercise list is the page; the library sits beside it in the sticky column with its own scroll.
+
+- **An exercise is two lines.** Line one: its number (Mono, r6), the name (15px 500, flex), how often (a select: "3× a week", "Every day") and three 32px icon buttons (up, down, remove; drawn 1.75 strokes, r7, r2 on hover). Line two, indented under the name: the dose written as PTs write it, `[3] × [12] reps  [5] s hold  [15] min`, each a 44px Mono box with its unit beside it so a number never wraps away from its unit, then "Each side" and "Add a note".
+- **The flare-up dose** is a third line only when the plan uses one: the same dose boxes set back behind a 2px amber rule with an amber-ink label. It is a variant of the dose, not a warning, so it has no wash.
+- **Choices are toggle-button groups** (`role="group"`, `aria-pressed`): pill buttons, r0 on r3, the pressed one r10 with on-rail text. Used for the flare-up choice and the library's phase filter.
+- **The publish bar** is sticky to the bottom of the list column on Porcelain with an r3 rule above: the primary button, Cancel, and one line saying who it publishes as and where it goes. Problems list above it in a red wash, only after a publish attempt.
+- **The library** has a search field, a kind select and the phase pills, then a count ("23 of 85 exercises"). Each row: name (700), dose in Mono with the how-to, "Works toward" in teal-ink, and a "Check first" line in amber-ink when the protocols carry one.
+
+## Signing in and adding a patient (Nov 15)
+
+The same frame as the caseload: graphite rail, Porcelain reading surface. The rail carries the wordmark, three plain lines about the site and "Look around with sample data". The form is a single 400px column: a 40px heading, one muted sentence, one field, one primary button. The sign-in code and the sharing code are Mono; the sharing code is the one large teal figure on its page (clamp 32 to 48px, 0.08em tracking, shown as "ABCD EFGH"). Rail buttons are outlined in r8 on graphite; "Add a patient" is the one solid rail button (on-rail fill, r10 text).

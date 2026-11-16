@@ -52,8 +52,9 @@ function Diamond({ x, y, r, half, className }: { readonly x: number; readonly y:
 }
 
 function MorningMark({ x, y, mark }: { readonly x: number; readonly y: number; readonly mark: RingDay['morning'] }) {
-  if (mark === 'flare') return <Diamond x={x} y={y} r={11} half={false} className="m-flare" />
-  if (mark === 'some') return <Diamond x={x} y={y} r={11} half className="m-some" />
+  // A flare-up morning is a worth-a-look flag, so it wears that tier's half diamond; "some" is noted, not flagged.
+  if (mark === 'flare') return <Diamond x={x} y={y} r={11} half className="m-flare" />
+  if (mark === 'some') return <Diamond x={x} y={y} r={10} half={false} className="m-some" />
   return <circle cx={x} cy={y} r={8} className={`m-${mark}`} />
 }
 

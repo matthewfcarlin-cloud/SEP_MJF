@@ -9,9 +9,9 @@ const R = 17
 const GAP_DEG = 6
 const SEGMENT = 360 / RING_DAYS
 
-const STROKE: Readonly<Record<MorningMark, string>> = { clear: 'var(--live)', some: 'var(--amber)', flare: 'var(--red)', none: 'var(--r8)' }
+const STROKE: Readonly<Record<MorningMark, string>> = { clear: 'var(--live)', some: 'var(--on-rail-2)', flare: 'var(--amber)', none: 'var(--r8)' }
 
-/** The week in the caseload: seven day segments from 12 o'clock, each the colour of that morning. */
+/** The week in the caseload: seven day segments from 12 o'clock, each the colour of that morning. Amber is a flare-up morning, the same amber as its flag; red is kept for contact-soon. */
 export function MiniRing({ ring, label }: { readonly ring: WeekRing; readonly label: string }) {
   return (
     <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={label}>

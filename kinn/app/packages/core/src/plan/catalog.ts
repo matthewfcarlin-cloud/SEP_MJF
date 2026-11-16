@@ -7,6 +7,8 @@ import type { Joint } from '../manual/types'
 import type { Metric } from '../protocol/protocols'
 import { LIBRARY, PHASE_NAMES } from './library'
 import type { Exercise, Phase } from './library'
+import { CORE_KNEE_CATEGORY, PT_KNEE_LIBRARY } from './pt-library'
+import type { ExerciseCategory } from './pt-library'
 import { parseDose } from './recovery'
 import type { PlanEntry } from './recovery'
 
@@ -34,17 +36,57 @@ export interface CatalogExercise {
   readonly phase: Phase
   readonly phaseName: string
   readonly worksToward: readonly Metric[]
+  /** How a PT would file it. Missing for joints whose library has no categories yet. */
+  readonly category?: ExerciseCategory
+  /** What published protocols say to check before giving it. */
+  readonly caution?: string
 }
 
-/** Every exercise for a joint, in phase order, each once (the first phase it appears in). */
-export function catalogFor(joint: Joint): readonly CatalogExercise[] {
+const PHASES: readonly Phase[] = [1, 2, 3, 4]
+
+/** The exercises RECO's own plan uses, each once (the first phase it appears in). */
+function coreCatalog(joint: Joint): readonly CatalogExercise[] {
   const seen = new Set<string>()
-  const phases: readonly Phase[] = [1, 2, 3, 4]
-  return phases.flatMap((phase) =>
+  return PHASES.flatMap((phase) =>
     LIBRARY[joint][phase]
       .filter((e) => (seen.has(e.id) ? false : (seen.add(e.id), true)))
-      .map((exercise) => ({ exercise, phase, phaseName: PHASE_NAMES[phase], worksToward: WORKS_TOWARD[exercise.id] ?? [] })),
+      .map((exercise) => {
+        const category = joint === 'knee' ? CORE_KNEE_CATEGORY[exercise.id] : undefined
+        return { exercise, phase, phaseName: PHASE_NAMES[phase], worksToward: WORKS_TOWARD[exercise.id] ?? [], ...(category !== undefined ? { category } : {}) }
+      }),
   )
+}
+
+/**
+ * Every exercise a PT can pick for a joint, in phase order: RECO's own set first within each
+ * phase, then the wider PT library (knee only so far).
+ */
+export function catalogFor(joint: Joint): readonly CatalogExercise[] {
+  const core = coreCatalog(joint)
+  if (joint !== 'knee') return core
+  const wider: readonly CatalogExercise[] = PT_KNEE_LIBRARY.map((x) => ({
+    exercise: x.exercise,
+    phase: x.phase,
+    phaseName: PHASE_NAMES[x.phase],
+    worksToward: x.worksToward,
+    category: x.category,
+    ...(x.caution !== undefined ? { caution: x.caution } : {}),
+  }))
+  return PHASES.flatMap((phase) => [...core, ...wider].filter((c) => c.phase === phase))
+}
+
+/** The catalog narrowed the way the library picker narrows it. An empty query matches everything. */
+export function searchCatalog(
+  catalog: readonly CatalogExercise[],
+  filter: { readonly query?: string; readonly phase?: Phase; readonly category?: ExerciseCategory },
+): readonly CatalogExercise[] {
+  const words = (filter.query ?? '').toLowerCase().split(/\s+/).filter((w) => w !== '')
+  return catalog.filter((c) => {
+    if (filter.phase !== undefined && c.phase !== filter.phase) return false
+    if (filter.category !== undefined && c.category !== filter.category) return false
+    const haystack = `${c.exercise.name} ${c.exercise.how}`.toLowerCase()
+    return words.every((w) => haystack.includes(w))
+  })
 }
 
 const DEFAULT_DAYS = 3

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 const PREFIX = '#/p/'
 const PLAN_SUFFIX = '/plan'
+const ADD = '#/add'
 
 export interface Selection {
   readonly id: string
@@ -27,15 +28,19 @@ export const idFromHash = (hash: string): string | undefined => selectionFromHas
 
 export interface SelectionApi {
   readonly selection: Selection | undefined
+  /** The "add a patient" page (#/add). */
+  readonly adding: boolean
   readonly select: (id: string) => void
   readonly openPlan: (id: string) => void
+  readonly openAdd: () => void
 }
 
 /** The open patient and view live in the URL, so a link or the back button lands in the same place. */
 export function useSelection(): SelectionApi {
-  const [selection, setSelection] = useState<Selection | undefined>(() => (typeof window === 'undefined' ? undefined : selectionFromHash(window.location.hash)))
+  const [hash, setHash] = useState(() => (typeof window === 'undefined' ? '' : window.location.hash))
+  const selection = selectionFromHash(hash)
   useEffect(() => {
-    const onHash = () => setSelection(selectionFromHash(window.location.hash))
+    const onHash = () => setHash(window.location.hash)
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
@@ -45,5 +50,8 @@ export function useSelection(): SelectionApi {
   const openPlan = useCallback((id: string) => {
     window.location.hash = `${PREFIX}${encodeURIComponent(id)}${PLAN_SUFFIX}`
   }, [])
-  return { selection, select, openPlan }
+  const openAdd = useCallback(() => {
+    window.location.hash = ADD
+  }, [])
+  return { selection, adding: hash === ADD, select, openPlan, openAdd }
 }

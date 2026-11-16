@@ -200,3 +200,42 @@ describe('tape bend', () => {
     expect(active(two).data.bendAlerts?.map((a) => a.t)).toEqual([1, 2])
   })
 })
+
+describe('sharing with a PT', () => {
+  const sync = { account: { id: 'a1', email: 'sam@example.com', name: 'Sam' }, revision: 0 }
+  const plan = { id: 'p', version: 2, author: { kind: 'pt' as const, name: 'Dana Ruiz, PT' }, adaptation: 'as-written' as const, entries: [], publishedOn: TODAY }
+
+  test('signing in and the PT’s plan belong to the person’s own record, even while sample data is showing', () => {
+    const looking = rootReducer(fresh(), { type: 'setMode', mode: 'sample' })
+    const signedIn = rootReducer(looking, { type: 'setSync', sync })
+    const withPlan = rootReducer(signedIn, { type: 'setPtPlan', accountId: 'a1', plan })
+    expect(withPlan.real.sync).toEqual(sync)
+    expect(withPlan.real.data.ptPlan).toEqual(plan)
+    expect(withPlan.sample.sync).toBeUndefined()
+    expect(withPlan.sample.data.ptPlan).toEqual(looking.sample.data.ptPlan)
+    expect(looking.real.sync).toBeUndefined()
+  })
+
+  test('signing out, a withdrawn plan and deleting everything each leave nothing behind', () => {
+    const on = rootReducer(rootReducer(fresh(), { type: 'setSync', sync }), { type: 'setPtPlan', accountId: 'a1', plan })
+    const out = rootReducer(on, { type: 'setSync', sync: undefined })
+    expect('sync' in out.real).toBe(false)
+    expect(out.real.data.ptPlan).toEqual(plan)
+    const noPlan = rootReducer(on, { type: 'setPtPlan', accountId: 'a1', plan: undefined })
+    expect('ptPlan' in noPlan.real.data).toBe(false)
+    const wiped = rootReducer(on, { type: 'deleteMyData', today: TODAY })
+    expect(wiped.real.sync).toBeUndefined()
+    expect(wiped.real.data.ptPlan).toBeUndefined()
+  })
+
+  test('a sync result that arrives after signing out, or for another account, changes nothing', () => {
+    const on = rootReducer(fresh(), { type: 'setSync', sync })
+    expect(rootReducer(on, { type: 'syncedTo', accountId: 'a1', revision: 4 }).real.sync?.revision).toBe(4)
+    const out = rootReducer(on, { type: 'setSync', sync: undefined })
+    expect(rootReducer(out, { type: 'syncedTo', accountId: 'a1', revision: 4 })).toBe(out)
+    expect(rootReducer(out, { type: 'setPtPlan', accountId: 'a1', plan })).toBe(out)
+    const someoneElse = rootReducer(out, { type: 'setSync', sync: { ...sync, account: { ...sync.account, id: 'b2' } } })
+    expect(rootReducer(someoneElse, { type: 'setPtPlan', accountId: 'a1', plan })).toBe(someoneElse)
+    expect(rootReducer(someoneElse, { type: 'syncedTo', accountId: 'a1', revision: 9 })).toBe(someoneElse)
+  })
+})

@@ -1,8 +1,8 @@
 # How the RECO backend works (as built)
 
-_Version 0.1 · 2026-10-27 · pairs with [scoring-methods.md](scoring-methods.md) for the formulas and [architecture.md](architecture.md) for the original plan_
+_Version 0.2 · 2026-11-15 · pairs with [how-reco-works.md](how-reco-works.md) for the plain-language walk-through, [scoring-methods.md](scoring-methods.md) for the formulas and [architecture.md](architecture.md) for the original plan_
 
-**Bottom line:** the app has no server. Everything the athlete sees is derived on the phone, in one pure TypeScript package, from a small set of records that never leave the device. The only server in the project is the marketing site's waitlist form.
+**Bottom line:** everything the person sees is still derived on the phone, in one pure TypeScript package, from a small set of records. Since Nov 15 there is also a RECO server (sections 9 to 12). It holds a sealed copy of the record only for someone who has turned on sharing with a PT, and it derives nothing. For everyone else the record never leaves the phone.
 
 ## 1. Two pieces, one rule
 
@@ -87,7 +87,7 @@ DeviceTransport (bytes only)      DeviceClient (core)                  useTape (
 - **Tape days**: `deriveToday(data, today, tapeRecords)` rolls the minutes up per RECO day (`core/src/tape/days.ts`: worn minutes, fault minutes, active minutes, reps, peak and mean activation) as `tapeDays` / `todayTape`; Today shows one line from it. Nothing from the tape reaches `data.romDays` or the load score, because the v1 tape reports stretch activation, not angle.
 - **Where it runs**: Web Bluetooth in Chrome and Edge (the `/try` build). On iOS the tape screen offers the simulated tape only until native BLE lands.
 
-## 6. The site's backend (the only server)
+## 6. The marketing site's backend
 
 `kinn/site/app.js` is a small Express app, deployed on Vercel as one serverless function; the static pages and the exported app at `/try` are served from the CDN.
 
@@ -97,11 +97,11 @@ DeviceTransport (bytes only)      DeviceClient (core)                  useTape (
 | `GET /admin/waitlist.csv`, `/admin/stats` | Behind `ADMIN_TOKEN`, compared in constant time. |
 | `GET /healthz` | Reports which store is active. |
 
-Without `DATABASE_URL` it falls back to a local JSON file for development. The app never calls this server.
+Without `DATABASE_URL` it falls back to a local JSON file for development. The app never calls this server, and it shares nothing with the RECO server below.
 
 ## 7. Testing
 
-`packages/core` has 17 Vitest files covering load, status, insights, trend, the report, the seed, the tape codec, the simulated device, the client's sync, and the banned-words list for copy. Run with:
+`packages/core` has 36 Vitest files (364 tests) covering load, status, insights, trend, the report, the seed, the protocol path, plans, the exercise library, sharing scopes, the tape, and the banned-words list for copy. The clinic site has 36 tests and the server 65. Run them all with:
 
 ```bash
 cd kinn/app && npm test
@@ -113,4 +113,50 @@ The mobile app has no automated tests; it is checked by hand on the iOS simulato
 
 - Tape readings do not feed Recovery %, the load score or `romDays`. The ROM numbers on Progress are the seed.
 - No native Bluetooth on iOS or Android.
-- No accounts and no sync between devices. Besides the Report share sheet, Settings has **Export trial data** (`core/src/export/trial.ts`): one JSON plus a daily CSV and a per-minute tape CSV, with sample entries flagged `sample: true`. It runs only when the athlete taps it. These are deliberate for now: "nothing leaves the phone" is a product promise, not a gap. Schedule send in [vision.md](vision.md) will change this once it ships, and only with the patient's opt-in ([decisions.md](decisions.md)).
+- No sync between a person's own devices (one phone per person; see section 11). Accounts exist only for sharing with a PT. Besides the Report share sheet, Settings has **Export trial data** (`core/src/export/trial.ts`): one JSON plus a daily CSV and a per-minute tape CSV, with sample entries flagged `sample: true`. It runs only when the athlete taps it. "Nothing leaves the phone" is still the promise for anyone who has not turned on sharing with a PT ([decisions.md](decisions.md), Nov 15).
+
+## 9. The RECO server
+
+Code: `kinn/app/apps/api` (Node, Hono, Postgres). Run and deploy: [apps/api/README.md](../app/apps/api/README.md).
+
+It does four things and nothing else: signs people in, keeps a sealed copy of a sharing patient's record, records who shares what with whom, and keeps every published plan version. It never computes a status, a flag, a phase or a plan; the apps do that from the record with `@reco/core`.
+
+```
+phone ──PUT /v1/me/dataset──►  datasets (sealed)  ──scopedDataset()──► GET /v1/patients ──► clinic site
+phone ◄──GET /v1/me/plan────   plans (sealed, versioned)  ◄── POST /v1/patients/:id/plans ── clinic site
+phone ──POST /v1/me/shares──►  shares (who, what, since, until)
+                               access_log (each PT read) ──► GET /v1/me/access-log ──► phone
+```
+
+| File | Holds |
+|---|---|
+| `src/app.ts` | Every route, and the rules for who may call it |
+| `src/store.ts` | Every SQL statement, one small function each, all parameterised |
+| `src/schemas.ts` | The shape of everything accepted (zod, strict: an unknown field is refused) |
+| `src/crypto.ts` | Codes, tokens, hashing, AES-256-GCM sealing |
+| `src/migrations.ts` | The tables, as numbered steps that run once |
+| `src/config.ts` | The environment, checked at startup; production is the default |
+| `src/db.ts` | One door to Postgres (`pg`) or PGlite (laptop, tests) |
+| `packages/core/src/sync/` | Shared with the apps: wire types, `uploadableDataset`, `scopedDataset`, the typed client, `syncOnce` |
+
+## 10. Signing in and sessions
+
+- `POST /v1/auth/start {email, role}` makes an 8-digit code, stores `HMAC(AUTH_SECRET, role + email + code)`, and emails it through Resend. The answer is the same whether or not the email has an account.
+- `POST /v1/auth/verify {email, role, code}` counts the guess first, then compares in constant time. A code works once, for 10 minutes, and dies after 5 wrong guesses. Guesses are also capped per email (20 an hour) so fresh codes buy no extra tries.
+- A session token is 256 random bits; only its SHA-256 is stored. A phone stays signed in 30 days, a clinic browser 12 hours. The phone keeps the token in the Keychain; the clinic site keeps it in the tab's session storage.
+- One email is one kind of account. PT accounts open only for emails on `PT_ALLOWLIST`.
+- Limits (rows in `rate_limits`, so they hold across serverless instances): codes per email and per address, verifies per address and per email, sharing-code tries per patient, sharing codes per PT per day, requests per address.
+
+## 11. The record, sharing and plans
+
+- **The record** is the app's `Dataset` minus what never uploads (`uploadableDataset`: voice notes, photos, the PT plan copy, warning feedback). It is one document, sealed with AES-256-GCM under `DATA_KEY` and bound to the patient's row. `PUT` carries the revision the phone last saw; a stale copy gets a 409 and the current revision. One phone per person: `syncOnce` in core treats the phone as the source of truth and saves over a newer server revision after reading it.
+- **Sharing.** A PT's `POST /v1/invites` returns an 8-character code (works once, 7 days, stored as an HMAC). The patient's `POST /v1/me/shares/preview` shows whose code it is; `POST /v1/me/shares {code, scopes}` creates the share. Scopes: `range`, `pain`, `activity`, `notes`, `tape`. `PATCH` changes them, `DELETE` stops sharing at once.
+- **What the PT gets.** `GET /v1/patients` opens each sharing patient's record, cuts it with `scopedDataset(record, scopes)`, attaches the latest plan as `ptPlan`, and writes a `viewed` line to the patient's access log (at most one an hour per PT). Exercise check-offs are never in what a PT gets, whatever the scopes.
+- **Plans.** `POST /v1/patients/:id/plans` needs a live share, checks the shape, sets the author to the signed-in PT, runs `validatePlan` from core, and requires the version to be the latest plus one. Two publishes of the same version at once: one wins, one gets a 409. Versions are never edited. The patient reads the latest with `GET /v1/me/plan`, and keeps it after they stop sharing.
+- **Delete.** `DELETE /v1/me` removes the account and, through the foreign keys, its sessions, record, shares, plans and access log.
+
+## 12. Tested how
+
+`apps/api/test/`: 65 tests drive the real routes through the same typed client the apps use. `auth.test.ts` covers codes, limits and sessions; `sharing.test.ts` the record, sharing, plans, delete and the edges; `phone.test.ts` the phone's sync pass; `units.test.ts` schemas (every sample persona's record must fit), sealing, config and migrations; `postgres.test.ts` runs the loop through `pg` over a real Postgres socket.
+
+Not covered by a test: a real email through Resend, and the Vercel deploy.

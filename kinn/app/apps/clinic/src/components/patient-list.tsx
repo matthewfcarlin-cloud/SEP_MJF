@@ -2,6 +2,7 @@ import type { PatientSummary } from '@reco/core'
 
 import wordmark from '../assets/reco-wordmark-ceramic.svg'
 import { copy } from '../copy'
+import type { WaitingPatient } from '../live'
 import { MiniRing } from './mini-ring'
 import { SeverityMark } from './severity'
 
@@ -40,14 +41,31 @@ function Row({ patient, selected, onSelect }: RowProps) {
   )
 }
 
+/** What the rail shows around the list: sample patients, or the signed-in PT's own. */
+export interface RailChrome {
+  readonly mode: 'sample' | 'live'
+  readonly accountName?: string
+  readonly waiting?: readonly WaitingPatient[]
+  readonly loading?: boolean
+  readonly loadError?: string | undefined
+  readonly onRetry?: () => void
+  readonly onAdd?: () => void
+  readonly onSignOut?: () => void
+  /** In sample mode on a build that has a server: the way to your own patients. */
+  readonly onSignIn?: () => void
+}
+
 interface PatientListProps {
   readonly patients: readonly PatientSummary[]
   readonly selectedId: string | undefined
   readonly onSelect: (id: string, viaKeyboard: boolean) => void
+  readonly chrome?: RailChrome
 }
 
+const SAMPLE: RailChrome = { mode: 'sample' }
+
 /** The caseload, most urgent first. Arrow keys move through it. */
-export function PatientList({ patients, selectedId, onSelect }: PatientListProps) {
+export function PatientList({ patients, selectedId, onSelect, chrome = SAMPLE }: PatientListProps) {
   const onKey = (e: React.KeyboardEvent<HTMLUListElement>) => {
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
     const buttons = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('.row')]
@@ -59,19 +77,53 @@ export function PatientList({ patients, selectedId, onSelect }: PatientListProps
     buttons[next]?.focus()
     onSelect(patient.id, true)
   }
+  const live = chrome.mode === 'live'
+  const waiting = chrome.waiting ?? []
   return (
     <nav className="rail" aria-label={copy.listTitle}>
       <img className="wordmark" src={wordmark} alt={copy.appName} width={86} height={26} />
       <div className="rail-head">
         <h2>{copy.listTitle}</h2>
-        <span className="sample">{copy.sampleTag}</span>
+        {live ? null : <span className="sample">{copy.sampleTag}</span>}
       </div>
-      <p className="rail-note">{copy.sampleNote}</p>
+      <p className="rail-note" aria-live="polite">
+        {!live ? copy.sampleNote : chrome.loading ? copy.loading : chrome.loadError ? copy.loadFailed : copy.liveNoteRail(patients.length + waiting.length)}
+      </p>
+      {live && chrome.loadError ? (
+        <div className="rail-actions">
+          <p className="rail-note">{chrome.loadError}</p>
+          <button type="button" className="btn btn-rail" onClick={chrome.onRetry}>{copy.tryAgain}</button>
+        </div>
+      ) : null}
       <ul className="rows" onKeyDown={onKey}>
         {patients.map((p) => (
           <Row key={p.id} patient={p} selected={p.id === selectedId} onSelect={onSelect} />
         ))}
       </ul>
+      {waiting.length > 0 ? (
+        <section className="rail-waiting" aria-labelledby="waiting-title">
+          <h3 id="waiting-title">{copy.waitingTitle}</h3>
+          <ul>
+            {waiting.map((w) => (
+              <li key={w.id}>
+                <span className="row-name">{w.name || copy.addPatient}</span>
+                <span className="row-sub">{w.unreadable ? copy.unreadableRow : copy.waitingRow}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      <div className="rail-foot">
+        {live ? (
+          <>
+            <button type="button" className="btn btn-rail btn-rail-solid" onClick={chrome.onAdd}>{copy.addPatient}</button>
+            <p className="rail-note">{copy.signedInAs(chrome.accountName ?? '')}</p>
+            <button type="button" className="btn btn-rail" onClick={chrome.onSignOut}>{copy.signOut}</button>
+          </>
+        ) : chrome.onSignIn ? (
+          <button type="button" className="btn btn-rail" onClick={chrome.onSignIn}>{copy.backToSignIn}</button>
+        ) : null}
+      </div>
     </nav>
   )
 }

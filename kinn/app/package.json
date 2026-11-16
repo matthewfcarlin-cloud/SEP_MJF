@@ -2,17 +2,18 @@
   "name": "reco-app",
   "private": true,
   "version": "0.1.0",
-  "description": "RECO prototype: pure TypeScript core plus Expo mobile app. Simulated sensor data only.",
+  "description": "RECO: pure TypeScript core, the Expo patient app, the clinician website and the server.",
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
   "scripts": {
-    "test": "npm run test -w @reco/core && npm run test -w reco-clinic",
+    "test": "npm run test -w @reco/core && npm run test -w reco-clinic && npm run test -w reco-api",
     "test:watch": "npm run test:watch -w @reco/core",
-    "typecheck": "npm run typecheck -w @reco/core && npm run typecheck -w reco-clinic",
+    "typecheck": "npm run typecheck -w @reco/core && npm run typecheck -w reco-clinic && npm run typecheck -w reco-api",
     "mobile": "npm run start -w reco-mobile",
-    "clinic": "npm run dev -w reco-clinic"
+    "clinic": "npm run dev -w reco-clinic",
+    "api": "npm run dev -w reco-api"
   },
   "engines": {
     "node": ">=20"

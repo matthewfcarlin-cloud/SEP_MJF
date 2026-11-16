@@ -1,0 +1,35 @@
+{
+  "name": "reco-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RECO server: accounts, the patient's record, patient-controlled sharing with a PT, and published plans.",
+  "type": "module",
+  "scripts": {
+    "dev": "RECO_ENV=development tsx watch src/server.ts",
+    "start": "node dist/server.mjs",
+    "build": "tsc --noEmit && node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "seed:local": "tsx scripts/seed-local.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@reco/core": "*",
+    "hono": "^4.6.14",
+    "pg": "^8.13.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
+    "@electric-sql/pglite-socket": "^0.2.19",
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "esbuild": "^0.24.2",
+    "tsx": "^4.19.2",
+    "typescript": "~6.0.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -39,7 +39,7 @@ export function WeekSection({ patient }: { readonly patient: PatientSummary }) {
             return (
               <tr key={d.date} className={d.date === last ? 'today' : undefined}>
                 <td>{`${weekday(d.date)} ${shortDate(d.date)}`}</td>
-                <td><span className="day-morning">{d.morning === 'flare' ? <SeverityMark tier="contact-soon" size={11} /> : d.morning === 'some' ? <SeverityMark tier="worth-a-look" size={11} /> : <i className={`dot dot-${d.morning}`} aria-hidden="true" />}{copy.morningWords(d.morning, d.checkInPain)}</span></td>
+                <td><span className="day-morning">{d.morning === 'flare' ? <SeverityMark tier="worth-a-look" size={11} /> : d.morning === 'some' ? <SeverityMark tier="note" size={11} /> : <i className={`dot dot-${d.morning}`} aria-hidden="true" />}{copy.morningWords(d.morning, d.checkInPain)}</span></td>
                 <td className="col-activity">{acts.length ? acts.join(', ') : '–'}</td>
                 <td>{entries.length ? entries.join('; ') : '–'}</td>
               </tr>

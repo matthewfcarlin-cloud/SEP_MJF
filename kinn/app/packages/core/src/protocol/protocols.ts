@@ -60,6 +60,15 @@ export type Metric =
   | 'runProgramDonePainFree' // boolean
   | 'mdClearance' // boolean
 
+/** Every metric, at run time. A Record so the compiler flags one that is added to the type and not here. */
+const METRIC_SET: Readonly<Record<Metric, true>> = {
+  extensionDeficitDeg: true, flexionDeg: true, flexionGapToOtherKneeDeg: true, extensionGapToOtherKneeDeg: true, effusionGrade: true,
+  painOrSwellingAfterExercise: true, slrNoLag: true, quadActivationFullExtension: true, normalGait: true, instabilityEpisodes7d: true,
+  singleLegSquats60: true, jointPositionErrorDeg: true, quadIndexPct: true, hamstringIndexPct: true, gluteIndexPct: true, hqRatioPct: true,
+  hopLsiPct: true, koosSportPct: true, ikdcScore: true, aclRsiPct: true, runProgramDonePainFree: true, mdClearance: true,
+}
+export const ALL_METRICS = Object.keys(METRIC_SET) as readonly Metric[]
+
 export type Comparator = '<=' | '>=' | '==' | '<' | '>'
 
 /**

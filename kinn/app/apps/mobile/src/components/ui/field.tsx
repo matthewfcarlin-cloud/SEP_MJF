@@ -16,6 +16,7 @@ export function Field({ label, style, ...rest }: FieldProps) {
       {label ? <SectionLabel>{label}</SectionLabel> : null}
       <TextInput
         placeholderTextColor={colors.textMuted}
+        accessibilityLabel={label}
         style={[{ ...typeScale.body, color: colors.text, backgroundColor: colors.surface, borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: 13, borderWidth: 1, borderColor: colors.border }, style]}
         {...rest}
       />

@@ -24,6 +24,18 @@ export const addCustom = (plan: RecoveryPlan, id: string): RecoveryPlan =>
 export const updateEntry = (plan: RecoveryPlan, id: string, patch: Partial<Omit<PlanEntry, 'id' | 'source'>>): RecoveryPlan =>
   withEntries(plan, plan.entries.map((e) => (e.id === id ? { ...e, ...patch } : e)))
 
+/**
+ * A change to an entry's main dose. "Each side" describes the exercise, not the day, so the
+ * flare-up dose follows it.
+ */
+export function withDose(entry: PlanEntry, dose: Dose): Partial<Omit<PlanEntry, 'id' | 'source'>> {
+  if (!entry.lightDose) return { dose }
+  return { dose, lightDose: setPerSide(entry.lightDose, dose.perSide === true) }
+}
+
+/** The flare-up dose the editor shows: the PT's own, or the full dose until they set one. */
+export const lightDoseOf = (entry: PlanEntry): Dose => entry.lightDose ?? entry.dose
+
 export const removeEntry = (plan: RecoveryPlan, id: string): RecoveryPlan => withEntries(plan, plan.entries.filter((e) => e.id !== id))
 
 export function moveEntry(plan: RecoveryPlan, id: string, by: -1 | 1): RecoveryPlan {
