@@ -1,0 +1,3 @@
+# Per-developer Impeccable state, never committed.
+config.local.json
+hook.cache.json

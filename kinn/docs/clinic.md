@@ -1,12 +1,16 @@
 # Clinician view
 
-A website where a PT sees their caseload: each patient's progress, next steps, week and anything alarming from their check-ins. Code: `app/apps/clinic` (Vite + React) on the shared logic in `app/packages/core/src/clinic`. Sample data only.
+A website where a PT sees their caseload: each patient's progress, next steps, week and anything alarming from their check-ins, and writes their plan. Code: `app/apps/clinic` (Vite + React) on the shared logic in `app/packages/core/src/clinic`. It runs on sample patients, or, when built with a server address, on the signed-in PT's own patients.
 
 Run it with `npm run clinic` from `kinn/app` (http://localhost:5174).
 
 ## Hosting on Vercel
 
 Import the GitHub repo as a new Vercel project and set **Root Directory** to `kinn/app/apps/clinic`. Everything else comes from `apps/clinic/vercel.json`: it installs only the clinic's packages from the workspace lockfile (`npm ci --workspace reco-clinic`), runs `npm run build` (typecheck, then Vite) and serves `dist`. Leave "Include files outside the root directory" on (the default), since the site builds `packages/core` from source. Every page is sent with `noindex` so search engines skip it.
+
+**Sample or real.** With no `VITE_API_URL` set on the Vercel project, the site shows the six sample patients, as it always has. Set `VITE_API_URL` to the RECO server's address and redeploy, and it opens on a sign-in page (email, then an 8-digit code), with "Look around with sample data" one click away. Signed in, the rail lists the PT's own patients, the ones whose phone hasn't synced yet, "Add a patient" (makes a sharing code) and sign out. Each patient's page says what they share and what they left off, so an empty section isn't read as a quiet week.
+
+**Which site is which.** This is `kinn/app/apps/clinic`, its own Vercel project. The public marketing site is `kinn/site`, a different folder and project; nothing here touches it.
 
 ## Why a website, not a PT mode in the app
 
@@ -15,7 +19,9 @@ Import the GitHub repo as a new Vercel project and set **Root Directory** to `ki
 - The patient app stays the patient's own. The vision says the record belongs to the patient and must never feel like policing, so a clinician role doesn't live inside it.
 - Nothing is duplicated: both apps call the same `@reco/core` functions (`deriveToday`, the protocol path, the weekly report), so they can't disagree.
 
-Vite + React rather than Expo web, because the patient app's components are phone-first and a dashboard wants wide layouts. The colours mirror `apps/mobile/src/theme/tokens.ts` and the fonts load from the same packages; change the palette in both places together.
+Vite + React rather than Expo web, because the patient app's components are phone-first and a dashboard wants wide layouts.
+
+**Design (Nov 12 redesign, "The Week Ring").** Each patient's last seven days are drawn as one 168-hour ring, opened out from RECO's Sensor O: clinic visits are an ink sliver, and the centre pairs "the hours you never see" with the hour in clinic. Its own palette (a stepped green-grey ramp, graphite rail, live teal) and Atkinson Hyperlegible Next and Mono, chosen for legibility on projectors and clinic screens; the RECO wordmark is the brand SVG. On Nov 15 two things were corrected: a flare-up morning is now amber wherever it is drawn (ring, rail, day table), matching its "worth a look" flag, with red kept for "contact soon"; and the plan editor was rebuilt around the exercise list, with each exercise in two lines, a searchable library and a publish bar that stays in view. The design system is recorded in `apps/clinic/DESIGN.md`, the product context in `apps/clinic/PRODUCT.md`, and the direction in `apps/clinic/.impeccable/surfaces/`. Built with the Impeccable and Emil Kowalski design skills.
 
 ## What it shows
 
@@ -43,6 +49,6 @@ PT voice. "Patient" is the right word here, unlike in the patient app; the rest 
 
 ## Not built yet
 
-- **Real data.** Every patient is a sample persona from `core/src/sim/seed.ts`. Real use needs patient-controlled sharing to a named PT (revocable, choosing what's shared, like the report's toggles), a backend and PT accounts, and health-data handling. That reverses the Oct 19 "report-only, no accounts" and "local-first, no backend" decisions, so it needs its own decision first.
-- PT sign-in, editing a patient's limits or phase from the website (`from-pt.tsx` stays in the patient app), messages, notifications, and remote-monitoring billing.
+- **Going live with real patients.** The sharing, accounts and server are built and tested (decisions.md, Nov 15; [backend.md](backend.md) sections 9 to 12) but not deployed, and the privacy policy and a health-data law review come first ([how-reco-works.md](how-reco-works.md), section 9).
+- Editing a patient's limits or phase from the website (`from-pt.tsx` stays in the patient app), messages, notifications, and remote-monitoring billing.
 - PT validation: vision.md's open question 5 ("What will PTs actually use?") still stands. This is the thing to put in front of one.

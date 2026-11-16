@@ -1,12 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { dayKey, deriveToday, nextPathRecord } from '@reco/core'
-import type { BendAlert, Doing, EffusionGrade, EveningWord, GuidanceLevel, Intensity, JournalEntry, ManualActivity, PathMeasurement, PlanExercise, Profile, RomDay, SampleChoice, Settled, Swelling, TodayView } from '@reco/core'
+import type { BendAlert, Doing, PhoneSync, EffusionGrade, EveningWord, GuidanceLevel, Intensity, JournalEntry, ManualActivity, PathMeasurement, PlanExercise, Profile, RomDay, SampleChoice, Settled, Swelling, TodayView } from '@reco/core'
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { AppState as NativeAppState, Platform } from 'react-native'
 import type { ReactNode } from 'react'
 
 import { removeFiles } from '@/files'
 import { syncNotifications } from '@/notifications'
+import { clearToken, loadToken, phoneApi } from '@/sync/session'
+import { useSyncLoop } from '@/sync/use-sync'
 import { useTapeRecords } from '@/tape/tape-log'
 
 import { active, initialRoot, initialSample, migrateReal, onlySeedData, rootReducer } from './state'
@@ -15,8 +17,12 @@ import type { AppState, DataMode, NotificationMode, PainPatch, PathOverrides, Ro
 /** The sample key moved to v2 when sample data became the protocol personas; v1 samples are simply rebuilt. */
 const KEYS = { real: 'reco.state.v1', sample: 'reco.sample.v2', mode: 'reco.mode.v1' } as const
 
-/** A real install starts on real data. The browser demo at /try has no real mode. */
-const DEFAULT_MODE: DataMode = Platform.OS === 'web' ? 'sample' : 'real'
+/**
+ * A real install starts on real data. The browser demo at /try has no real mode; a developer can
+ * turn it on for a local run (EXPO_PUBLIC_WEB_REAL=1) to try sharing against a local server.
+ */
+const WEB_SAMPLE_ONLY = Platform.OS === 'web' && process.env.EXPO_PUBLIC_WEB_REAL !== '1'
+const DEFAULT_MODE: DataMode = WEB_SAMPLE_ONLY ? 'sample' : 'real'
 
 const newId = (prefix: string): string => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 
@@ -68,6 +74,9 @@ export interface Store {
   /** The bend, in degrees, the person held at the tape's max calibration. undefined clears it. */
   readonly setBendMaxDeg: (maxDeg: number | undefined) => void
   readonly addBendAlert: (alert: BendAlert) => void
+  /** Sharing with a PT: who is signed in, if anyone. The record syncs only while this is set. */
+  readonly sync: PhoneSync | undefined
+  readonly setSync: (sync: PhoneSync | undefined) => void
 }
 
 const StoreContext = createContext<Store | undefined>(undefined)
@@ -92,7 +101,7 @@ async function loadRoot(today: string): Promise<RootState> {
   try {
     const [real, sample, mode] = await Promise.all([AsyncStorage.getItem(KEYS.real), AsyncStorage.getItem(KEYS.sample), AsyncStorage.getItem(KEYS.mode)])
     return {
-      mode: Platform.OS === 'web' ? 'sample' : mode === 'sample' ? 'sample' : 'real',
+      mode: WEB_SAMPLE_ONLY || mode === 'sample' ? 'sample' : 'real',
       real: migrateReal(parse(real), today),
       sample: sampleFrom(parse(sample), today),
     }
@@ -108,6 +117,22 @@ const save = (key: string, value: string): void => {
 
 const localFiles = (state: AppState): readonly string[] =>
   state.data.painLogs.flatMap((p) => [p.voiceUri, p.photoUri]).filter((u): u is string => u !== undefined)
+
+/**
+ * Deletes the account and everything under it on the server, then forgets the session.
+ * Returns false when the server could not be reached, so the screen can say the copy is still there.
+ */
+export async function deleteServerCopy(): Promise<boolean> {
+  try {
+    const token = await loadToken()
+    if (token) await phoneApi().deleteAccount()
+    await clearToken()
+    return true
+  } catch (error) {
+    console.warn('RECO: the copy on RECO’s server could not be deleted.', error)
+    return false
+  }
+}
 
 /** The day key follows the clock: the app can stay open overnight, and a new day must read as one. */
 function useToday(): string {
@@ -170,6 +195,15 @@ export function StoreProvider({ children }: { readonly children: ReactNode }) {
     if (ready) void syncNotifications(root.real.onboarded ? notifications : 'off', nextVisit)
   }, [ready, root.real.onboarded, notifications, nextVisit])
 
+  useSyncLoop({
+    enabled: ready && root.real.onboarded,
+    sync: root.real.sync,
+    data: root.real.data,
+    onRevision: (accountId, revision) => dispatch({ type: 'syncedTo', accountId, revision }),
+    onPlan: (accountId, plan) => dispatch({ type: 'setPtPlan', accountId, plan }),
+    onSignedOut: () => dispatch({ type: 'setSync', sync: undefined }),
+  })
+
   const tapeRecords = useTapeRecords()
   // Real mode never shows a simulated or tape number in Phase A.
   const view = useMemo(() => deriveToday(state.data, today, root.mode === 'sample' ? tapeRecords : []), [state.data, today, root.mode, tapeRecords])
@@ -231,6 +265,8 @@ export function StoreProvider({ children }: { readonly children: ReactNode }) {
       setSample: (choice) => dispatch({ type: 'setSample', today, choice }),
       setBendMaxDeg: (maxDeg) => dispatch({ type: 'setBendCalibration', calibration: maxDeg === undefined ? undefined : { maxDeg, date: today } }),
       addBendAlert: (alert) => dispatch({ type: 'addBendAlert', alert }),
+      sync: root.real.sync,
+      setSync: (sync) => dispatch({ type: 'setSync', sync }),
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- realFiles is rebuilt from root.real, already listed
     [root.mode, root.real, state, today, view, ready, pressPain],

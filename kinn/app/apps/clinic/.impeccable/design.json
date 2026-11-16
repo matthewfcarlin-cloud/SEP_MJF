@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-13T02:33:17+00:00",
+  "title": "Design System: RECO Clinic",
+  "extensions": {
+    "colorMeta": {
+      "r0": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r1": {
+        "role": "neutral",
+        "displayName": "Porcelain",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r2": {
+        "role": "neutral",
+        "displayName": "Mist Rule",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r3": {
+        "role": "neutral",
+        "displayName": "Region Rule",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r4": {
+        "role": "neutral",
+        "displayName": "Pewter",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r5": {
+        "role": "neutral",
+        "displayName": "Pewter Deep",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r6": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r7": {
+        "role": "neutral",
+        "displayName": "Slate Deep",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r8": {
+        "role": "neutral",
+        "displayName": "Graphite Selected",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r9": {
+        "role": "neutral",
+        "displayName": "Graphite Hover",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "r10": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "teal": {
+        "role": "primary",
+        "displayName": "Week Teal",
+        "tonalRamp": [
+          "#001109",
+          "#003024",
+          "#145C4C",
+          "#1F8A72",
+          "#429B84",
+          "#3DDBB8",
+          "#A5DFCD",
+          "#CDE7DF"
+        ]
+      },
+      "live": {
+        "role": "primary",
+        "displayName": "Live Teal (on graphite)",
+        "tonalRamp": [
+          "#001109",
+          "#003024",
+          "#145C4C",
+          "#1F8A72",
+          "#429B84",
+          "#3DDBB8",
+          "#A5DFCD",
+          "#CDE7DF"
+        ]
+      },
+      "teal-ink": {
+        "role": "primary",
+        "displayName": "Teal Ink",
+        "tonalRamp": [
+          "#001109",
+          "#003024",
+          "#145C4C",
+          "#1F8A72",
+          "#429B84",
+          "#3DDBB8",
+          "#A5DFCD",
+          "#CDE7DF"
+        ]
+      },
+      "teal-soft": {
+        "role": "primary",
+        "displayName": "Teal Mist",
+        "tonalRamp": [
+          "#001109",
+          "#003024",
+          "#145C4C",
+          "#1F8A72",
+          "#429B84",
+          "#3DDBB8",
+          "#A5DFCD",
+          "#CDE7DF"
+        ]
+      },
+      "red": {
+        "role": "secondary",
+        "displayName": "Signal Red",
+        "tonalRamp": [
+          "#260000",
+          "#510000",
+          "#9E2A1F",
+          "#C93C30",
+          "#DB5A4C",
+          "#F98A7B",
+          "#FFB4A6",
+          "#F8E1DE"
+        ]
+      },
+      "red-ink": {
+        "role": "secondary",
+        "displayName": "Red Ink",
+        "tonalRamp": [
+          "#260000",
+          "#510000",
+          "#9E2A1F",
+          "#C93C30",
+          "#DB5A4C",
+          "#F98A7B",
+          "#FFB4A6",
+          "#F8E1DE"
+        ]
+      },
+      "red-soft": {
+        "role": "secondary",
+        "displayName": "Red Wash",
+        "tonalRamp": [
+          "#260000",
+          "#510000",
+          "#9E2A1F",
+          "#C93C30",
+          "#DB5A4C",
+          "#F98A7B",
+          "#FFB4A6",
+          "#F8E1DE"
+        ]
+      },
+      "amber": {
+        "role": "secondary",
+        "displayName": "Signal Amber",
+        "tonalRamp": [
+          "#190600",
+          "#3B2000",
+          "#7A5200",
+          "#B37E00",
+          "#E0A21B",
+          "#FFC660",
+          "#FFE58C",
+          "#FBEFD3"
+        ]
+      },
+      "amber-ink": {
+        "role": "secondary",
+        "displayName": "Amber Ink",
+        "tonalRamp": [
+          "#190600",
+          "#3B2000",
+          "#7A5200",
+          "#B37E00",
+          "#E0A21B",
+          "#FFC660",
+          "#FFE58C",
+          "#FBEFD3"
+        ]
+      },
+      "amber-soft": {
+        "role": "secondary",
+        "displayName": "Amber Wash",
+        "tonalRamp": [
+          "#190600",
+          "#3B2000",
+          "#7A5200",
+          "#B37E00",
+          "#E0A21B",
+          "#FFC660",
+          "#FFE58C",
+          "#FBEFD3"
+        ]
+      },
+      "on-rail": {
+        "role": "neutral",
+        "displayName": "Rail Text",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      },
+      "on-rail-2": {
+        "role": "neutral",
+        "displayName": "Rail Text Secondary",
+        "tonalRamp": [
+          "#1C2422",
+          "#263130",
+          "#33403C",
+          "#46534F",
+          "#5F6E69",
+          "#8D9C97",
+          "#B4C1BC",
+          "#D2DBD7",
+          "#E3E9E6",
+          "#EEF2F0",
+          "#F7F9F8"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The patient's name, once per view."
+      },
+      "ring-figure": {
+        "displayName": "Ring Figure",
+        "purpose": "Hours-unseen number at the Week Ring's centre, in teal."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Rail heading and current phase name."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Region headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Facts, readouts, flag proof."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Meta, row subtitles, legends, footer."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Badges, tags, phase names."
+      },
+      "numeric": {
+        "displayName": "Numeric",
+        "purpose": "Every number, date and time; right-aligned in fact lists."
+      },
+      "axis-label": {
+        "displayName": "Axis Label",
+        "purpose": "Uppercase weekday names around the ring only."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "The only easing: week-arc refill and row press."
+      },
+      {
+        "name": "ring-refill",
+        "value": "280ms ease-out, stroke-dasharray 0 to full, clockwise from 12",
+        "purpose": "Week arc on a pointer patient switch only; skipped for keyboard switches and prefers-reduced-motion."
+      },
+      {
+        "name": "row-feedback",
+        "value": "background-color 120ms ease; transform scale(0.985) 120ms ease-out on press",
+        "purpose": "Caseload row hover and press; reduced motion keeps only the background change."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column-body",
+        "value": "1180px"
+      },
+      {
+        "name": "stacked",
+        "value": "860px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Caseload Row",
+      "kind": "nav",
+      "refersTo": "caseload-row",
+      "description": "One patient on the graphite rail: mini ring, name, surgery and week, phase, top flag.",
+      "html": "<div class=\"ds-rail\"><button class=\"ds-row\"><svg width=\"44\" height=\"44\" viewBox=\"0 0 44 44\" aria-hidden=\"true\"><path d=\"M 22.89 5.02 A 17 17 0 0 1 34.72 10.72\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 35.83 12.11 A 17 17 0 0 1 38.75 24.91\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 38.35 26.65 A 17 17 0 0 1 30.17 36.91\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 28.56 37.68 A 17 17 0 0 1 15.44 37.68\" stroke=\"var(--amber)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 13.83 36.91 A 17 17 0 0 1 5.65 26.65\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 5.25 24.91 A 17 17 0 0 1 8.17 12.11\" stroke=\"var(--red)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 9.28 10.72 A 17 17 0 0 1 21.11 5.02\" stroke=\"var(--r8)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/></svg><span class=\"ds-row-main\"><span class=\"ds-row-name\">Leo</span><span class=\"ds-row-sub\">ACL reconstruction · week 7</span><span class=\"ds-row-sub\">Phase 3 of 6</span><span class=\"ds-row-flag\"><svg width=\"11\" height=\"11\" viewBox=\"0 0 12 12\" style=\"color:var(--amber)\"><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 L 0.75 6 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 Z\" fill=\"currentColor\"/></svg>2 flare-ups in 3 days</span></span></button><button class=\"ds-row\" aria-current=\"true\"><svg width=\"44\" height=\"44\" viewBox=\"0 0 44 44\" aria-hidden=\"true\"><path d=\"M 22.89 5.02 A 17 17 0 0 1 34.72 10.72\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 35.83 12.11 A 17 17 0 0 1 38.75 24.91\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 38.35 26.65 A 17 17 0 0 1 30.17 36.91\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 28.56 37.68 A 17 17 0 0 1 15.44 37.68\" stroke=\"var(--amber)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 13.83 36.91 A 17 17 0 0 1 5.65 26.65\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 5.25 24.91 A 17 17 0 0 1 8.17 12.11\" stroke=\"var(--red)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 9.28 10.72 A 17 17 0 0 1 21.11 5.02\" stroke=\"var(--r8)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/></svg><span class=\"ds-row-main\"><span class=\"ds-row-name\">Ava</span><span class=\"ds-row-sub\">ACL reconstruction · week 10</span><span class=\"ds-row-flag quiet\">Nothing new</span></span></button></div>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-rail{background:var(--r10);color:var(--on-rail);padding:24px 16px;width:320px;display:flex;flex-direction:column;gap:2px;font:400 15px/1.5 var(--sans)}.ds-row{display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;align-items:start;padding:12px 8px;border:0;border-radius:12px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;transition:background-color 120ms ease,transform 120ms var(--ease-out)}.ds-row:hover{background:var(--r9)}.ds-row[aria-current=true]{background:var(--r8)}.ds-row:active{transform:scale(0.985)}.ds-row:focus-visible{outline:2px solid var(--live);outline-offset:-2px}.ds-row-main{display:flex;flex-direction:column;gap:2px}.ds-row-name{font-size:16px;font-weight:700}.ds-row-sub{font-size:13px;line-height:18px;color:var(--on-rail-2)}.ds-row-flag{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:13px;line-height:18px;font-weight:500}.ds-row-flag.quiet{color:var(--on-rail-2);font-weight:400}"
+    },
+    {
+      "name": "Severity Marks",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The diamond family: filled contact soon, half worth a look, outline note. Always beside a word.",
+      "html": "<div class=\"ds-sev\"><span><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" style=\"color:var(--red)\"><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 L 0.75 6 Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg><b class=\"ds-ink-red\">Contact soon</b></span><span><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" style=\"color:var(--amber)\"><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 L 0.75 6 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 Z\" fill=\"currentColor\"/></svg><b class=\"ds-ink-amber\">Worth a look</b></span><span><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" style=\"color:var(--r5)\"><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 L 0.75 6 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg><b class=\"ds-ink-note\">Note</b></span></div>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-sev{display:flex;gap:24px;background:var(--r1);padding:16px;font:500 15px/1.5 var(--sans)}.ds-sev span{display:inline-flex;align-items:center;gap:6px}.ds-ink-red{color:var(--red-ink);font-weight:500}.ds-ink-amber{color:var(--amber-ink);font-weight:500}.ds-ink-note{color:var(--r6);font-weight:500}"
+    },
+    {
+      "name": "Flag",
+      "kind": "card",
+      "refersTo": "flag-contact-soon",
+      "description": "A flag with its proof: tier word and mark, title, the patient's words, when and source.",
+      "html": "<div class=\"ds-flag ds-flag-red\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" style=\"color:var(--red);margin-top:4px\"><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 L 0.75 6 Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg><p><span class=\"ds-flag-tier\">Contact soon · </span><span class=\"ds-flag-title\">Reported a red-flag symptom</span></p><p class=\"ds-flag-proof\">In their words: \"Knee gave way on the stairs\".</p><p class=\"ds-flag-meta\">today · pain log</p></div><div class=\"ds-flag ds-flag-amber\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" style=\"color:var(--amber);margin-top:4px\"><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 L 0.75 6 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M 6 0.75 L 11.25 6 L 6 11.25 Z\" fill=\"currentColor\"/></svg><p><span class=\"ds-flag-tier\">Worth a look · </span><span class=\"ds-flag-title\">2 flare-ups in 3 days</span></p><p class=\"ds-flag-proof\">Flare-up mornings on Tue and Thu.</p><p class=\"ds-flag-meta\">yesterday · check-in</p></div>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-flag{border-radius:14px;padding:16px;display:grid;grid-template-columns:16px minmax(0,1fr);gap:6px 12px;background:var(--r1);color:var(--r10);font:400 15px/1.5 var(--sans);max-width:420px;margin-bottom:16px}.ds-flag p{margin:0}.ds-flag-red{background:var(--red-soft)}.ds-flag-amber{background:var(--amber-soft)}.ds-flag-tier{font-weight:500}.ds-flag-red .ds-flag-tier{color:var(--red-ink)}.ds-flag-amber .ds-flag-tier{color:var(--amber-ink)}.ds-flag-title{font-weight:700}.ds-flag-proof,.ds-flag-meta{grid-column:2}.ds-flag-proof{color:var(--r8)}.ds-flag-meta{font-size:13px;line-height:18px;color:var(--r7)}"
+    },
+    {
+      "name": "Mini Ring",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The week in the caseload: seven morning segments clockwise from 12 on graphite.",
+      "html": "<div class=\"ds-mini\"><svg width=\"44\" height=\"44\" viewBox=\"0 0 44 44\" aria-hidden=\"true\"><path d=\"M 22.89 5.02 A 17 17 0 0 1 34.72 10.72\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 35.83 12.11 A 17 17 0 0 1 38.75 24.91\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 38.35 26.65 A 17 17 0 0 1 30.17 36.91\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 28.56 37.68 A 17 17 0 0 1 15.44 37.68\" stroke=\"var(--amber)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 13.83 36.91 A 17 17 0 0 1 5.65 26.65\" stroke=\"var(--live)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 5.25 24.91 A 17 17 0 0 1 8.17 12.11\" stroke=\"var(--red)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M 9.28 10.72 A 17 17 0 0 1 21.11 5.02\" stroke=\"var(--r8)\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/></svg></div>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-mini{background:var(--r10);padding:16px;display:inline-block}"
+    },
+    {
+      "name": "Week Ring (simplified)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Signature: 168-hour ring, teal week arc from 12 to now, clinic visit in ink, hours unseen at centre.",
+      "html": "<div class=\"ds-ring\"><svg viewBox=\"0 0 700 700\" width=\"280\" height=\"280\" aria-hidden=\"true\"><circle cx=\"350\" cy=\"350\" r=\"272\" stroke=\"var(--r2)\" stroke-width=\"22\" fill=\"none\"/><path class=\"ds-arc\" d=\"M 350 78 A 272 272 0 1 1 330 78.7\" stroke=\"var(--teal)\" stroke-width=\"22\" fill=\"none\"/><path d=\"M 345 622 A 272 272 0 0 0 355 622\" stroke=\"var(--r10)\" stroke-width=\"28\" fill=\"none\"/><line x1=\"350\" y1=\"210\" x2=\"350\" y2=\"304\" stroke=\"var(--r3)\" stroke-width=\"2\"/><circle cx=\"350\" cy=\"350\" r=\"296\" stroke=\"var(--r3)\" stroke-width=\"8\" stroke-dasharray=\"1 10.07\" fill=\"none\"/></svg><div class=\"ds-ring-c\"><span class=\"ds-ring-n\">161<small> h</small></span><span class=\"ds-ring-l\">the hours you never see</span><span class=\"ds-ring-s\"><b>1 h</b> in clinic</span></div></div>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-ring{position:relative;width:280px;background:var(--r1);font-family:var(--sans)}.ds-ring svg{display:block}.ds-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.ds-ring-n{font:500 48px/1 var(--mono);letter-spacing:-0.04em;color:var(--teal)}.ds-ring-n small{font-size:0.4em;letter-spacing:0}.ds-ring-l{font-size:12px;font-weight:500;margin-top:6px;color:var(--r10)}.ds-ring-s{font-size:12px;color:var(--r7);margin-top:6px}.ds-ring-s b{font:500 1.15em var(--mono);color:var(--r10)}@keyframes ds-refill{from{stroke-dasharray:0 1720}to{stroke-dasharray:1720 1720}}.ds-ring:hover .ds-arc{animation:ds-refill 280ms var(--ease-out)}@media (prefers-reduced-motion:reduce){.ds-ring:hover .ds-arc{animation:none}}"
+    },
+    {
+      "name": "Badges",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Who measures a checkpoint: Clinic, Tape, or default.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge\">Self-test</span><span class=\"ds-badge ds-badge-pt\">Clinic</span><span class=\"ds-badge ds-badge-tape\">Tape</span></div>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-badges{display:flex;gap:8px;background:var(--r1);padding:16px}.ds-badge{font:500 12px/16px var(--sans);padding:2px 7px;border-radius:6px;background:var(--r2);color:var(--r8)}.ds-badge-pt{background:var(--r10);color:var(--on-rail)}.ds-badge-tape{background:var(--teal-soft);color:var(--teal-ink)}"
+    },
+    {
+      "name": "Progress Phases and Facts",
+      "kind": "custom",
+      "refersTo": "phase-bar",
+      "description": "Six phase bars and a ruled facts list with Mono values set right.",
+      "html": "<section class=\"ds-panel\"><h2>Progress</h2><ol class=\"ds-phases\"><li class=\"done\"><i></i>Protect</li><li class=\"done\"><i></i>Bend back</li><li class=\"done\"><i></i>Strength</li><li class=\"cur\"><i></i>Bridge to sport</li><li><i></i>Run, jump</li><li><i></i>Return</li></ol><dl class=\"ds-facts\"><dt>Checkpoints met</dt><dd class=\"n\">0 / 6</dd><dt>Bend</dt><dd class=\"n\">141°</dd><dt>Bend limit</dt><dd class=\"n lim\">120°</dd><dt>Straightening</dt><dd>Fully straight</dd></dl></section>",
+      "css": ":root{--r0:#F7F9F8;--r1:#EEF2F0;--r2:#E3E9E6;--r3:#D2DBD7;--r4:#B4C1BC;--r5:#8D9C97;--r6:#5F6E69;--r7:#46534F;--r8:#33403C;--r9:#263130;--r10:#1C2422;--teal:#1F8A72;--teal-soft:#CDE7DF;--teal-ink:#145C4C;--live:#3DDBB8;--red:#C93C30;--red-ink:#9E2A1F;--red-soft:#F8E1DE;--amber:#E0A21B;--amber-soft:#FBEFD3;--amber-ink:#7A5200;--on-rail:#F2F5F4;--on-rail-2:#A9B8B3;--sans:'Atkinson Hyperlegible Next',system-ui,sans-serif;--mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;--ease-out:cubic-bezier(0.23,1,0.32,1);--cell:8px}.ds-panel{background:var(--r1);color:var(--r10);font:400 15px/1.5 var(--sans);border-top:1px solid var(--r3);padding:24px 16px 32px;display:flex;flex-direction:column;gap:16px;max-width:440px}.ds-panel h2{margin:0;font-size:17px;line-height:24px;font-weight:700}.ds-phases{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.ds-phases li{display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:15px;color:var(--r6)}.ds-phases i{height:6px;border-radius:3px;background:var(--r2)}.ds-phases .done i{background:var(--teal)}.ds-phases .cur i{background:var(--r10)}.ds-phases .cur{color:var(--r10);font-weight:500}.ds-facts{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 16px}.ds-facts dt{color:var(--r6)}.ds-facts dd{margin:0;text-align:right}.ds-facts .n{font-family:var(--mono)}.ds-facts .lim{color:var(--amber-ink);font-weight:500}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Week Ring",
+    "overview": "**Creative North Star: \"The Week Ring\"**\n\nThe hours the PT never sees, drawn. Every patient's last seven days are one 168-hour ring, read clockwise from 12 o'clock like the brand's Sensor O: the clinic visit is a sliver of ink, everything else is the patient's own record. The world is a graphite rail holding the caseload beside a cool porcelain reading surface, both drawn from a single stepped green-grey ramp, with live teal reserved for the week itself and red and amber for severity.\n\nIt is an instrument, not a dashboard. Density is calm and measured: regions are separated by hairline rules and an 8px cell rhythm rather than boxed into cards, numbers are tabular mono set right, and every coloured signal also carries a word and a shape so it survives a projector, a print-out, or a colour-blind reader. Nothing is decorative; the only motion is the week arc refilling clockwise when a patient is picked by pointer.\n\nThe build refuses the white SaaS card dashboard: no KPI tiles, no line charts, no drop shadows, no gradient fills.",
+    "keyCharacteristics": [
+      "One stepped green-grey ramp (r0 to r10) for every neutral, light and dark.",
+      "Teal means the week (recorded time); ink means the clinic; red and amber mean severity, never decoration.",
+      "Severity is triple-coded: colour, diamond weight, and a word.",
+      "Atkinson Hyperlegible Next for words, its Mono for every number, time and date.",
+      "Ruled regions on an 8px cell derived from the ring's own hour ticks.",
+      "Flat surfaces; depth comes from the ramp, not from shadows."
+    ],
+    "rules": [
+      {
+        "name": "The One Ramp Rule",
+        "body": "Every neutral, light or dark, comes from r0 to r10. A new grey is a new ramp step argued for, never a one-off hex.",
+        "section": "colors"
+      },
+      {
+        "name": "The Teal Is Time Rule",
+        "body": "Teal marks recorded time and things that went well against the protocol. It is never a button colour, a link colour or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Pair Rule",
+        "body": "Red and amber are graphic colours. Any severity word is set in its ink variant (red-ink, amber-ink) so text contrast holds on Porcelain and on the washes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Counts Rule",
+        "body": "Numbers, dates and times are Mono, tabular and right-aligned in any facts column. Words are never Mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Never Retype Rule",
+        "body": "RECO appears as the brand SVG in the interface; never set the wordmark in a font.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hour Cell Rule",
+        "body": "Structural spacing is a multiple of the 8px cell. Tight inline gaps inside a single component (marks beside words, stacked meta) may use 2px or 6px; nothing structural does.",
+        "section": "layout"
+      },
+      {
+        "name": "The Fixed Furniture Rule",
+        "body": "Every caseload row carries the same parts in the same place: mini ring, name, surgery and week, phase, top flag (or \"Nothing new\").",
+        "section": "layout"
+      },
+      {
+        "name": "The Ruled Not Boxed Rule",
+        "body": "Regions are separated by a 1px top rule (r3 between regions, r2 inside them), never by bordered or shadowed panels. The only filled shapes on the reading surface are flags, whose wash is part of the severity signal, and badges.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Diamond Family",
+        "body": "Severity has one silhouette, a diamond, at three weights: filled for contact soon, half-filled (right half solid, outline whole) for worth a look, outline for a note. The same diamonds appear in the rail, in flags, in the day table, on the ring and in its legend. Circles are reserved for neutral or good records (clear mornings, ordinary pain logs, no check-in as an empty ring).",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do draw every neutral from r0 to r10, and use the graphite r10 rail for the caseload.",
+      "Do give every severity signal all three codes: colour, diamond weight, and a word.",
+      "Do set severity words in red-ink or amber-ink, never in red or amber.",
+      "Do use Live Teal (live) instead of Week Teal on graphite.",
+      "Do set every number, date and time in Atkinson Hyperlegible Mono, right-aligned in fact lists.",
+      "Do separate regions with a 1px r3 top rule and 3-cell / 4-cell padding.",
+      "Do pair every flag with the entry that raised it, and its date and source.",
+      "Do keep the ring's refill to 280ms, pointer-only, and skip it for keyboard and reduced motion.",
+      "Do use the RECO SVG wordmark at 26px tall on the rail."
+    ],
+    "donts": [
+      "Don't add shadows, bordered panels or card grids to the reading surface.",
+      "Don't use teal for buttons, links or decoration; it means recorded time.",
+      "Don't carry meaning by colour alone, or draw severity with any shape but the diamond family.",
+      "Don't animate the reading surface except the week arc, and only by filling clockwise from 12; rail rows keep only their 120ms hover and press feedback.",
+      "Don't typeset the RECO wordmark.",
+      "Don't set words in Mono, or numbers in a proportional face inside facts and readouts.",
+      "Don't introduce KPI tiles or line charts for the week; the week is the ring."
+    ]
+  }
+}

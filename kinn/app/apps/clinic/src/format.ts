@@ -20,3 +20,11 @@ export function shortDate(date: string): string {
 export function weekday(date: string): string {
   return new Date(startOfDay(date, 12)).toLocaleDateString('en-US', { weekday: 'short' })
 }
+
+/** "19:30" from a fractional hour of the day. */
+export function clockTime(hour: number): string {
+  const minutes = Math.round(hour * 60)
+  const h = Math.floor(minutes / 60) % 24
+  const m = minutes % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
