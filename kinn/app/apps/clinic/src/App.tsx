@@ -15,6 +15,7 @@ import { liveCaseload } from './live'
 import { apiUrl } from './session'
 import { useLive } from './use-live'
 import { usePlans } from './use-plans'
+import { usePublishedNote } from './use-published-note'
 import { useSelection } from './use-selection'
 import type { ChartView } from './use-selection'
 
@@ -40,6 +41,8 @@ interface ClinicProps {
   /** Opens a patient's chart on a tab; used when the editor closes. */
   readonly onSelect?: (id: string, view?: ChartView) => void
   readonly onPublish?: (id: string, plan: RecoveryPlan) => void | Promise<void>
+  /** Just published for the open patient: their exercise plan tab says so. */
+  readonly publishedVersion?: number
   /** Sample patients when missing. */
   readonly chrome?: ClinicChrome
   /** Live only: what each patient shares, and how to make a sharing code. */
@@ -51,7 +54,7 @@ const noop = (): void => undefined
 const noInvite = (): Promise<InviteView> => Promise.reject(new Error('Sign in to make a sharing code.'))
 
 /** The site, without state, so tests can render it for any day, patient and view. One thing per page. */
-export function Clinic({ today, patients, selectedId, view = 'detail', onSelect = noop, onPublish = noop, chrome = SAMPLE_CHROME, scopes, onCreateInvite = noInvite }: ClinicProps) {
+export function Clinic({ today, patients, selectedId, view = 'detail', onSelect = noop, onPublish = noop, publishedVersion, chrome = SAMPLE_CHROME, scopes, onCreateInvite = noInvite }: ClinicProps) {
   const live = chrome.mode === 'live'
   // A link to someone who isn't on the list (an old link, a stopped share) lands on the patients table.
   const open = patients.find((p) => p.id === selectedId)
@@ -72,7 +75,14 @@ export function Clinic({ today, patients, selectedId, view = 'detail', onSelect 
           onClose={() => onSelect(open.id, 'exercises')}
         />
       ) : open ? (
-        <PatientDetail key={open.id} patient={open} today={today} tab={view === 'add' || view === 'plan' ? 'detail' : view} {...(scopes?.[open.id] ? { scopes: scopes[open.id] } : {})} />
+        <PatientDetail
+          key={open.id}
+          patient={open}
+          today={today}
+          tab={view === 'add' || view === 'plan' ? 'detail' : view}
+          {...(scopes?.[open.id] ? { scopes: scopes[open.id] } : {})}
+          {...(publishedVersion !== undefined ? { publishedVersion } : {})}
+        />
       ) : (
         <PatientsPage patients={patients} chrome={chrome} />
       )}
@@ -94,7 +104,10 @@ function useClinicNav() {
     window.scrollTo({ top: 0 })
     document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true })
   }, [page])
-  return { selectedId: selection?.id, view, select }
+  const [publishedVersion, announce] = usePublishedNote(selection ? `${selection.id}:${selection.view}` : page)
+  /** After a publish: back to the patient's exercise plan, which says which version went out. */
+  const published = (id: string, version: number): void => { announce(`${id}:exercises`, version); select(id, 'exercises') }
+  return { selectedId: selection?.id, view, select, publishedVersion, published }
 }
 
 /** The six sample patients. A published plan is kept on this computer only. */
@@ -110,7 +123,8 @@ function SampleClinic({ onSignIn }: { readonly onSignIn?: () => void }) {
       selectedId={nav.selectedId}
       view={nav.view === 'add' ? 'detail' : nav.view}
       onSelect={nav.select}
-      onPublish={(id, plan) => { publishPlan(id, plan); nav.select(id, 'exercises') }}
+      onPublish={(id, plan) => { publishPlan(id, plan); nav.published(id, plan.version) }}
+      {...(nav.publishedVersion !== undefined ? { publishedVersion: nav.publishedVersion } : {})}
       chrome={{ mode: 'sample', ...(onSignIn ? { onSignIn } : {}) }}
     />
   )
@@ -133,7 +147,8 @@ function LiveClinic({ baseUrl, onSample }: { readonly baseUrl: string; readonly 
       selectedId={nav.selectedId}
       view={nav.view}
       onSelect={nav.select}
-      onPublish={async (id, plan) => { await live.publish(id, plan); nav.select(id, 'exercises') }}
+      onPublish={async (id, plan) => { await live.publish(id, plan); nav.published(id, plan.version) }}
+      {...(nav.publishedVersion !== undefined ? { publishedVersion: nav.publishedVersion } : {})}
       scopes={caseload.scopes}
       onCreateInvite={live.createInvite}
       chrome={{

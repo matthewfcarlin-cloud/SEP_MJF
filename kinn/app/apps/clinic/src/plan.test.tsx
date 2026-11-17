@@ -97,6 +97,16 @@ describe('the plan on the clinic site', () => {
     expect(html.match(/class="entry"/g)).toHaveLength(5)
   })
 
+  test('after publishing, the exercise plan tab says which version went out, and only that tab', () => {
+    const patients = buildCaseload(TODAY)
+    const onPlan = text(renderToStaticMarkup(<Clinic today={TODAY} patients={patients} selectedId="leo-flare" view="exercises" publishedVersion={3} />))
+    expect(onPlan).toContain(copy.published(3))
+    const onSummary = text(renderToStaticMarkup(<Clinic today={TODAY} patients={patients} selectedId="leo-flare" view="detail" publishedVersion={3} />))
+    expect(onSummary).not.toContain(copy.published(3))
+    const quiet = text(renderToStaticMarkup(<Clinic today={TODAY} patients={patients} selectedId="leo-flare" view="exercises" />))
+    expect(quiet).not.toContain('published.')
+  })
+
   test('plan links route to the editor', () => {
     expect(selectionFromHash('#/p/leo-flare/plan')).toEqual({ id: 'leo-flare', view: 'plan' })
     expect(selectionFromHash('#/p/leo-flare/exercises')).toEqual({ id: 'leo-flare', view: 'exercises' })

@@ -266,6 +266,28 @@ Flat. Sheets are separated from the desk by a 1px hairline and their own white, 
 
 **The One Shadow Rule.** The only shadow is on the plan editor's publish bar (`0 4px 16px rgba(23, 33, 43, 0.1)`), because it floats over the list while it scrolls. Nothing else is lifted.
 
+## Motion
+
+One authored moment, the opening, and quiet support for it. Motion is never the look; it explains where something came from.
+
+- **The opening (1.9 s).** The RECO Coin (the front-on render, cut into a ring and a dial in `public/intro/`) sits on the desk. A thin teal line runs clockwise round its rim from 12 o'clock and stops three-quarters round, as the O in the logo does. The dial clears and the view passes through it: the page shows inside the ring first, the ring passes the edges, and the page settles from 90% to full size. Markup and timing are in `index.html`; `src/intro.ts` decides whether it plays.
+- **A page arrives** with a 10px rise and a fade (360ms). Nothing animates out, so going somewhere is never slower than it was.
+- **A list appears as a list.** Patients table rows arrive 40ms apart, most urgent first.
+- **Progress fills from zero**, the motion of the coin's ring and the dial in the app: recovery bars over 800ms, phase steps left to right up to the current phase.
+- **A tab** grows its teal marker (200ms) and swaps only the sheet below.
+- **Feedback.** Buttons press in slightly. Publishing lands on the exercise plan with "Version N published." in a teal note.
+- **Waiting** is the O in RECO turning, beside the words.
+
+All of it lives in `src/motion.css`, on one ease-out curve (`cubic-bezier(0.16, 1, 0.3, 1)`) and one fill curve (`cubic-bezier(0.33, 1, 0.68, 1)`).
+
+### Named Rules
+
+**The Once Rule.** The opening plays once per browser session. A PT who opens the site forty times a day sees the coin in the morning, not on every reload. `?intro=1` plays it again for a demo.
+
+**The Still Rule.** With reduced motion the opening does not play, nothing moves, bars and steps are simply full, and pages fade in over 160ms.
+
+**The Finished-State Rule.** Every animation starts from the finished page (keyframes name only the `from`), so nothing is hidden if an animation never runs.
+
 ## Shapes
 
 - 8px corners on sheets, 6px on buttons, fields and alerts, 4px on tags and bars.
@@ -316,6 +338,7 @@ White, strong hairline, 6px corners, a visible label above. Focus is a 2px teal 
 - **Don't** bring back the Week Ring, a dark sidebar, diamonds or any chart that needs a legend.
 - **Don't** use monospace, or a font that draws zero with a slash.
 - **Don't** add a second accent colour, gradients or decorative shadows.
+- **Don't** add an exit animation, a bounce, or motion on scroll. Don't make the opening longer or play it more than once a session.
 - **Don't** show a percentage, a score or a risk level for a patient. The bar places them on the protocol; the clinical call is the PT's.
 - **Don't** count what a patient did or didn't do. Flags are about the knee only.
 - **Don't** use a coloured side stripe on a card or alert.

@@ -1,0 +1,58 @@
+/*
+ * Motion. One authored moment, the coin opening (index.html), and quiet support for it: a page
+ * arrives, a list appears as a list, and progress fills from zero the way the coin's ring does.
+ * Everything starts from the finished state, so nothing is hidden if an animation never runs.
+ */
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fill: cubic-bezier(0.33, 1, 0.68, 1);
+  --t-press: 120ms; --t-state: 200ms; --t-page: 360ms; --t-fill: 800ms;
+  --stagger: 40ms;
+}
+html { background: var(--bg); }
+
+/* The opening hands over to the page: it settles to full size as the view passes through the dial. */
+html.intro-play #root { transform-origin: 50vw 50vh; animation: intro-settle 700ms var(--ease-fill) 1400ms both; }
+html.intro:not(.intro-reveal) #root * { animation-play-state: paused !important; }
+@keyframes intro-settle { from { transform: scale(0.9); } }
+
+/* A page arrives; a tab of the same chart only changes its sheet. */
+.page { animation: page-in var(--t-page) var(--ease-out) both; }
+.tab-panel { display: flex; flex-direction: column; gap: 20px; animation: panel-in 260ms var(--ease-out) both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(10px); } }
+@keyframes panel-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* The patients table appears as a list, most urgent first. */
+.patients tbody tr { animation: row-in 420ms var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--stagger) + 80ms); }
+@keyframes row-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* Recovery fills from zero, the motion of the coin's ring and the dial in the app. */
+.recovery-fill { animation: fill-in var(--t-fill) var(--ease-fill) both; animation-delay: calc(var(--i, 0) * var(--stagger) + 220ms); }
+.phase-done .phase-bar, .phase-current .phase-bar { transform-origin: 0 50%; animation: phase-in 420ms var(--ease-fill) both; animation-delay: calc(var(--i, 0) * 90ms + 160ms); }
+@keyframes fill-in { from { transform: translateX(-101%); } }
+@keyframes phase-in { from { transform: scaleX(0); } }
+
+/* The tab marker grows under the tab that was picked. */
+.tab { position: relative; transition: color var(--t-press) ease, background-color var(--t-press) ease; }
+.tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px; background: var(--accent); transform: scaleX(0); transition: transform var(--t-state) var(--ease-out); }
+.tab[aria-current='page']::after { transform: scaleX(1); }
+
+/* Controls acknowledge a press; rows and links change state without a jump. */
+.btn { transition: background-color var(--t-press) ease, border-color var(--t-press) ease, transform var(--t-press) var(--ease-out); }
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.patients tbody tr, .back-link, .row-name { transition: background-color var(--t-press) ease; }
+.entry { animation: panel-in 260ms var(--ease-out) both; }
+.notice { animation: panel-in 320ms var(--ease-out) both; }
+.gate-brand, .gate-card { animation: page-in var(--t-page) var(--ease-out) both; }
+.gate-card { animation-delay: 60ms; }
+.loading-ring { animation: ring-turn 900ms linear infinite; }
+@keyframes ring-turn { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .page, .tab-panel, .patients tbody tr, .entry, .notice, .gate-brand, .gate-card { animation-name: quiet-in; animation-duration: 160ms; animation-delay: 0ms; }
+  .loading-ring { animation-duration: 2400ms; }
+  .recovery-fill, .phase-bar { animation: none !important; }
+  .tab::after, .btn { transition: none; }
+  .btn:active:not(:disabled) { transform: none; }
+}
+@keyframes quiet-in { from { opacity: 0; } }

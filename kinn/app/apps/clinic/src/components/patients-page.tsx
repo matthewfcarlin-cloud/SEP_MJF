@@ -2,17 +2,19 @@ import type { PatientSummary } from '@reco/core'
 
 import type { ClinicChrome } from '../chrome'
 import { copy } from '../copy'
+import { placeInList } from '../motion'
 import { ADD_HREF, chartHref } from '../use-selection'
+import { LoadingRing } from './icons'
 import { RecoveryBar } from './recovery-bar'
 import { StatusTag } from './status-tag'
 
 /** One patient, the same columns in the same place: who, what, how far along, what needs a look, the way in. */
-function Row({ patient }: { readonly patient: PatientSummary }) {
+function Row({ patient, index }: { readonly patient: PatientSummary; readonly index: number }) {
   const top = patient.flags[0]
   const more = patient.flags.length - 1
   const week = Math.floor(patient.weeksIn)
   return (
-    <tr>
+    <tr style={placeInList(index)}>
       <th scope="row">
         <a className="row-name" href={chartHref(patient.id)}>{patient.name}</a>
         <span className="row-sub">{copy.rowSub(patient.surgeryLabel, patient.weeksIn)}</span>
@@ -54,7 +56,7 @@ export function PatientsPage({ patients, chrome }: PatientsPageProps) {
       <header className="page-head">
         <div className="page-title">
           <h1 id="page-title" tabIndex={-1}>{copy.listTitle}</h1>
-          <p className="muted" aria-live="polite">{note}</p>
+          <p className="muted page-note" aria-live="polite">{live && chrome.loading ? <LoadingRing /> : null}{note}</p>
         </div>
         {live ? <a className="btn btn-primary" href={ADD_HREF}>{copy.addPatient}</a> : null}
       </header>
@@ -78,8 +80,8 @@ export function PatientsPage({ patients, chrome }: PatientsPageProps) {
               </tr>
             </thead>
             <tbody>
-              {patients.map((p) => (
-                <Row key={p.id} patient={p} />
+              {patients.map((p, i) => (
+                <Row key={p.id} patient={p} index={i} />
               ))}
             </tbody>
           </table>

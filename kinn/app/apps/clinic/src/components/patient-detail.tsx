@@ -5,7 +5,7 @@ import { notShared } from '../live'
 import { chartHref, LIST_HREF } from '../use-selection'
 import type { ChartView } from '../use-selection'
 import { FlagList } from './flags'
-import { BackIcon } from './icons'
+import { BackIcon, CheckIcon } from './icons'
 import { NextStepsSection } from './next-steps'
 import { PlanSection } from './plan-section'
 import { ProgressSection } from './progress'
@@ -20,10 +20,12 @@ interface PatientDetailProps {
   readonly tab: ChartTab
   /** Real patients only: what this patient chose to share, so an empty section isn't read as a quiet week. */
   readonly scopes?: readonly ShareScope[]
+  /** A version published a moment ago; the exercise plan tab confirms it. */
+  readonly publishedVersion?: number
 }
 
 /** One patient's chart: who they are, one clear action, and three tabs so each view holds one thing. */
-export function PatientDetail({ patient, today, tab, scopes }: PatientDetailProps) {
+export function PatientDetail({ patient, today, tab, scopes, publishedVersion }: PatientDetailProps) {
   const hasPtPlan = patient.writtenPlan.source === 'pt'
   return (
     <main className="page" aria-labelledby="patient-name">
@@ -43,17 +45,22 @@ export function PatientDetail({ patient, today, tab, scopes }: PatientDetailProp
           </a>
         ))}
       </nav>
-      {tab === 'detail' ? (
-        <>
-          <FlagList flags={patient.flags} today={today} />
-          <ProgressSection patient={patient} today={today} />
-          <NextStepsSection patient={patient} />
-        </>
-      ) : tab === 'log' ? (
-        <WeekSection patient={patient} />
-      ) : (
-        <PlanSection patient={patient} />
-      )}
+      <div className="tab-panel" key={tab}>
+        {tab === 'detail' ? (
+          <>
+            <FlagList flags={patient.flags} today={today} />
+            <ProgressSection patient={patient} today={today} />
+            <NextStepsSection patient={patient} />
+          </>
+        ) : tab === 'log' ? (
+          <WeekSection patient={patient} />
+        ) : (
+          <>
+            {publishedVersion !== undefined ? <p className="notice" role="status"><CheckIcon />{copy.published(publishedVersion)}</p> : null}
+            <PlanSection patient={patient} />
+          </>
+        )}
+      </div>
     </main>
   )
 }

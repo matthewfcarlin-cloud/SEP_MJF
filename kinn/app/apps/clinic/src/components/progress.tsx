@@ -2,14 +2,15 @@ import type { PatientSummary } from '@reco/core'
 
 import { copy } from '../copy'
 import { relativeDay } from '../format'
+import { placeInList } from '../motion'
 
 function Phases({ patient }: { readonly patient: PatientSummary }) {
   const path = patient.path
   if (!path) return null
   return (
     <ol className="phases" aria-label={copy.phasesLabel}>
-      {path.timeline.map((row) => (
-        <li key={row.n} className={`phase phase-${row.status}`} aria-current={row.status === 'current' ? 'step' : undefined}>
+      {path.timeline.map((row, i) => (
+        <li key={row.n} className={`phase phase-${row.status}`} style={placeInList(i)} aria-current={row.status === 'current' ? 'step' : undefined}>
           <span className="phase-bar" />
           <span>{`${row.n}. ${row.name}`}</span>
         </li>

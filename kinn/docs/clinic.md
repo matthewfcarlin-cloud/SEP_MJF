@@ -35,6 +35,18 @@ The recovery progress bar is filled by the phases behind the patient plus the sh
 
 The open page lives in the URL: `#/` is the patients table, `#/p/<id>` a chart, `#/p/<id>/log` and `#/p/<id>/exercises` its other tabs, `#/p/<id>/plan` the plan editor. A link to someone who isn't on the list lands on the patients table.
 
+## The opening and motion
+
+- **The opening.** The first time a browser session opens the site, the RECO Coin shows for about two seconds: its rim fills in teal, then the view passes through the dial into the page. It plays once per session, never for someone who has asked their device for less motion, and `?intro=1` plays it again for a demo.
+- **Everything else is small.** Pages fade in with a slight rise, the patients table arrives row by row, recovery bars and phase steps fill from zero, the tab marker grows under the tab you pick, and publishing a plan lands on the exercise plan with "Version N published.".
+- **Where it lives.** The coin's markup and timing are in `index.html`, the rule for when it plays in `src/intro.ts`, and every other animation in `src/motion.css`. The full rules are in the site's `DESIGN.md` under Motion.
+
+## The pitch film
+
+`kinn/video/RECO_clinic_demo.mp4` is a 10-second film of the site for the pitch deck (1920 by 1080, 60 frames a second, no added words). It follows Ava, the script's patient: the opening, the patients table, her chart, her daily log, writing her exercise plan from the library, and publishing it.
+
+It is recorded by `kinn/video/clinic_demo/record.mjs`, which runs the built site in headless Chrome with every animation slowed down and takes one screenshot per film frame, so the film is smooth whatever else the Mac is doing. To re-record after a site change: `npm run build -w reco-clinic`, then `node record.mjs film.mjs <frames folder>` from `kinn/video/clinic_demo`, then join the frames with ffmpeg at 60 frames a second. `film.mjs` is the timeline: what the pointer does and when.
+
 ## Flags (`core/src/clinic/flags.ts`)
 
 | Tier | When | Window |
