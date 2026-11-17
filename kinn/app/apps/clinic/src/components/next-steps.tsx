@@ -3,18 +3,34 @@ import type { CriterionView, PatientSummary } from '@reco/core'
 
 import { copy } from '../copy'
 
-function Checkpoint({ item }: { readonly item: CriterionView }) {
-  const projection = item.blockedByLimit ? copy.blocked : projectionWords(item.projection, 'clinician')
+function Checkpoints({ items, caption }: { readonly items: readonly CriterionView[]; readonly caption: string }) {
   return (
-    <li className="checkpoint">
-      <span className={`cp-mark cp-${item.status}`} aria-hidden="true" />
-      <span className="stack" style={{ gap: 2 }}>
-        <span>{item.criterion.label}</span>
-        <span className="small muted">{criterionValueWords(item, 'clinician')}</span>
-        {projection ? <span className="small muted">{projection}</span> : null}
-      </span>
-      <span className={`badge badge-${item.criterion.measuredBy}`}>{copy.by[item.criterion.measuredBy]}</span>
-    </li>
+    <table className="table" aria-label={caption}>
+      <thead>
+        <tr>
+          <th scope="col">{copy.colCheckpoint}</th>
+          <th scope="col" className="col-latest">{copy.colLatest}</th>
+          <th scope="col" className="col-by">{copy.colMeasuredBy}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((item) => {
+          const projection = item.blockedByLimit ? copy.blocked : projectionWords(item.projection, 'clinician')
+          return (
+            <tr key={item.criterion.id}>
+              <th scope="row">{item.criterion.label}</th>
+              <td>
+                <span className="stack-tight">
+                  <span>{criterionValueWords(item, 'clinician')}</span>
+                  {projection ? <span className="small muted">{projection}</span> : null}
+                </span>
+              </td>
+              <td className="col-by">{copy.by[item.criterion.measuredBy]}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
   )
 }
 
@@ -23,26 +39,18 @@ export function NextStepsSection({ patient }: { readonly patient: PatientSummary
   const { phaseLine, open, forClinic } = patient.nextSteps
   const athome = open.filter((c) => c.criterion.measuredBy !== 'pt')
   return (
-    <section className="panel" aria-labelledby="next-title">
-      <h2 id="next-title">{copy.nextTitle}</h2>
-      <p>{phaseLine}</p>
-      {patient.path && open.length === 0 ? <p className="small muted">{copy.allMet}</p> : null}
-      {athome.length > 0 ? (
-        <ul className="checkpoints">
-          {athome.map((c) => (
-            <Checkpoint key={c.criterion.id} item={c} />
-          ))}
-        </ul>
-      ) : null}
+    <section className="card" aria-labelledby="next-title">
+      <header className="card-head"><h2 id="next-title">{copy.nextTitle}</h2></header>
+      <div className="card-body stack">
+        <p>{phaseLine}</p>
+        {patient.path && open.length === 0 ? <p className="muted">{copy.allMet}</p> : null}
+      </div>
+      {athome.length > 0 ? <Checkpoints items={athome} caption={copy.nextTitle} /> : null}
       {forClinic.length > 0 ? (
-        <div className="for-clinic">
-          <h3>{copy.forClinic}</h3>
-          <ul className="checkpoints">
-            {forClinic.map((c) => (
-              <Checkpoint key={c.criterion.id} item={c} />
-            ))}
-          </ul>
-        </div>
+        <>
+          <h3 className="card-subhead">{copy.forClinic}</h3>
+          <Checkpoints items={forClinic} caption={copy.forClinic} />
+        </>
       ) : null}
     </section>
   )

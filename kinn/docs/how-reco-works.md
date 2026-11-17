@@ -47,7 +47,7 @@ flowchart LR
 1. **The PT signs in** on the clinic website with their work email and an 8-digit code. There is no password to keep or lose. PT accounts are by invitation during the pilot.
 2. **The PT makes a sharing code** (8 characters, works once, lasts 7 days) and gives it to the patient.
 3. **The patient types the code** into the app (Settings, then Share with my PT). The app shows the PT's name and email, lists what is always shared and what is optional, and the patient taps Share. Nothing is shared before that tap.
-4. **The patient appears on the PT's list.** The website draws their last seven days as one 168-hour ring: the clinic hour is a sliver, the rest is the patient's own record.
+4. **The patient appears on the PT's patients table,** with a small recovery progress bar and a word tag for anything that needs attention. Their chart has three tabs: Summary, Daily log and Exercise plan.
 5. **Flags** put the patients who need attention at the top. Contact soon: pain 8 or above, a note with red-flag words, or the knee giving way. Worth a look: flare-up mornings, bends past the limit. Note: a stalled checkpoint, or past the phase's typical window. Flags are about the knee, never about whether exercises were done.
 6. **The PT writes a plan:** picks from the library or types their own exercises, edits doses, and chooses whether RECO may swap in a lighter dose on flare-up mornings. Publishing makes version 1, then 2, and so on. A version is never edited.
 7. **The plan reaches the phone** the next time the app opens. The patient sees "From Dana Ruiz, PT · version 2".
@@ -180,7 +180,7 @@ Leo is seven weeks out from ACL reconstruction. This is the sample patient the t
 1. Thursday: Leo logs gym, then presses the pain button at 21:00, rating 6.
 2. Friday morning: check-in pain 5. Rule: pain 5 or more is a flare-up morning. "Did it settle?" No.
 3. It happens again Saturday. Two flare-ups in three days.
-4. On Dana's caseload, Leo moves up with an amber "Worth a look · 2 flare-ups in 3 days". His ring shows amber diamonds on those mornings, the same amber as the flag.
+4. On Dana's caseload, Leo moves up with an amber "Worth a look · 2 flare-ups in 3 days". His daily log marks those mornings with an amber "Flare-up" tag, the same amber as the flag.
 5. Dana opens Leo's plan. The library opens on his phase and shows that mini squats work toward "Quad strength ≥80% of other leg", an open checkpoint for him. She adds three exercises, turns on "swap in a lighter dose", and publishes version 1.
 6. Leo opens RECO. His plan reads "From Dana Ruiz, PT · version 1". On his next flare-up morning the squats show 2 × 10 instead of 3 × 12, marked as lighter.
 7. Under "Who looked", Leo sees: Dana Ruiz, PT opened your record; Dana Ruiz, PT sent you a plan.
@@ -197,7 +197,7 @@ Steps 4 to 7 were run on a laptop through the real website, server and app code 
 - PTs write plans from a library of 85 knee exercises, each tied to the checkpoints it works toward. Plans are versioned and reach the phone.
 - The patient chooses what the PT sees, sees every time they looked, and can stop any time. Exercise check-offs are never shared.
 
-| 465 | 50 | 85 | 20 |
+| 468 | 50 | 85 | 20 |
 |---|---|---|---|
 | automated tests passing | published checkpoints modelled | knee exercises in the library | server routes, each tested |
 
@@ -209,7 +209,7 @@ From `kinn/app`, with Node 20 or newer. The first command installs everything.
 
 | Claim | How to check | What you should see |
 |---|---|---|
-| The rules are tested | `npm ci` then `npm test` | 364 core, 36 clinic and 65 server tests pass |
+| The rules are tested | `npm ci` then `npm test` | 364 core, 39 clinic and 65 server tests pass |
 | It typechecks | `npm run typecheck` | No output after each package name |
 | The server's database is real Postgres | `npm run test -w reco-api` | `postgres.test.ts` passes: it drives the server through the production Postgres driver |
 | A PT cannot see an unshared patient | `apps/api/test/sharing.test.ts`, "one PT never sees another PT's patient" and "stopping the share cuts the PT off at once" | Both pass |

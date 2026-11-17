@@ -6,16 +6,17 @@ import { copy } from '../copy'
 import { shortDate } from '../format'
 import { spacedCode } from '../live'
 import { messageOf } from '../use-live'
+import { LIST_HREF } from '../use-selection'
+import { BackIcon } from './icons'
 
 interface AddPatientProps {
   readonly onCreate: () => Promise<InviteView>
-  readonly onClose: () => void
   /** Shown as the page when the caseload is empty, where there is nothing to go back to. */
   readonly empty: boolean
 }
 
 /** Adding a patient is giving them a code. The patient does the rest, and decides what is shared. */
-export function AddPatient({ onCreate, onClose, empty }: AddPatientProps) {
+export function AddPatient({ onCreate, empty }: AddPatientProps) {
   const [invite, setInvite] = useState<InviteView | undefined>(undefined)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -51,16 +52,18 @@ export function AddPatient({ onCreate, onClose, empty }: AddPatientProps) {
   }
 
   return (
-    <article className="main" aria-labelledby="add-title">
-      {empty ? null : <button type="button" className="btn btn-ghost back" onClick={onClose}>{copy.backToList}</button>}
-      <header className="patient-head">
-        <h1 id="add-title" tabIndex={-1}>{empty ? copy.emptyTitle : copy.addTitle}</h1>
+    <main className="page page-narrow" aria-labelledby="add-title">
+      {empty ? null : <a className="back-link" href={LIST_HREF}><BackIcon />{copy.backToList}</a>}
+      <header className="page-head">
+        <div className="page-title">
+          <h1 id="add-title" tabIndex={-1}>{empty ? copy.emptyTitle : copy.addTitle}</h1>
+          <p className="muted">{empty ? copy.emptyLead : copy.addLead}</p>
+        </div>
       </header>
-      <div className="add">
-        <p className="headline">{empty ? copy.emptyLead : copy.addLead}</p>
+      <div className="card card-body stack">
         <ol className="steps">
           {copy.addSteps.map((step, i) => (
-            <li key={step}><span className="num step-n">{i + 1}</span><span>{step}</span></li>
+            <li key={step}><span className="step-n">{i + 1}</span><span>{step}</span></li>
           ))}
         </ol>
         {invite ? (
@@ -80,6 +83,6 @@ export function AddPatient({ onCreate, onClose, empty }: AddPatientProps) {
         )}
         {error ? <p className="form-error" role="alert">{error}</p> : null}
       </div>
-    </article>
+    </main>
   )
 }

@@ -1,7 +1,7 @@
 import { SIGN_IN_CODE_DIGITS } from '@reco/core'
 import { useState } from 'react'
 
-import wordmark from '../assets/reco-wordmark-ceramic.svg'
+import wordmark from '../assets/reco-wordmark-ink.svg'
 import { copy } from '../copy'
 import { messageOf } from '../use-live'
 
@@ -48,18 +48,12 @@ export function SignIn({ onStart, onVerify, needsName, onName, onSample }: SignI
   const saveName = () => run(() => onName(name.trim()))
 
   return (
-    <div className="app">
-      <aside className="rail" aria-label={copy.forClinicians}>
-        <img className="wordmark" src={wordmark} alt={copy.appName} width={86} height={26} />
-        <div className="rail-head"><h2>{copy.forClinicians}</h2></div>
-        <ul className="rail-pitch">
-          {copy.railPitch.map((line) => <li key={line}>{line}</li>)}
-        </ul>
-        <div className="rail-foot">
-          <button type="button" className="btn btn-rail" onClick={onSample}>{copy.lookAround}</button>
-        </div>
-      </aside>
-      <main className="main gate">
+    <div className="gate">
+      <div className="gate-brand">
+        <img src={wordmark} alt={copy.appName} width={92} height={28} />
+        <span className="brand-sub">{copy.forClinicians}</span>
+      </div>
+      <main className="card card-body gate-card">
         {needsName ? (
           <form className="gate-form" onSubmit={(e) => { e.preventDefault(); void saveName() }}>
             <h1>{copy.nameTitle}</h1>
@@ -99,6 +93,7 @@ export function SignIn({ onStart, onVerify, needsName, onName, onSample }: SignI
           </form>
         )}
       </main>
+      <button type="button" className="btn btn-secondary" onClick={onSample}>{copy.lookAround}</button>
     </div>
   )
 }

@@ -3,35 +3,43 @@ import type { PatientSummary } from '@reco/core'
 
 import { copy } from '../copy'
 import { shortDate } from '../format'
+import { chartHref } from '../use-selection'
 
-/** The plan the patient follows from a PT, on the patient page, with the way in to edit it. */
-export function PlanSection({ patient, onEdit }: { readonly patient: PatientSummary; readonly onEdit: () => void }) {
+/** The plan the patient follows from a PT, as a table, with the way in to write or change it. */
+export function PlanSection({ patient }: { readonly patient: PatientSummary }) {
   const { source, plan } = patient.writtenPlan
+  const fromPt = source === 'pt' && plan && plan.author.kind === 'pt'
   return (
-    <section className="panel" aria-labelledby="plan-title">
-      <div className="week-head">
+    <section className="card" aria-labelledby="plan-title">
+      <header className="card-head">
         <h2 id="plan-title">{copy.planTitle}</h2>
-        <button type="button" className="btn btn-secondary" onClick={onEdit}>
-          {source === 'pt' ? copy.planEdit : copy.planWrite}
-        </button>
+        {fromPt ? <span className="small muted">{copy.planBy(plan.author.name, plan.version, shortDate(plan.publishedOn))}</span> : null}
+      </header>
+      <div className="card-body stack">
+        {fromPt ? (
+          <p>{`${copy.adaptationTitle}: ${plan.adaptation === 'lighter-on-flare' ? copy.planLighter : copy.planAsWritten}.`}</p>
+        ) : (
+          <>
+            <p className="muted">{source === 'typed' ? copy.planTyped : copy.planNone}</p>
+            <div><a className="btn btn-primary" href={chartHref(patient.id, 'plan')}>{copy.planWrite}</a></div>
+          </>
+        )}
       </div>
-      {source === 'pt' && plan && plan.author.kind === 'pt' ? (
-        <p className="small muted">
-          {`${copy.planBy(plan.author.name, plan.version, shortDate(plan.publishedOn))} · ${plan.adaptation === 'lighter-on-flare' ? copy.planLighter : copy.planAsWritten}`}
-        </p>
-      ) : (
-        <p className="small muted">{source === 'typed' ? copy.planTyped : copy.planNone}</p>
-      )}
       {plan && plan.entries.length > 0 ? (
-        <ul className="plan-list">
-          {plan.entries.map((e) => (
-            <li key={e.id} className="plan-item">
-              <span>{e.name}</span>
-              <span className="num plan-dose">{doseText(e.dose)}</span>
-              <span className="small muted">{copy.planDays(e.daysPerWeek)}</span>
-            </li>
-          ))}
-        </ul>
+        <table className="table">
+          <thead>
+            <tr><th scope="col">{copy.fieldName}</th><th scope="col">{copy.colDose}</th><th scope="col">{copy.colHowOften}</th></tr>
+          </thead>
+          <tbody>
+            {plan.entries.map((e) => (
+              <tr key={e.id}>
+                <th scope="row">{e.name}</th>
+                <td className="num">{doseText(e.dose)}</td>
+                <td>{copy.planDays(e.daysPerWeek)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : null}
     </section>
   )

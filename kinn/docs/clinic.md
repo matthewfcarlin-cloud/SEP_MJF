@@ -21,17 +21,19 @@ Import the GitHub repo as a new Vercel project and set **Root Directory** to `ki
 
 Vite + React rather than Expo web, because the patient app's components are phone-first and a dashboard wants wide layouts.
 
-**Design (Nov 12 redesign, "The Week Ring").** Each patient's last seven days are drawn as one 168-hour ring, opened out from RECO's Sensor O: clinic visits are an ink sliver, and the centre pairs "the hours you never see" with the hour in clinic. Its own palette (a stepped green-grey ramp, graphite rail, live teal) and Atkinson Hyperlegible Next and Mono, chosen for legibility on projectors and clinic screens; the RECO wordmark is the brand SVG. On Nov 15 two things were corrected: a flare-up morning is now amber wherever it is drawn (ring, rail, day table), matching its "worth a look" flag, with red kept for "contact soon"; and the plan editor was rebuilt around the exercise list, with each exercise in two lines, a searchable library and a publish bar that stays in view. The design system is recorded in `apps/clinic/DESIGN.md`, the product context in `apps/clinic/PRODUCT.md`, and the direction in `apps/clinic/.impeccable/surfaces/`. Built with the Impeccable and Emil Kowalski design skills.
+**Design (Nov 16, "The clinic record").** The site looks and works like the patient-record software a PT already uses: white pages, tables, labelled buttons, one thing per page. One teal marks the main button on each page and recovery progress; red and amber appear only on alerts, always with the word. The font is Source Sans 3; the RECO wordmark is the brand SVG. This replaced the Nov 12 "Week Ring" design (a 168-hour ring per patient, a dark sidebar, diamonds for severity), which Matthew found confusing and asked to simplify (decisions.md, Nov 16). The design system is recorded in `apps/clinic/DESIGN.md`, the product context in `apps/clinic/PRODUCT.md`, and the direction in `apps/clinic/.impeccable/surfaces/`.
 
 ## What it shows
 
-- **Patient list**, most urgent first, then by name. Each row has the checkpoint ring, injury, week, phase and the top flag, so nothing alarming hides behind a click.
-- **Patient detail**, flags first, then:
-  - **Progress**: phase and its state, checkpoints met, the six phases, latest bend (with the other knee) and straightening, the exercise-plan phase and whether flare-ups held it back, any bend limit.
-  - **Next steps**: how the phase moves on, the open checkpoints with their values and who measures each, and the in-clinic ones under "For you at the next visit".
-  - **This week**: the same headline the patient's own PT report uses, the seven mornings, deepest bend, best straightening, flare-up mornings, pain logs, and what they logged.
+- **Patients page**: a table, most urgent first, then by name. Each row has the patient, procedure, week, a small recovery progress bar with the phase in words, the top flag as a word tag, and an "Open chart" button, so nothing alarming hides behind a click.
+- **Patient chart**: the name and facts, one main button ("Write exercise plan" or "Edit exercise plan"), and three tabs:
+  - **Summary**: what needs attention first, then recovery progress (phase and its state, the six phases, checkpoints met, latest bend with the other knee, straightening, the plan phase and whether flare-ups held it back, any bend limit), then the next checkpoints with their latest values and who measures each, and the in-clinic ones under "To check at the next visit".
+  - **Daily log**: the same headline the patient's own PT report uses, deepest bend, best straightening, flare-up mornings and pain logs, then the last seven days as a table.
+  - **Exercise plan**: the plan the patient follows, as a table, with who wrote it and its version.
 
-The open patient lives in the URL (`#/p/<id>`). With none picked, the most urgent opens.
+The recovery progress bar is filled by the phases behind the patient plus the share of the current phase's checkpoints they have met. It shows the phase in words and never a percentage.
+
+The open page lives in the URL: `#/` is the patients table, `#/p/<id>` a chart, `#/p/<id>/log` and `#/p/<id>/exercises` its other tabs, `#/p/<id>/plan` the plan editor. A link to someone who isn't on the list lands on the patients table.
 
 ## Flags (`core/src/clinic/flags.ts`)
 
