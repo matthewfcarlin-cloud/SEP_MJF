@@ -197,7 +197,7 @@ Steps 4 to 7 were run on a laptop through the real website, server and app code 
 - PTs write plans from a library of 85 knee exercises, each tied to the checkpoints it works toward. Plans are versioned and reach the phone.
 - The patient chooses what the PT sees, sees every time they looked, and can stop any time. Exercise check-offs are never shared.
 
-| 468 | 50 | 85 | 20 |
+| 476 | 50 | 85 | 20 |
 |---|---|---|---|
 | automated tests passing | published checkpoints modelled | knee exercises in the library | server routes, each tested |
 
@@ -209,7 +209,7 @@ From `kinn/app`, with Node 20 or newer. The first command installs everything.
 
 | Claim | How to check | What you should see |
 |---|---|---|
-| The rules are tested | `npm ci` then `npm test` | 364 core, 39 clinic and 65 server tests pass |
+| The rules are tested | `npm ci` then `npm test` | 364 core, 47 clinic and 65 server tests pass |
 | It typechecks | `npm run typecheck` | No output after each package name |
 | The server's database is real Postgres | `npm run test -w reco-api` | `postgres.test.ts` passes: it drives the server through the production Postgres driver |
 | A PT cannot see an unshared patient | `apps/api/test/sharing.test.ts`, "one PT never sees another PT's patient" and "stopping the share cuts the PT off at once" | Both pass |
