@@ -58,11 +58,11 @@ describe('drafting a plan', () => {
 })
 
 describe('the plan on the clinic site', () => {
-  const page = (selectedId: string, view: 'detail' | 'plan', plans: Readonly<Record<string, RecoveryPlan>> = {}) =>
-    renderToStaticMarkup(<Clinic today={TODAY} nowHour={10} patients={buildCaseload(TODAY, plans)} selectedId={selectedId} view={view} onSelect={() => undefined} />)
+  const page = (selectedId: string, view: 'exercises' | 'plan', plans: Readonly<Record<string, RecoveryPlan>> = {}) =>
+    renderToStaticMarkup(<Clinic today={TODAY} patients={buildCaseload(TODAY, plans)} selectedId={selectedId} view={view} />)
 
-  test('the patient page shows the PT plan with its author, version and flare-up setting', () => {
-    const t = text(page('leo-flare', 'detail'))
+  test('the exercise plan tab shows the PT plan with its author, version and flare-up setting', () => {
+    const t = text(page('leo-flare', 'exercises'))
     expect(t).toContain(copy.planTitle)
     expect(t).toContain('By Dana Ruiz, PT (sample) · version 2')
     expect(t).toContain(copy.planLighter)
@@ -71,14 +71,14 @@ describe('the plan on the clinic site', () => {
   })
 
   test('a patient with only a typed plan, or none, is offered a plan to write', () => {
-    const sam = text(page('sam-stuck-bend', 'detail'))
+    const sam = text(page('sam-stuck-bend', 'exercises'))
     expect(sam).toContain(copy.planTyped)
     expect(sam).toContain(copy.planWrite)
   })
 
   test('a plan published here replaces the sample plan', () => {
     const published: RecoveryPlan = { id: 'p', version: 3, author: { kind: 'pt', name: 'Alex Kim, PT' }, adaptation: 'as-written', publishedOn: TODAY, entries: [{ id: 'n1', source: { kind: 'custom' }, name: 'Wall sit', dose: { sets: 3, seconds: 30 }, daysPerWeek: 5 }] }
-    const t = text(page('leo-flare', 'detail', { 'leo-flare': published }))
+    const t = text(page('leo-flare', 'exercises', { 'leo-flare': published }))
     expect(t).toContain('By Alex Kim, PT · version 3')
     expect(t).toContain('Wall sit 3 × 30 s')
     expect(t).not.toContain('Mini squats 3 × 12')
@@ -99,6 +99,7 @@ describe('the plan on the clinic site', () => {
 
   test('plan links route to the editor', () => {
     expect(selectionFromHash('#/p/leo-flare/plan')).toEqual({ id: 'leo-flare', view: 'plan' })
+    expect(selectionFromHash('#/p/leo-flare/exercises')).toEqual({ id: 'leo-flare', view: 'exercises' })
     expect(selectionFromHash('#/p/leo-flare')).toEqual({ id: 'leo-flare', view: 'detail' })
     expect(selectionFromHash('#/p/')).toBeUndefined()
   })

@@ -36,11 +36,11 @@ The PT sees a measured record of the hours they don't see, built from the patien
 
 ## Capabilities and Constraints
 
-- Caseload list, most urgent first; patient detail with flags, progress (phase, checkpoints, range against the other knee, plan phase), next steps (open checkpoints, who measures each, in-clinic checks) and the week (the same summary as the patient's PT report).
+- A patients table, most urgent first, each row with a small recovery progress bar; a patient chart in three tabs: Summary (flags, progress, next checkpoints, in-clinic checks), Daily log (the last seven days, with the same summary as the patient's PT report) and Exercise plan; a plan editor with an exercise library.
 - Flags in three tiers: **Contact soon** (pain 8+, red-flag words, the knee giving way), **Worth a look** (flare-ups, bends past the limit), **Note** (stalled progress). Thresholds are the patient app's own.
 - Logic lives in `kinn/app/packages/core/src/clinic`; the site is Vite + React, deployed on Vercel from `kinn/app/apps/clinic`.
-- **Sample data only.** Six personas from `core/src/sim/seed.ts`. No accounts, no backend, no real patient data. Real data needs patient-controlled sharing, a backend and PT accounts: a separate, undecided product decision (see `kinn/docs/decisions.md`).
-- Not built: PT sign-in, editing a patient from the site, messaging, notifications, remote-monitoring billing.
+- **Sample data on the deployed site.** Six personas from `core/src/sim/seed.ts`. PT sign-in, patient-controlled sharing and publishing a plan to a real patient are built and tested against the RECO server (`kinn/app/apps/api`) but the server is not deployed, so no real patient data is on the site yet (see `kinn/docs/decisions.md`, Nov 15).
+- Not built: editing a patient's limits or phase from the site, messaging, notifications, remote-monitoring billing.
 
 ## Brand Commitments
 
@@ -50,6 +50,7 @@ From `kinn/docs/brand.md` (binding):
 - The Sensor O: the logo's ring with a live arc from 12 o'clock clockwise; only the arc may animate, only by filling clockwise. Logo files in `kinn/brand/`.
 - Never: "safe", "cleared", "ready to return", "at risk", risk predictions, readiness or clearance calls, "clinical-grade". RECO doesn't diagnose; the clinical call is the PT's.
 - No adherence or compliance metrics, no "missed" or "skipped": flags are about the knee only.
+- The clinician site looks like familiar clinic records software: white pages, tables, labelled buttons, one thing per page. No invented data graphics or dark surfaces (Matthew, Nov 16, after the Week Ring design read as confusing).
 
 ## Evidence on Hand
 

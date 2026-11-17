@@ -23,9 +23,9 @@ const shared: readonly SharedPatient[] = [
 ]
 const caseload = liveCaseload(TODAY, shared)
 const nothing = (): void => undefined
-const chrome = { mode: 'live' as const, accountName: 'Dana Ruiz, PT', waiting: caseload.waiting, onAdd: nothing, onSignOut: nothing }
+const chrome = { mode: 'live' as const, accountName: 'Dana Ruiz, PT', waiting: caseload.waiting, onSignOut: nothing }
 const page = (props: Partial<Parameters<typeof Clinic>[0]> = {}): string =>
-  renderToStaticMarkup(<Clinic today={TODAY} nowHour={10} patients={caseload.patients} selectedId="a1" onSelect={nothing} chrome={chrome} scopes={caseload.scopes} {...props} />)
+  renderToStaticMarkup(<Clinic today={TODAY} patients={caseload.patients} selectedId="a1" chrome={chrome} scopes={caseload.scopes} {...props} />)
 
 describe('real patients from the server', () => {
   test('synced patients are summarised, most urgent first; one whose phone hasn’t synced waits by name', () => {
@@ -43,8 +43,8 @@ describe('real patients from the server', () => {
     expect(copy.sharing([], ['notes'])).toBe('Shares check-ins only. Not shared: notes.')
   })
 
-  test('the rail is the PT’s own: no sample tag, a way to add a patient, who is signed in, who is waiting', () => {
-    const t = text(page())
+  test('the patients page is the PT’s own: no sample tag, a way to add a patient, who is signed in, who is waiting', () => {
+    const t = text(page({ selectedId: undefined }))
     expect(t).not.toContain(copy.sampleTag)
     expect(t).not.toContain(copy.sampleNote)
     expect(t).toContain(copy.liveNoteRail(3))
@@ -87,12 +87,12 @@ describe('real patients from the server', () => {
   test('a plan link for someone who isn’t on the list opens nobody’s editor', () => {
     const t = text(page({ view: 'plan', selectedId: 'someone-elses-patient' }))
     expect(t).not.toContain(copy.editorTitle('Leo'))
-    expect(t).toContain(copy.ringTitle)
+    expect(t).toContain(copy.colRecovery)
   })
 
   test('a record the server couldn’t open says so, instead of looking like a phone that hasn’t synced', () => {
     const broken = liveCaseload(TODAY, [{ id: 'd4', name: 'Sam', sharedSince: '2026-11-12T09:00:00.000Z', scopes: [], unreadable: true }])
-    const t = text(page({ chrome: { ...chrome, waiting: broken.waiting } }))
+    const t = text(page({ selectedId: undefined, chrome: { ...chrome, waiting: broken.waiting } }))
     expect(t).toContain(copy.unreadableRow)
   })
 
@@ -124,7 +124,7 @@ describe('signing in', () => {
 })
 
 describe('the plan editor, second pass', () => {
-  const editor = renderToStaticMarkup(<Clinic today={TODAY} nowHour={10} patients={caseload.patients} selectedId="a1" view="plan" onSelect={nothing} />)
+  const editor = renderToStaticMarkup(<Clinic today={TODAY} patients={caseload.patients} selectedId="a1" view="plan" />)
 
   test('the library opens on the patient’s phase and says how much more there is', () => {
     const total = catalogFor('knee').length
@@ -139,7 +139,7 @@ describe('the plan editor, second pass', () => {
     expect(editor.match(/class="entry"/g)).toHaveLength(5)
     expect(editor).toContain('aria-label="Sets, Mini squats"')
     expect(editor.match(/class="entry-row entry-dose entry-light"/g)).toHaveLength(5)
-    const asWritten = renderToStaticMarkup(<Clinic today={TODAY} nowHour={10} patients={caseload.patients} selectedId="b2" view="plan" onSelect={nothing} />)
+    const asWritten = renderToStaticMarkup(<Clinic today={TODAY} patients={caseload.patients} selectedId="b2" view="plan" />)
     expect(asWritten).not.toContain('entry-light')
   })
 })

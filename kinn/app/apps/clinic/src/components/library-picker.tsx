@@ -21,7 +21,7 @@ interface LibraryPickerProps {
 }
 
 /**
- * The knee library: search by name, narrow by phase and kind. It opens on the patient's own
+ * The knee library: search by name, narrow by plan phase and kind. It opens on the patient's own
  * phase, and each exercise names the checkpoints it works toward on that patient's protocol.
  */
 export function LibraryPicker({ draft, path, onAdd }: LibraryPickerProps) {
@@ -38,15 +38,25 @@ export function LibraryPicker({ draft, path, onAdd }: LibraryPickerProps) {
     ...(category !== 'all' ? { category } : {}),
   })
   return (
-    <section className="panel library-panel" aria-labelledby="library-title">
-      <h2 id="library-title">{copy.libraryTitle}</h2>
+    <section className="card library-panel" aria-labelledby="library-title">
+      <header className="card-head"><h2 id="library-title">{copy.libraryTitle}</h2></header>
+      <div className="card-body stack">
       <div className="library-filters">
-        <label className="field">
-          <span className="sr-only">{copy.librarySearch}</span>
+        <label className="field field-search">
+          <span>{copy.librarySearch}</span>
           <input type="search" value={query} placeholder={copy.librarySearchPlaceholder} onChange={(e) => setQuery(e.target.value)} />
         </label>
-        <label className="field field-kind">
-          <span className="sr-only">{copy.libraryKind}</span>
+        <label className="field">
+          <span>{copy.libraryPhaseLabel}</span>
+          <select value={searching ? 'all' : phase} onChange={(e) => { setPhase(e.target.value === 'all' ? 'all' : (Number(e.target.value) as Phase)); setQuery('') }}>
+            <option value="all">{copy.libraryAll}</option>
+            {PHASES.map((n) => (
+              <option key={n} value={n}>{copy.libraryPhase(n, catalog.find((c) => c.phase === n)?.phaseName ?? '')}</option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span>{copy.libraryKind}</span>
           <select value={category} onChange={(e) => setCategory(e.target.value as ExerciseCategory | 'all')}>
             <option value="all">{copy.libraryAllKinds}</option>
             {CATEGORY_ORDER.map((c) => (
@@ -54,14 +64,6 @@ export function LibraryPicker({ draft, path, onAdd }: LibraryPickerProps) {
             ))}
           </select>
         </label>
-      </div>
-      <div className="seg" role="group" aria-label={copy.libraryPhaseLabel}>
-        <button type="button" aria-pressed={phase === 'all' || searching} className="seg-btn" onClick={() => setPhase('all')}>{copy.libraryAll}</button>
-        {PHASES.map((n) => (
-          <button key={n} type="button" aria-pressed={phase === n && !searching} className="seg-btn" onClick={() => { setPhase(n); setQuery('') }}>
-            {copy.libraryPhase(n, catalog.find((c) => c.phase === n)?.phaseName ?? '')}
-          </button>
-        ))}
       </div>
       <p className="small muted" aria-live="polite">{copy.libraryCount(shown.length, catalog.length)}</p>
       {shown.length === 0 ? <p className="muted">{copy.libraryEmpty}</p> : null}
@@ -85,6 +87,7 @@ export function LibraryPicker({ draft, path, onAdd }: LibraryPickerProps) {
         })}
       </ul>
       <p className="small muted">{copy.librarySource}</p>
+      </div>
     </section>
   )
 }

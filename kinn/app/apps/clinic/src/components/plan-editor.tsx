@@ -6,6 +6,7 @@ import { copy } from '../copy'
 import { addCustom, addFromLibrary, moveEntry, removeEntry, setAdaptation, setAuthor, startDraft, updateEntry } from '../plan-draft'
 import { messageOf } from '../use-live'
 import { EntryEditor } from './entry-editor'
+import { BackIcon } from './icons'
 import { LibraryPicker } from './library-picker'
 
 let counter = 0
@@ -53,15 +54,17 @@ export function PlanEditor({ patient, today, author, onPublish, onClose }: PlanE
   }
 
   return (
-    <article className="main" aria-labelledby="editor-title">
-      <button type="button" className="btn btn-ghost back" onClick={onClose}>{copy.editorBack(patient.name)}</button>
-      <header className="patient-head">
-        <h1 id="editor-title" tabIndex={-1}>{copy.editorTitle(patient.name)}</h1>
-        <p className="patient-facts">{copy.editorVersion(draft.version, current?.version)}</p>
+    <main className="page" aria-labelledby="editor-title">
+      <button type="button" className="back-link" onClick={onClose}><BackIcon />{copy.editorBack(patient.name)}</button>
+      <header className="page-head">
+        <div className="page-title">
+          <h1 id="editor-title" tabIndex={-1}>{copy.editorTitle(patient.name)}</h1>
+          <p className="patient-facts">{copy.editorVersion(draft.version, current?.version)}</p>
+        </div>
       </header>
-      <div className="body editor-body">
-        <div className="side">
-          <section className="panel plan-settings" aria-label={copy.adaptationTitle}>
+      <div className="editor-body">
+        <div className="editor-main">
+          <section className="card card-body plan-settings" aria-label={copy.adaptationTitle}>
             <div className="setting">
               <h2 id="adapt-title">{copy.adaptationTitle}</h2>
               <div className="seg" role="group" aria-labelledby="adapt-title">
@@ -77,12 +80,12 @@ export function PlanEditor({ patient, today, author, onPublish, onClose }: PlanE
               </label>
             ) : null}
           </section>
-          <section className="panel" aria-labelledby="entries-title">
-            <div className="week-head">
+          <section className="card" aria-labelledby="entries-title">
+            <header className="card-head">
               <h2 id="entries-title">{copy.exercisesTitle}</h2>
               <span className="small muted">{copy.entryCount(draft.entries.length)}</span>
-            </div>
-            {empty ? <p className="muted">{copy.noEntries}</p> : null}
+            </header>
+            {empty ? <p className="muted card-body">{copy.noEntries}</p> : null}
             <ol className="entries">
               {draft.entries.map((e, i) => (
                 <EntryEditor
@@ -97,7 +100,7 @@ export function PlanEditor({ patient, today, author, onPublish, onClose }: PlanE
                 />
               ))}
             </ol>
-            <div><button type="button" className="btn btn-secondary" onClick={() => setDraft(addCustom(draft, newId()))}>{copy.addOwn}</button></div>
+            <div className="card-foot"><button type="button" className="btn btn-secondary" onClick={() => setDraft(addCustom(draft, newId()))}>{copy.addOwn}</button></div>
           </section>
           <section className="publish-bar" aria-label={copy.publish(draft.version)}>
             {tried && problems.length > 0 ? (
@@ -122,10 +125,10 @@ export function PlanEditor({ patient, today, author, onPublish, onClose }: PlanE
             </div>
           </section>
         </div>
-        <div className="ring-col">
+        <div className="editor-side">
           <LibraryPicker draft={draft} path={patient.path} onAdd={(exercise) => setDraft(addFromLibrary(draft, exercise, newId()))} />
         </div>
       </div>
-    </article>
+    </main>
   )
 }
