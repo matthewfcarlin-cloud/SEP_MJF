@@ -61,6 +61,12 @@ test('config never exposes a secret', async t => {
   assert.deepEqual(JSON.parse(text), { enabled: true, depositCents: DEPOSIT_CENTS, expectedPrice: '$150', expectedShip: '6 to 12 months', refundAfterMonths: 12 });
 });
 
+test('config is cached at the edge, so the Preorder button shows without waiting on a cold start', async t => {
+  const { base } = await harness(t);
+  const res = await fetch(`${base}/api/preorder/config`);
+  assert.match(res.headers.get('cache-control') || '', /s-maxage=\d+/);
+});
+
 test('checkout returns 503 and calls nothing while preorders are off', async t => {
   const { base, calls } = await harness(t, { env: { ...ENV, STRIPE_SECRET_KEY: '' } });
   const res = await fetch(`${base}/api/preorder/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
@@ -78,7 +84,7 @@ test('checkout sets the amount on the server, whatever the browser sends', async
   assert.equal(params.line_items[0].price_data.unit_amount, DEPOSIT_CENTS);
   assert.equal(params.line_items[0].quantity, 1);
   assert.ok(params.success_url.startsWith('https://example.test/preorder/thanks'));
-  assert.equal(params.cancel_url, 'https://example.test/preorder/reserve');
+  assert.equal(params.cancel_url, 'https://example.test/preorder');
   assert.equal(params.metadata.kind, 'reco-preorder');
   assert.equal(params.metadata.source, 'reddit');
 });

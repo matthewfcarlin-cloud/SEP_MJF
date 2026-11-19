@@ -45,14 +45,15 @@
      Nothing is timed or locked; the next scroll carries on. Each is a point on the film, in the same 'shot t' terms as the captions.
      The last is where the dial is fully lit, so the waitlist is never skipped on the way to the footer */
   const DIAL_LIT_AT = 'join .8';
-  const PAUSES = ['signal .72', 'phone .22', 'phone .6', 'phone .9', DIAL_LIT_AT];
+  /* one stop inside every caption, so none can be scrolled past in one flick */
+  const PAUSES = ['hero .46', 'hero .84', 'bend .55', 'hold .4', 'signal .72', 'phone .22', 'phone .6', 'phone .9', DIAL_LIT_AT];
   const words = [...document.querySelectorAll('#words [data-a]')].map(el => ({el, a: mark(el.dataset.a), b: mark(el.dataset.b)}));
   /* a film position in vh is also how far into the section the page has scrolled, so each stop sits at that depth */
   PAUSES.forEach(at => { const stop = document.createElement('i'); stop.className = 'pause'; stop.setAttribute('aria-hidden', 'true'); stop.style.top = mark(at) + 'vh'; sec.append(stop); });
   /* the CSS stops above cover touch. A wheel or trackpad sends a stream of events, so: when one motion crosses a stop going down,
      rest on it and let the rest of that motion go. A new motion carries on: a gap in the stream, a swipe that speeds up again,
      or HOLD_MAX_MS at the most, so it never feels stuck */
-  const GESTURE_GAP_MS = 160, SPEED_UP = 1.4, SPEED_UP_MIN = 6, HOLD_MAX_MS = 1100, PAUSE_REACH = 2;
+  const GESTURE_GAP_MS = 160, SPEED_UP = 1.4, SPEED_UP_MIN = 6, HOLD_MAX_MS = 1600, PAUSE_REACH = 2;
   const stopsPx = () => [...sec.querySelectorAll('.pause')].map(el => el.getBoundingClientRect().top + scrollY);
   let heldAt = 0, held = false, lastWheel = 0, lastDelta = 0;
   addEventListener('wheel', e => {
