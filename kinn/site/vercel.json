@@ -77,6 +77,11 @@
       "source": "/learn/(.*)",
       "destination": "/try/",
       "permanent": false
+    },
+    {
+      "source": "/preorder/reserve",
+      "destination": "/preorder#buy",
+      "permanent": false
     }
   ]
 }

@@ -12,6 +12,7 @@ const WEBHOOK_PATH = '/api/stripe/webhook';
 const DEPOSIT_CENTS = 4900;
 const EXPECTED_PRICE = '$150';
 const EXPECTED_SHIP = '6 to 12 months';
+const CONFIG_CACHE_S = 300;
 const REFUND_AFTER_MONTHS = 12;       // we promise to refund any preorder that hasn't shipped by then
 const CURRENCY = 'usd';
 const ORDER_KIND = 'reco-preorder';   // the Stripe account may sell other things; only these are ours
@@ -115,7 +116,8 @@ function preorderHandlers({ stripe, store, env, sendEmail, tooMany, logError = c
   }
 
   return {
-    config(req, res) { res.json(readConfig(env)); },
+    /* cached at the edge for a few minutes: the Preorder button shouldn't wait on a cold start. Switching the keys takes up to CONFIG_CACHE_S to show */
+    config(req, res) { res.set('Cache-Control', `public, max-age=0, s-maxage=${CONFIG_CACHE_S}, stale-while-revalidate=86400`); res.json(readConfig(env)); },
 
     async checkout(req, res) {
       const config = readConfig(env);
@@ -142,7 +144,7 @@ function preorderHandlers({ stripe, store, env, sendEmail, tooMany, logError = c
           payment_intent_data: { description: 'RECO preorder deposit', metadata },
           custom_text: { submit: { message: `Non-binding. Refundable in full anytime before you pay the balance, and automatically if yours hasn't shipped within ${REFUND_AFTER_MONTHS} months. Terms: ${site}/preorder/terms` } },
           success_url: `${site}/preorder/thanks`,
-          cancel_url: `${site}/preorder/reserve`,
+          cancel_url: `${site}/preorder`,
         });
         res.json({ ok: true, url: session.url });
       } catch (e) {

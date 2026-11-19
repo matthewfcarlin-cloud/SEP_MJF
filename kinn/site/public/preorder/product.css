@@ -1,0 +1,115 @@
+/* The preorder page as a product page: everything someone ready to buy needs, on one page, in the order they ask for it */
+.product{--card:#EAE7E1;--pill:#3DDBB8}
+.product .top{position:fixed;background:rgba(243,241,237,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.product .top nav a{color:var(--fg)}
+.product .top nav a.nav-buy{background:var(--pill);color:#0d1212}
+.product .top nav a.nav-buy:hover{background:#7fe6cf}
+.product section{scroll-margin-top:84px}
+.product .wrap{max-width:1240px;margin:0 auto}
+.product h2{font-size:clamp(2rem,3.8vw,3.4rem);font-weight:300;text-wrap:balance}
+.product .sub{margin-top:12px;font-size:clamp(1rem,1.3vw,1.15rem);line-height:1.45;color:var(--dim);max-width:34em;text-wrap:pretty}
+
+/* the buy section: pictures on the left, the decision on the right */
+.buy-sec{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4.4vw,72px);align-items:start;padding-top:96px;padding-bottom:clamp(40px,7vh,80px)}
+.gallery{position:sticky;top:92px;display:grid;gap:12px}
+.shot{aspect-ratio:1;border-radius:22px;overflow:hidden;background:var(--card)}
+.shot img{width:100%;height:100%;object-fit:cover}
+.thumbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.thumbs button{padding:0;aspect-ratio:1;border:0;border-radius:12px;overflow:hidden;background:var(--card);cursor:pointer;opacity:.62;outline-offset:3px;transition:opacity .2s}
+.thumbs button:hover{opacity:.9}
+.thumbs button[aria-current="true"]{opacity:1;box-shadow:0 0 0 2px var(--fg)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+
+.buybox{display:grid;gap:22px;padding-top:8px}
+.ship{font:400 12px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.buybox h1{font-size:clamp(3rem,5.4vw,4.8rem);font-weight:300;letter-spacing:-.03em;line-height:1}
+.buybox .sub{margin-top:10px}
+.props{list-style:none;margin:0;padding:18px 0;display:grid;gap:12px;border-block:1px solid var(--line)}
+.props li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;font-size:16px;line-height:1.4}
+.props svg{width:18px;height:18px;margin-top:2px;color:var(--teal)}
+.price{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px}
+.price strong{font-size:clamp(2.8rem,4.4vw,3.8rem);font-weight:300;letter-spacing:-.03em;line-height:1}
+.price span{font-size:15px;color:var(--dim)}
+.price-note{margin-top:-10px;font-size:14.5px;line-height:1.45;color:var(--dim)}
+.deal{list-style:none;margin:0;padding:16px 18px;display:grid;gap:8px;border-radius:16px;background:var(--card);font-size:14.5px;line-height:1.4;color:var(--dim)}
+.deal strong{font-weight:500;color:var(--fg)}
+.buy .btn{width:100%;padding:19px 34px;font-size:17px}
+.buy .msg{text-align:center}
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:-8px;font-size:13px;color:var(--faint)}
+.trust a{text-decoration:underline;text-underline-offset:3px}
+.alt{font-size:14px;text-align:center;color:var(--dim)}
+.alt a{color:var(--teal);text-decoration:underline;text-underline-offset:3px}
+
+/* the lineup: flat to a deep bend, unrolling as it arrives */
+.bends{padding-block:clamp(40px,8vh,96px) 0;text-align:center}
+.bends .sub{margin-inline:auto}
+.bends img{width:100%;height:auto;margin-top:clamp(12px,3vh,32px)}
+@media (prefers-reduced-motion:no-preference){.bends img{animation:unroll 1.7s var(--out) both;animation-timeline:view();animation-range:entry 0% cover 40%}}
+
+/* how it works: three steps, three pictures */
+.how{padding-block:clamp(56px,10vh,112px)}
+.steps3{list-style:none;margin:clamp(24px,4vh,40px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2vw,28px)}
+.steps3 li{display:grid;gap:16px;align-content:start}
+.steps3 .pic{aspect-ratio:4/3;border-radius:20px;overflow:hidden;background:var(--card)}
+.steps3 .pic img{width:100%;height:100%;object-fit:cover}
+.steps3 .pic.app{display:grid;place-items:end center;padding-top:8%}
+.steps3 .pic.app img{width:46%;height:auto;object-fit:contain;border-radius:22px 22px 0 0;box-shadow:0 0 0 6px #0a0b0b}
+.steps3 h3{margin:0;font-size:19px;font-weight:500}
+.steps3 p{margin-top:4px;font-size:15px;line-height:1.45;color:var(--dim)}
+.steps3 .n{font:400 12px/1 var(--mono);color:var(--faint);margin-right:8px}
+
+/* the app, on a dark band like the home page */
+.appband{background:#0d1212;color:#F2F1EC;padding-block:clamp(64px,12vh,128px)}
+.appband .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:clamp(28px,5vw,80px);align-items:center}
+.appband h2 em{font-style:normal;color:#a9d7c6}
+.appband .sub{color:rgba(242,241,236,.74)}
+.appband .more{display:inline-block;margin-top:22px;color:#a9d7c6;text-decoration:underline;text-underline-offset:3px}
+.phones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.6vw,22px)}
+.phones figure{margin:0;display:grid;gap:12px;justify-items:center}
+.phones .ph{width:100%;aspect-ratio:390/844;padding:5px;border-radius:30px;background:#0a0b0b;box-shadow:0 0 0 1px #55595a,0 24px 60px rgba(0,0,0,.5)}
+.phones .ph img{width:100%;height:100%;object-fit:cover;border-radius:25px}
+.phones figcaption{font-size:14px;color:rgba(242,241,236,.7)}
+
+/* what you get */
+.get{padding-block:clamp(56px,10vh,112px)}
+.specs{margin-top:clamp(24px,4vh,40px);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2vw,28px)}
+.specs div{padding-top:16px;border-top:1px solid var(--line)}
+.specs h3{margin:0 0 6px;font-size:17px;font-weight:500}
+.specs p{font-size:14.5px;line-height:1.45;color:var(--dim)}
+.specs a{color:var(--teal);text-decoration:underline;text-underline-offset:3px}
+
+/* questions */
+.faq{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:clamp(24px,5vw,80px);padding-block:clamp(40px,8vh,96px);border-top:1px solid var(--line)}
+.qs{display:grid}
+.qs details{border-bottom:1px solid var(--line)}
+.qs details:first-child{border-top:1px solid var(--line)}
+.qs summary{display:flex;justify-content:space-between;gap:16px;padding:20px 0;font-size:17px;cursor:pointer;list-style:none}
+.qs summary::-webkit-details-marker{display:none}
+.qs summary::after{content:"+";font-weight:300;font-size:22px;line-height:1;color:var(--dim);transition:transform .25s var(--out)}
+.qs details[open] summary::after{transform:rotate(45deg)}
+.qs summary:focus-visible{outline:2px solid var(--teal);outline-offset:4px}
+.qs p{padding:0 0 20px;max-width:40em;font-size:15.5px;line-height:1.5;color:var(--dim)}
+.qs a{text-decoration:underline;text-underline-offset:3px}
+
+/* the last ask */
+.last{display:grid;justify-items:center;gap:18px;text-align:center;padding-block:clamp(56px,10vh,112px)}
+.last .buy{width:min(100%,380px)}
+.last .fine{max-width:40em}
+.product footer{border-top:1px solid var(--line)}
+.product footer .small,.product footer nav a{color:var(--dim)}
+
+@media (max-width:960px){
+  .buy-sec{grid-template-columns:minmax(0,1fr);padding-top:84px}
+  .gallery{position:static}
+  .appband .wrap,.faq{grid-template-columns:minmax(0,1fr)}
+  .specs{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .steps3{grid-template-columns:minmax(0,1fr)}
+  .specs{grid-template-columns:minmax(0,1fr)}
+  .phones{gap:8px}
+  .phones .ph{border-radius:20px;padding:3px}
+  .phones .ph img{border-radius:17px}
+  .bends img{width:180%;max-width:none;margin-left:-80%}
+  .bends{overflow:hidden}
+}
