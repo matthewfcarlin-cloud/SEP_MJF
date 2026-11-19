@@ -1,4 +1,4 @@
-/* Preorder links and buttons. If preorders are off, or the server can't be reached, the site offers only the waitlist */
+/* Preorder links and buttons. They show from the first paint, since preorders are open; if the server says they're off, or can't be reached, the site offers only the waitlist */
 (function preorder() {
   const money = cents => `$${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`;
   const SOURCE = new URLSearchParams(location.search).get('src') || 'site';
